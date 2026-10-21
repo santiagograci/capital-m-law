@@ -153,7 +153,7 @@ export function HomeBlogSection({
         {/* Redes Sociales: YouTube & Instagram */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
           <a
-            href="https://www.youtube.com/@CapitalMLaw"
+            href="https://www.youtube.com/@capitalemelaw"
             target="_blank"
             rel="noopener noreferrer"
             className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 text-center space-y-4 hover:shadow-lg transition-all hover:border-red-300 dark:hover:border-red-900/50 block"
@@ -168,7 +168,7 @@ export function HomeBlogSection({
           </a>
 
           <a
-            href="https://www.instagram.com/capitalm.law"
+            href="https://www.instagram.com/capitalm.law/"
             target="_blank"
             rel="noopener noreferrer"
             className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 text-center space-y-4 hover:shadow-lg transition-all hover:border-[#C01072]/40 dark:hover:border-[#C01072]/30 block"
