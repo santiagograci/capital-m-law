@@ -47,7 +47,7 @@ const CATEGORY_MAPPINGS: Record<
     headline: "Need Tailored Legal Advice for Your Case in Colombia?",
     description:
       "Get direct answers from licensed Colombian attorneys. The $67 USD consultation fee is 100% credited toward your full case retainer upon onboarding.",
-    serviceLink: "/#consultation",
+    serviceLink: "/services",
     ctaButton: "Schedule 45-Min Legal Session · $67",
   },
   "Tax & Compliance": {
@@ -55,7 +55,7 @@ const CATEGORY_MAPPINGS: Record<
     headline: "Questions About 183-Day Tax Residency or Assets in Colombia?",
     description:
       "Protect your worldwide assets and understand double taxation treaties before DIAN assessments. Schedule an intake session with our corporate tax team.",
-    serviceLink: "/#consultation",
+    serviceLink: "/services",
     ctaButton: "Book Tax Assessment · $67",
   },
   "Family Law": {

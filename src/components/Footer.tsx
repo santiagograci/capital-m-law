@@ -147,6 +147,16 @@ export function Footer({ lang = "en" }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/privacy-policy" className="hover:text-[#9BB8E0] transition-colors">
+                  {isEs ? "Política de Privacidad" : "Privacy Policy"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-and-conditions" className="hover:text-[#9BB8E0] transition-colors">
+                  {isEs ? "Términos y Condiciones" : "Terms & Conditions"}
+                </Link>
+              </li>
+              <li className="pt-1">
                 <a
                   href="https://calendly.com/capital-m-law-"
                   target="_blank"
@@ -187,9 +197,27 @@ export function Footer({ lang = "en" }: FooterProps) {
           </div>
         </div>
 
-        {/* Bottom copyright line */}
+        {/* Bottom copyright line with legal links */}
         <div className="pt-6 border-t border-blue-950/60 text-[11px] text-gray-400 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <p>© 2026 Capital M Law. All rights reserved.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p>© 2026 Capital M Law. All rights reserved.</p>
+            <span className="hidden sm:inline text-gray-600">•</span>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/privacy-policy"
+                className="hover:text-white underline-offset-2 hover:underline transition-colors"
+              >
+                {isEs ? "Política de Privacidad" : "Privacy Policy"}
+              </Link>
+              <span>•</span>
+              <Link
+                href="/terms-and-conditions"
+                className="hover:text-white underline-offset-2 hover:underline transition-colors"
+              >
+                {isEs ? "Términos y Condiciones" : "Terms & Conditions"}
+              </Link>
+            </div>
+          </div>
           <p className="text-gray-400">
             {isEs
               ? "Asesoría legal especializada para extranjeros e inversionistas en Colombia."

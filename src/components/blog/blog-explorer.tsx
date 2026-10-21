@@ -186,10 +186,12 @@ function EmptyState({ onReset }: { onReset: () => void }) {
           Clear filters
         </button>
         <a
-          href="/#consultation"
+          href="https://calendly.com/capital-m-law-"
+          target="_blank"
+          rel="noopener noreferrer"
           className="rounded-xl border border-[#C01072] px-5 py-2.5 text-sm font-semibold text-[#C01072] transition hover:bg-[#C01072] hover:text-white"
         >
-          Book a consultation
+          Book a consultation ($67)
         </a>
       </div>
     </div>
