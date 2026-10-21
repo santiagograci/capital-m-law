@@ -8,6 +8,7 @@ import { CoverImage } from "@/components/blog/cover-image";
 import { PostCard } from "@/components/blog/post-card";
 import { PostContent } from "@/components/blog/post-content";
 import { ShareButtons } from "@/components/blog/share-buttons";
+import { ContextualBlogCta } from "@/components/blog/contextual-blog-cta";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog/queries";
 import { formatPostDate } from "@/lib/blog/utils";
 
@@ -149,28 +150,8 @@ async function Article({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
             </ul>
           )}
 
-          {/* CTA */}
-          <aside className="legal-texture-bg relative mt-14 overflow-hidden rounded-3xl bg-[#16345F] p-8 text-white sm:p-10">
-            <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xl font-semibold">Have a question about your case?</p>
-                <p className="mt-1 text-sm text-[#9BB8E0]">Get personalised advice from our bilingual legal team.</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Link href="/#consultation" className="rounded-xl bg-[#C01072] px-5 py-3 text-sm font-semibold transition hover:bg-[#A50E62]">
-                  Book consultation
-                </Link>
-                <a
-                  href="https://wa.me/573146022411"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/25 px-5 py-3 text-sm font-semibold transition hover:bg-white/10"
-                >
-                  <MessageCircle className="size-4" /> WhatsApp
-                </a>
-              </div>
-            </div>
-          </aside>
+          {/* Contextual Monetization CTA */}
+          <ContextualBlogCta category={post.category} tags={post.tags} />
 
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[#16345F]/10 pt-8 dark:border-white/10">
             <Link

@@ -30,12 +30,15 @@ import {
   Globe,
 } from "lucide-react";
 import { HomeBlogSection } from "@/components/home/home-blog-section";
+import { BookingPaymentModal } from "@/components/home/booking-payment-modal";
+import { SocialProofReviews } from "@/components/home/social-proof-reviews";
 
 export default function CapitalMLawApp() {
   const [lang, setLang] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
-
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [bookingService, setBookingService] = useState("Visas & Immigration");
   const [activeService, setActiveService] = useState(FIGMA_SERVICES[0]);
   const [selectedIntent, setSelectedIntent] = useState("visa");
   const [selectedServiceForm, setSelectedServiceForm] = useState(CONTENT.en.form.matters[0]);
@@ -175,23 +178,36 @@ export default function CapitalMLawApp() {
         <div className="max-w-[1240px] mx-auto flex flex-wrap items-center justify-between gap-3 text-[#16345F] dark:text-[#9BB8E0]">
           
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <a href="#consultation" className="flex items-center gap-1.5 hover:underline font-medium text-[#C01072] dark:text-[#F472B6]">
+            <button
+              onClick={() => {
+                setBookingService("General Legal Consultation");
+                setBookingModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 hover:underline font-bold text-[#C01072] dark:text-[#F472B6] cursor-pointer"
+            >
               <Calendar className="w-3.5 h-3.5" /> {t.topBar.book}
-            </a>
-            <a href="mailto:info@capitaleme.com" className="hidden md:flex items-center gap-1.5 hover:underline">
+            </button>
+            <a href="mailto:info@capitaleme.com" className="hidden md:flex items-center gap-1.5 hover:underline text-gray-700 dark:text-gray-200">
               <Mail className="w-3.5 h-3.5 text-[#C01072]" /> {t.topBar.email}
             </a>
             <a
               href="https://wa.me/573146022411"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 text-[#C01072] dark:text-[#F472B6] hover:text-[#16345F] font-bold"
+              className="hidden sm:flex items-center gap-1.5 text-[#706F6F] dark:text-gray-300 hover:text-[#C01072] font-semibold"
             >
-              <MessageCircle className="w-3.5 h-3.5" /> {t.topBar.whatsapp}
+              <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" /> {t.topBar.whatsapp}
             </a>
-            <a href="#pay" className="flex items-center gap-1.5 hover:underline font-semibold text-[#16345F] dark:text-white">
+            <button
+              onClick={() => {
+                setBookingService("Direct Retainer Payment");
+                setBookingModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 hover:underline font-bold text-[#16345F] dark:text-white cursor-pointer"
+            >
+              <Lock className="w-3 h-3 text-[#C01072]" />
               {t.topBar.payNow}
-            </a>
+            </button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -249,23 +265,26 @@ export default function CapitalMLawApp() {
 
           <div className="col-span-2 md:col-span-1 justify-self-center mt-3 md:mt-0">
             <div className="flex items-center gap-4 sm:gap-6 bg-[#C01072] text-white px-6 sm:px-8 py-2.5 rounded-full font-medium text-xs sm:text-sm shadow-md">
-              <a href="#about" className="hover:text-[#16345F] dark:hover:text-black transition-colors">{t.nav.about}</a>
-              <a href="/services" className="hover:text-[#16345F] dark:hover:text-black transition-colors">{t.nav.services}</a>
-              <a href="/team" className="hover:text-[#16345F] dark:hover:text-black transition-colors">{t.nav.team}</a>
-              <a href="#life" className="hover:text-[#16345F] dark:hover:text-black transition-colors">{t.nav.life}</a>
-              <a href="#forum" className="hover:text-[#16345F] dark:hover:text-black transition-colors">{t.nav.forum}</a>
-              <a href="/blog" className="hover:text-[#C01072] dark:hover:text-[#F472B6] font-semibold transition-colors">Blog</a>
-              <a href="#contact" className="hover:text-[#16345F] dark:hover:text-black transition-colors">{t.nav.contact}</a>
+              <a href="#about" className="hover:text-white/80 transition-colors">{t.nav.about}</a>
+              <a href="/services" className="hover:text-white/80 transition-colors">{t.nav.services}</a>
+              <a href="/team" className="hover:text-white/80 transition-colors">{t.nav.team}</a>
+              <a href="#life" className="hover:text-white/80 transition-colors">{t.nav.life}</a>
+              <a href="#forum" className="hover:text-white/80 transition-colors">{t.nav.forum}</a>
+              <a href="/blog" className="hover:text-white/80 font-bold transition-colors">Blog</a>
+              <a href="#contact" className="hover:text-white/80 transition-colors">{t.nav.contact}</a>
             </div>
           </div>
 
           <div className="hidden md:flex justify-self-end items-center gap-2">
-            <a
-              href="#consultation"
-              className="bg-[#16345F] hover:bg-[#C01072] text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-xs"
+            <button
+              onClick={() => {
+                setBookingService("Initial Consultation");
+                setBookingModalOpen(true);
+              }}
+              className="bg-[#16345F] hover:bg-[#C01072] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
             >
               {t.nav.bookBtn}
-            </a>
+            </button>
           </div>
 
         </div>
@@ -321,19 +340,35 @@ export default function CapitalMLawApp() {
               </div>
             </div>
 
-            <div className="pt-2 space-y-2">
-              <a
-                href="#consultation"
-                className="inline-flex items-center gap-2 bg-[#C01072] hover:bg-[#16345F] text-white font-bold text-base px-7 py-4 rounded-2xl shadow-xl transition-all transform hover:-translate-y-0.5 cursor-pointer"
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setBookingService(currentIntent.label.replace(/[^\w\s/]/g, "").trim());
+                  setBookingModalOpen(true);
+                }}
+                className="inline-flex items-center justify-center gap-2 bg-[#C01072] hover:bg-[#A50E62] text-white font-bold text-base px-8 py-4 rounded-2xl shadow-xl transition-all transform hover:-translate-y-0.5 cursor-pointer"
               >
+                <Calendar className="w-5 h-5" />
                 <span>{currentIntent.cta}</span>
                 <ChevronRight className="w-5 h-5" />
+              </button>
+
+              <a
+                href="https://wa.me/573146022411?text=Hi%20Capital%20M!%20I'm%20interested%20in%20legal%20counsel%20for%20Medell%C3%ADn."
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl border border-gray-200 dark:border-white/10 hover:border-[#25D366] dark:hover:border-[#25D366] text-gray-700 dark:text-gray-200 font-semibold text-sm transition"
+              >
+                <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                <span>{lang === "es" ? "WhatsApp Rápido" : "WhatsApp Quick Chat"}</span>
               </a>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#C01072]" />
-                <span>{t.hero.feeCredit}</span>
-              </p>
             </div>
+
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1.5 pt-1">
+              <Sparkles className="w-3.5 h-3.5 text-[#C01072]" />
+              <span>{t.hero.feeCredit}</span>
+            </p>
           </div>
 
           <div id="contact" className="lg:col-span-5 animate-soft-levitate">
@@ -487,28 +522,24 @@ export default function CapitalMLawApp() {
               ))}
             </ul>
 
-            <div className="pt-4 flex flex-wrap gap-3">
-              <a
-                href="#consultation"
-                className="inline-flex items-center gap-2 bg-[#9BB8E0] hover:bg-[#16345F] hover:text-white text-[#16345F] font-bold text-sm px-6 py-3 rounded-xl transition shadow-xs"
+            <div className="pt-4 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setBookingService(lang === "es" ? activeService.nameEs : activeService.name);
+                  setBookingModalOpen(true);
+                }}
+                className="inline-flex items-center gap-2 bg-[#16345F] hover:bg-[#C01072] text-white font-bold text-sm px-6 py-3 rounded-xl transition shadow-md hover:shadow-lg cursor-pointer"
               >
+                <Calendar className="w-4 h-4 text-[#9BB8E0]" />
                 {lang === "es" ? activeService.ctaTextEs : activeService.ctaText} · $67
                 <ChevronRight className="w-4 h-4" />
-              </a>
+              </button>
               <a
                 href={`/services/${activeService.id === "visas" ? "visas-and-immigration" : activeService.id === "real-estate" ? "real-estate-transactions" : activeService.id === "marriage" ? "marriage-and-prenuptial-agreements" : "sas-company-incorporation"}`}
                 className="inline-flex items-center gap-2 border border-[#16345F]/20 dark:border-white/20 hover:border-[#C01072] hover:text-[#C01072] dark:hover:text-[#F472B6] text-[#16345F] dark:text-white font-semibold text-sm px-5 py-3 rounded-xl transition"
               >
                 {lang === "es" ? "Ver requisitos y proceso completo →" : "View requirements & full process →"}
-              </a>
-              <a
-                href={`https://wa.me/573146022411?text=Inquiry%20regarding%20${encodeURIComponent(lang === "es" ? activeService.nameEs : activeService.name)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 bg-gray-100 dark:bg-white/10 hover:bg-[#C01072] hover:text-white text-gray-800 dark:text-white font-semibold text-sm px-5 py-3 rounded-xl transition"
-              >
-                <MessageCircle className="w-4 h-4 text-[#C01072]" />
-                {t.servicesHeading.askWhatsApp}
               </a>
             </div>
           </div>
@@ -739,84 +770,9 @@ export default function CapitalMLawApp() {
         </div>
       </section>
 
-      {/* 9. CARRUSEL: FORO Y RESEÑAS */}
-      <section id="forum" className="py-20 px-4 max-w-[1240px] mx-auto relative z-10 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-black text-[#16345F] dark:text-white">{t.reviewsHeading.title}</h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t.reviewsHeading.subtitle}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={prevReview}
-              aria-label="Previous review"
-              className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/15 bg-white dark:bg-[#0F223D] hover:bg-[#16345F] hover:text-white text-[#16345F] dark:text-white flex items-center justify-center shadow-xs transition-all cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={nextReview}
-              aria-label="Next review"
-              className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/15 bg-white dark:bg-[#0F223D] hover:bg-[#C01072] hover:text-white text-[#16345F] dark:text-white flex items-center justify-center shadow-xs transition-all cursor-pointer"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#0F223D] rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-xs space-y-6">
-          <div className="flex items-center justify-between flex-wrap gap-4 border-b border-gray-100 dark:border-white/10 pb-4">
-            <div>
-              <p className="font-bold text-[#16345F] dark:text-white text-lg">Capital M Law</p>
-              <div className="flex items-center gap-2 text-amber-500 text-xs">
-                <span>★★★★★</span>
-                <span className="text-gray-700 dark:text-gray-300 font-bold">4.8 rating of 53 reviews</span>
-                <span className="text-[#C01072] dark:text-[#F472B6] font-semibold">• {t.reviewsHeading.googleBadge}</span>
-              </div>
-            </div>
-            <a
-              href="https://maps.google.com/?q=Capital+M+Law+Medellin"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 bg-[#16345F] hover:bg-[#C01072] text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition shadow-xs"
-            >
-              <span>{t.reviewsHeading.mapsBtn}</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-
-          <div className="overflow-hidden">
-            <div
-              className="flex gap-6 transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${reviewIndex * 100}%)` }}
-            >
-              {FIGMA_REVIEWS.map((rev) => (
-                <div
-                  key={rev.author}
-                  className="w-full shrink-0 p-6 sm:p-8 rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50/70 dark:bg-white/[0.03] space-y-4 text-left"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-bold text-[#16345F] dark:text-white text-base">{rev.author}</span>
-                      <span className="text-xs text-gray-400 block">{rev.time}</span>
-                    </div>
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#C01072]/10 text-[#C01072] dark:text-[#F472B6]">
-                      {rev.service}
-                    </span>
-                  </div>
-
-                  <div className="text-amber-500 text-sm">★★★★★</div>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed italic">
-                    &ldquo;{lang === "es" ? rev.quoteEs : rev.quote}&rdquo;
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* 9. PRUEBA SOCIAL, CALIFICACIÓN GOOGLE & TARJETAS PROFESIONALES */}
+      <section id="forum">
+        <SocialProofReviews lang={lang} />
       </section>
 
       {/* 10. BLOG & REDES SOCIALES */}
@@ -880,14 +836,26 @@ export default function CapitalMLawApp() {
           <MessageCircle className="w-4 h-4" />
           WhatsApp
         </a>
-        <a
-          href="#consultation"
-          className="flex-[1.4] py-3 px-3 rounded-xl bg-[#16345F] dark:bg-[#C01072] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+        <button
+          type="button"
+          onClick={() => {
+            setBookingService("General Legal Consultation");
+            setBookingModalOpen(true);
+          }}
+          className="flex-[1.4] py-3 px-3 rounded-xl bg-[#16345F] dark:bg-[#C01072] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
         >
           <Calendar className="w-4 h-4" />
           {lang === "en" ? "Book · $67" : "Agendar · $67"}
-        </a>
+        </button>
       </div>
+
+      {/* MODAL DE RESERVA DIRECTA Y PASARELA DE PAGO ($67 USD) */}
+      <BookingPaymentModal
+        isOpen={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
+        defaultService={bookingService}
+        lang={lang}
+      />
 
     </div>
   );
