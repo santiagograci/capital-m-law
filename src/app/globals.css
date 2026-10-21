@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-brand-blue: #16345F;
+  --color-brand-green: #00AA81;
+  --color-brand-gray: #706F6F;
+  --color-brand-light-blue: #9BB8E0;
+  --color-brand-pink: #C01072;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: #ffffff;
+    color: #16345F;
+    font-family: var(--font-poppins), system-ui, sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .dark body {
+    background-color: #0A1526;
+    color: #E2E8F0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Textura Legal Continua Adaptable */
+.legal-texture-bg {
+  position: relative;
+}
+
+.legal-texture-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/legal-pattern.svg');
+  background-repeat: repeat;
+  background-size: 130px 130px;
+  pointer-events: none;
+  z-index: 0;
+  color: #16345F;
+  opacity: 0.035;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.dark .legal-texture-bg::before {
+  color: #9BB8E0;
+  opacity: 0.04;
+}
+
+/* Animación de apertura suspendida en el aire */
+@keyframes floatInAir {
+  0% {
+    opacity: 0;
+    transform: translateY(35px) scale(0.98);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 0.95;
+    transform: translateY(-4px) scale(1.005);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.animate-suspended-hero {
+  animation: floatInAir 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes softLevitate {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-soft-levitate {
+  animation: softLevitate 6s ease-in-out infinite;
 }
