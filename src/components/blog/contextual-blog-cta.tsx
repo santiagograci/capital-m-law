@@ -93,14 +93,16 @@ export function ContextualBlogCta({ category }: ContextualBlogCtaProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
-          <Link
-            href="/#consultation"
+          <a
+            href="https://calendly.com/capital-m-law-"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-2xl bg-[#C01072] hover:bg-[#A50E62] px-6 py-3.5 text-sm font-bold text-white shadow-lg transition flex items-center justify-center gap-2 group"
           >
             <Calendar className="size-4" />
             <span>{cta.ctaButton}</span>
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          </a>
 
           <Link
             href={cta.serviceLink}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { BlogHeader } from "@/components/blog/blog-header";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Legal Services & Practice Directory | Capital M Law",
@@ -18,33 +18,7 @@ export default function ServicesLayout({
     <div className="min-h-screen bg-[#FAFBFD] dark:bg-[#0A1526]">
       <BlogHeader />
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">{children}</div>
-      <footer className="mt-20 bg-[#16345F] text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div>
-            <p className="text-lg font-bold">Capital M Law</p>
-            <p className="mt-1 max-w-md text-sm text-[#9BB8E0]">
-              Specialized legal counsel for international expats, investors, and founders in Colombia.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3 text-sm">
-            <Link href="/" className="rounded-xl border border-white/20 px-4 py-2.5 transition hover:bg-white/10">
-              Home
-            </Link>
-            <Link href="/team" className="rounded-xl border border-white/20 px-4 py-2.5 transition hover:bg-white/10">
-              Legal Team
-            </Link>
-            <Link href="/blog" className="rounded-xl border border-white/20 px-4 py-2.5 transition hover:bg-white/10">
-              Insights
-            </Link>
-            <Link
-              href="/#consultation"
-              className="rounded-xl bg-[#C01072] px-4 py-2.5 font-semibold transition hover:bg-[#A50E62]"
-            >
-              Book Consultation · $67
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -90,14 +90,16 @@ export function BlogHeader() {
           >
             {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
-          <Link
-            href="/#consultation"
+          <a
+            href="https://calendly.com/capital-m-law-"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-[#C01072] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(192,16,114,0.7)] transition hover:bg-[#A50E62]"
           >
             <Calendar className="size-4" />
             <span className="hidden sm:inline">Book Consultation · $67</span>
             <span className="sm:hidden">Book · $67</span>
-          </Link>
+          </a>
         </div>
       </nav>
     </header>

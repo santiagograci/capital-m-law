@@ -30,8 +30,9 @@ import {
   Globe,
 } from "lucide-react";
 import { HomeBlogSection } from "@/components/home/home-blog-section";
-import { BookingPaymentModal } from "@/components/home/booking-payment-modal";
+import { BookingPaymentModal, CALENDLY_URL } from "@/components/home/booking-payment-modal";
 import { SocialProofReviews } from "@/components/home/social-proof-reviews";
+import { Footer } from "@/components/Footer";
 
 export default function CapitalMLawApp() {
   const [lang, setLang] = useState<Language>("en");
@@ -783,47 +784,8 @@ export default function CapitalMLawApp() {
         instagramCardText={t.blogHeading.instagramCard}
       />
 
-      {/* 11. FOOTER */}
-      <footer className="bg-[#16345F] dark:bg-[#070E1A] text-white pt-16 pb-12 px-4 border-t border-gray-800">
-        <div className="max-w-[1240px] mx-auto space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            <div className="md:col-span-5 space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-extrabold tracking-tight text-white lowercase">
-                  capital
-                </span>
-                <div className="w-8 h-8 rounded-full border-2 border-white p-[2px] flex items-center justify-center">
-                  <div className="w-full h-full rounded-full bg-white text-[#16345F] flex items-center justify-center text-sm font-black">
-                    M
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-gray-300 ml-1 tracking-wider uppercase">
-                  Law
-                </span>
-              </div>
-              <p className="text-xs text-gray-300 max-w-sm leading-relaxed">
-                {t.footer.desc}
-              </p>
-            </div>
-
-            <div className="md:col-span-3 space-y-2 text-xs text-gray-300">
-              {t.footer.links.map((link, i) => (
-                <p key={i}><a href="#consultation" className="hover:text-[#9BB8E0] transition-colors">{link}</a></p>
-              ))}
-            </div>
-
-            <div className="md:col-span-4 space-y-2 text-xs text-gray-300">
-              <p><a href="mailto:info@capitaleme.com" className="hover:text-[#9BB8E0] underline transition-colors">info@capitaleme.com</a></p>
-              <p>+57 314 602 2411</p>
-              <p>Cra 66D #32B - 57, Coworking Inspira, Belén Malibú, Medellín</p>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-blue-950 text-[11px] text-gray-400 text-center">
-            {t.footer.rights}
-          </div>
-        </div>
-      </footer>
+      {/* 11. FOOTER (CON REDES SOCIALES TIKTOK, FACEBOOK, INSTAGRAM, YOUTUBE) */}
+      <Footer lang={lang} />
 
       {/* 12. BARRA FIJA MÓVIL */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 p-2.5 bg-white/95 dark:bg-[#0A1526]/95 backdrop-blur-md border-t border-gray-200 dark:border-white/10 flex items-center gap-2 shadow-2xl">

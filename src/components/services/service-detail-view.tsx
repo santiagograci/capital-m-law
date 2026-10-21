@@ -295,8 +295,10 @@ export function ServiceDetailView({ service }: ServiceDetailViewProps) {
 
             {/* CTAs */}
             <div className="space-y-3">
-              <Link
-                href="/#consultation"
+              <a
+                href="https://calendly.com/capital-m-law-"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full rounded-2xl bg-[#C01072] hover:bg-[#A50E62] text-white p-4 font-bold text-sm shadow-md transition flex items-center justify-center gap-2 group"
               >
                 <Calendar className="size-4" />
@@ -306,7 +308,7 @@ export function ServiceDetailView({ service }: ServiceDetailViewProps) {
                     : `Agendar Asesoría · ${service.consultationFee}`}
                 </span>
                 <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              </a>
 
               <a
                 href={`https://wa.me/573146022411?text=Hi%20Capital%20M!%20I'd%20like%20to%20inquire%20about%20your%20service:%20${encodeURIComponent(

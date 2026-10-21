@@ -166,12 +166,14 @@ export function ServicesDirectoryView() {
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </Link>
 
-                <Link
-                  href="/#consultation"
+                <a
+                  href="https://calendly.com/capital-m-law-"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="rounded-xl bg-[#C01072] hover:bg-[#A50E62] text-white px-4 py-2 text-xs font-bold transition shadow-xs"
                 >
                   {lang === "en" ? "Book · $67" : "Agendar · $67"}
-                </Link>
+                </a>
               </div>
             </article>
           );
@@ -199,13 +201,15 @@ export function ServicesDirectoryView() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/#consultation"
+            <a
+              href="https://calendly.com/capital-m-law-"
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded-2xl bg-[#C01072] px-6 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#A50E62] transition inline-flex items-center gap-2"
             >
               <Calendar className="size-4" />
               <span>{lang === "en" ? "Book Comprehensive Consultation · $67" : "Agendar Consulta Integral · $67"}</span>
-            </Link>
+            </a>
 
             <a
               href="https://wa.me/573146022411?text=Hello%20Capital%20M%20Law!%20I'd%20like%20to%20inquire%20about%20your%20legal%20services."

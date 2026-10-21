@@ -262,8 +262,10 @@ export function TeamExecutiveView() {
                       <span>WhatsApp Direct</span>
                     </a>
 
-                    <Link
-                      href={`/#consultation`}
+                    <a
+                      href="https://calendly.com/capital-m-law-"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 rounded-xl bg-[#C01072] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#A50E62] transition"
                     >
                       <Calendar className="size-3.5" />
@@ -272,7 +274,7 @@ export function TeamExecutiveView() {
                           ? `Book Consultation with ${attorney.name.split(" ")[0]} · $67`
                           : `Agendar Consulta con ${attorney.name.split(" ")[0]} · $67`}
                       </span>
-                    </Link>
+                    </a>
                   </div>
                 </div>
 
@@ -326,13 +328,15 @@ export function TeamExecutiveView() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <Link
-              href="/#consultation"
+            <a
+              href="https://calendly.com/capital-m-law-"
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded-2xl bg-[#C01072] px-6 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#A50E62] transition inline-flex items-center gap-2"
             >
               <Calendar className="size-4" />
               <span>{lang === "en" ? "Schedule Consultation · $67 USD" : "Agendar Consulta · $67 USD"}</span>
-            </Link>
+            </a>
 
             <Link
               href="/blog"
