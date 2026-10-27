@@ -31,10 +31,9 @@ function NavLinks() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/", label: "Home", active: pathname === "/" },
+    { href: "/#about", label: "About" },
     { href: "/services", label: "Services", active: pathname?.startsWith("/services") ?? false },
-    { href: "/team", label: "Team", active: pathname?.startsWith("/team") ?? false },
-    { href: "/blog", label: "Insights", active: pathname?.startsWith("/blog") ?? false },
+    { href: "/blog", label: "Blog", active: pathname?.startsWith("/blog") ?? false },
     { href: "/#contact", label: "Contact" },
   ];
 
@@ -65,15 +64,19 @@ export function BlogHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-[#16345F]/5 bg-white/90 backdrop-blur-xl dark:border-white/5 dark:bg-[#0A1526]/90">
       <nav aria-label="Main" className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-[#16345F] text-xl font-bold tracking-tighter text-white dark:bg-white dark:text-[#16345F]">
-            M
-          </span>
-          <span className="leading-tight">
-            <span className="block text-base font-semibold text-[#16345F] dark:text-white">Capital M Law</span>
-            <span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-[#706F6F] dark:text-gray-400">
-              Colombian Legal Experts
-            </span>
+        <Link href="/" className="flex items-center gap-2">
+          <img
+            src="/assets/capital-m-logo.svg"
+            alt="Capital M Law"
+            className="h-8 w-auto dark:hidden"
+          />
+          <img
+            src="/assets/capital-m-logo-white.svg"
+            alt="Capital M Law"
+            className="h-8 w-auto hidden dark:block"
+          />
+          <span className="text-xs font-semibold text-[#706F6F] dark:text-gray-400 tracking-wider uppercase ml-0.5">
+            Law
           </span>
         </Link>
 

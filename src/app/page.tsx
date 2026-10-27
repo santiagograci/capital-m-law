@@ -248,28 +248,27 @@ export default function CapitalMLawApp() {
           
           <div className="flex items-center gap-2 justify-self-start">
             <a href="#" className="flex items-center gap-2 group">
-              <span className="text-2xl font-extrabold tracking-tight text-[#16345F] dark:text-white lowercase">
-                capital
-              </span>
-              <div className="w-8 h-8 rounded-full border-2 border-[#16345F] dark:border-white p-[2px] flex items-center justify-center">
-                <div className="w-full h-full rounded-full bg-[#16345F] dark:bg-white text-white dark:text-[#0A1526] flex items-center justify-center text-sm font-black">
-                  M
-                </div>
-              </div>
-              <span className="text-xs font-semibold text-[#706F6F] dark:text-gray-400 ml-1 tracking-wider uppercase">
+              <img
+                src="/assets/capital-m-logo.svg"
+                alt="Capital M Law"
+                className="h-8 sm:h-9 w-auto dark:hidden"
+              />
+              <img
+                src="/assets/capital-m-logo-white.svg"
+                alt="Capital M Law"
+                className="h-8 sm:h-9 w-auto hidden dark:block"
+              />
+              <span className="text-xs font-semibold text-[#706F6F] dark:text-gray-400 ml-0.5 tracking-wider uppercase">
                 Law
               </span>
             </a>
           </div>
 
           <div className="col-span-2 md:col-span-1 justify-self-center mt-3 md:mt-0">
-            <div className="flex items-center gap-4 sm:gap-6 bg-[#C01072] text-white px-6 sm:px-8 py-2.5 rounded-full font-medium text-xs sm:text-sm shadow-md">
+            <div className="flex items-center gap-5 sm:gap-7 bg-[#C01072] text-white px-7 sm:px-9 py-2.5 rounded-full font-medium text-xs sm:text-sm shadow-md">
               <a href="#about" className="hover:text-white/80 transition-colors">{t.nav.about}</a>
               <a href="/services" className="hover:text-white/80 transition-colors">{t.nav.services}</a>
-              <a href="/team" className="hover:text-white/80 transition-colors">{t.nav.team}</a>
-              <a href="#life" className="hover:text-white/80 transition-colors">{t.nav.life}</a>
-              <a href="#forum" className="hover:text-white/80 transition-colors">{t.nav.forum}</a>
-              <a href="/blog" className="hover:text-white/80 font-bold transition-colors">Blog</a>
+              <a href="/blog" className="hover:text-white/80 transition-colors">Blog</a>
               <a href="#contact" className="hover:text-white/80 transition-colors">{t.nav.contact}</a>
             </div>
           </div>
@@ -531,7 +530,7 @@ export default function CapitalMLawApp() {
                 <ChevronRight className="w-4 h-4" />
               </a>
               <a
-                href={`/services/${activeService.id === "visas" ? "visas-and-immigration" : activeService.id === "real-estate" ? "real-estate-transactions" : activeService.id === "marriage" ? "marriage-and-prenuptial-agreements" : "sas-company-incorporation"}`}
+                href={activeService.slug ? `/services/${activeService.slug}` : `/services`}
                 className="inline-flex items-center gap-2 border border-[#16345F]/20 dark:border-white/20 hover:border-[#C01072] hover:text-[#C01072] dark:hover:text-[#F472B6] text-[#16345F] dark:text-white font-semibold text-sm px-5 py-3 rounded-xl transition"
               >
                 {lang === "es" ? "Ver requisitos y proceso completo →" : "View requirements & full process →"}

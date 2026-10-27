@@ -1,7 +1,7 @@
 export interface ServiceDetail {
   id: string;
   slug: string;
-  category: "visas" | "real-estate" | "marriage" | "sas";
+  category: "visas" | "real-estate" | "marriage" | "sas" | "wills-trusts" | "civil-litigation" | "labour-law";
   name: { en: string; es: string };
   shortBadge: { en: string; es: string };
   heroHeadline: { en: string; es: string };
@@ -721,6 +721,507 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
           question: "¿Crear una SAS me permite solicitar una Visa de Negocios?",
           answer:
             "Sí, constituir una SAS y registrar inversión extranjera superior a 100 salarios mínimos (SMLMV) te habilita para solicitar la Visa M Socio o Propietario de Empresa.",
+        },
+      ],
+    },
+  },
+  {
+    id: "wills-trusts",
+    slug: "wills-and-trusts",
+    category: "wills-trusts",
+    name: {
+      en: "Wills, Trusts & Estate Planning",
+      es: "Testamentos, Fideicomisos y Planificación Sucesoral",
+    },
+    shortBadge: {
+      en: "Estate & Asset Shielding",
+      es: "Patrimonio y Blindaje Sucesoral",
+    },
+    heroHeadline: {
+      en: "Cross-Border Wills, Trusts & Colombian Inheritance Structuring",
+      es: "Testamentos Notariales, Fiducias Civiles y Sucesión en Colombia",
+    },
+    heroSubtitle: {
+      en: "Protect your Colombian real estate and international assets. We draft enforceable open and closed wills, structure civil trusts to avoid probate delays, and harmonize foreign estate plans with Colombian forced heirship rules.",
+      es: "Protege tus inmuebles y patrimonio en Colombia. Redactamos testamentos solemnes notariales, constituimos fiducias civiles para evitar sucesiones engorrosas y armonizamos herencias transfronterizas bajo el Código Civil.",
+    },
+    consultationFee: "$67 USD",
+    leadAttorney: "María Fernanda Duarte & Ana María Muñoz",
+    estimatedTimeline: {
+      en: "2 to 4 Weeks for Notarial Protocolization",
+      es: "2 a 4 Semanas para Protocolización Notarial",
+    },
+    keyHighlights: {
+      en: [
+        "Open & Closed Wills drafted in strict compliance with Colombian Civil Code formal requirements.",
+        "Fiducia Civil setup for direct property transfer to designated heirs without judicial succession.",
+        "Cross-border estate harmonization between US/EU revocable living trusts and Colombian assets.",
+        "Full representation before Medellín Notaries for consensual inheritance partition.",
+      ],
+      es: [
+        "Testamentos solemnes abiertos y cerrados con pleno cumplimiento de las legítimas rigurosas.",
+        "Constitución de Fiducia Civil para transferencia directa de bienes sin proceso sucesorio.",
+        "Armonización de trusts extranjeros y testamentos foráneos con bienes en Colombia.",
+        "Representación completa ante Notarías de Medellín para partición y adjudicación de herencias.",
+      ],
+    },
+    requirements: {
+      en: [
+        {
+          title: "Identification & Civil Status",
+          desc: "Valid passport or Cédula de Extranjería, marriage certificate, and official identification of heirs.",
+        },
+        {
+          title: "Property Deeds & Asset Inventories",
+          desc: "Certificados de Tradición y Libertad, property tax receipts (paz y salvo predial), and bank balances.",
+        },
+        {
+          title: "Foreign Estate Documents (if applicable)",
+          desc: "Existing foreign wills or trust agreements with apostilles and certified official translations.",
+        },
+        {
+          title: "Witness Qualifications",
+          desc: "For open wills (testamento público), three qualified adult witnesses not related to beneficiaries.",
+        },
+      ],
+      es: [
+        {
+          title: "Identificación y Estado Civil",
+          desc: "Pasaporte vigente o Cédula de Extranjería, registro civil de matrimonio y documento de los herederos.",
+        },
+        {
+          title: "Títulos de Propiedad e Inventario",
+          desc: "Certificados de Tradición y Libertad de inmuebles, paz y salvo predial y saldos bancarios.",
+        },
+        {
+          title: "Documentos Foráneos (si aplica)",
+          desc: "Testamentos o trusts extranjeros con apostilla y traducción oficial certificada.",
+        },
+        {
+          title: "Testigos Hábiles",
+          desc: "Para testamentos abiertos, presencia de tres testigos hábiles sin parentesco con los herederos.",
+        },
+      ],
+    },
+    stepByStepProcess: {
+      en: [
+        {
+          stepNumber: "01",
+          title: "Diagnostic & Asset Audit",
+          description:
+            "We analyze your family hierarchy, Colombian property assets, and foreign holdings against mandatory Colombian inheritance rules (Legítimas rigurosas).",
+          firmDeliverable: "Comprehensive Estate Blueprint & Strategy Memorandum",
+        },
+        {
+          stepNumber: "02",
+          title: "Document Drafting & Vetting",
+          description:
+            "We draft the bilingual will text, trust indenture (Fiducia Civil), or partition deed tailored to protect your intended beneficiaries.",
+          firmDeliverable: "Draft Testamentary Deed & Bilingual Executive Summary",
+        },
+        {
+          stepNumber: "03",
+          title: "Notarial Execution & Protocolization",
+          description:
+            "Our attorneys coordinate and accompany you to the Notaría in Medellín for official solemn execution, signature, and public deed issuance.",
+          firmDeliverable: "Official Registered Public Deed (Escritura Pública)",
+        },
+        {
+          stepNumber: "04",
+          title: "Public Registry Filing",
+          description:
+            "We record real estate transfers or encumbrances with the Public Registry Office (Oficina de Registro de Instrumentos Públicos).",
+          firmDeliverable: "Updated Certificado de Tradición y Libertad with Recorded Encumbrance",
+        },
+      ],
+      es: [
+        {
+          stepNumber: "01",
+          title: "Diagnóstico y Auditoría Patrimonial",
+          description:
+            "Analizamos tu composición familiar, bienes en Colombia y patrimonio foráneo frente a las asignaciones forzosas del Código Civil.",
+          firmDeliverable: "Hoja de Ruta Sucesoral y Dictamen Estratégico",
+        },
+        {
+          stepNumber: "02",
+          title: "Elaboración de Minutas y Estatutos",
+          description:
+            "Redactamos la minuta de testamento solemne, contrato de fiducia civil o partición hereditaria con cláusulas de protección.",
+          firmDeliverable: "Minuta Notarial y Resumen Ejecutivo Bilingüe",
+        },
+        {
+          stepNumber: "03",
+          title: "Firma y Protocolización Notarial",
+          description:
+            "Coordinamos y te acompañamos a la Notaría en Medellín para la lectura, firma solemne y protocolización de la escritura pública.",
+          firmDeliverable: "Copia Auténtica de Escritura Pública Registrada",
+        },
+        {
+          stepNumber: "04",
+          title: "Inscripción en Registro de Instrumentos Públicos",
+          description:
+            "Radicamos y hacemos seguimiento a la inscripción del acto o gravamen en la Oficina de Registro de Instrumentos Públicos.",
+          firmDeliverable: "Certificado de Tradición y Libertad con Anotación de Registro",
+        },
+      ],
+    },
+    faq: {
+      en: [
+        {
+          question: "Can a foreigner leave their Colombian property to anyone in a will?",
+          answer:
+            "Colombian law includes forced heirship rules (legítimas rigurosas) prioritizing children and spouses. However, 50% of the estate (libre disposición) can be distributed freely, and civil trusts can offer alternative structuring options.",
+        },
+        {
+          question: "Is a US or Canadian will valid for real estate in Colombia?",
+          answer:
+            "While foreign wills can be recognized via exequatur before the Colombian Supreme Court, the process is lengthy (1-2 years). Executing a local Colombian will or Fiducia Civil is significantly faster, cheaper, and safer.",
+        },
+      ],
+      es: [
+        {
+          question: "¿Un extranjero puede dejar sus propiedades en Colombia a cualquier persona?",
+          answer:
+            "La legislación colombiana protege a los herederos forzosos (hijos y cónyuge). Sin embargo, el 50% del patrimonio es de libre disposición y figuras como la Fiducia Civil permiten estructurar transferencias eficientes.",
+        },
+        {
+          question: "¿Un testamento de EE.UU. o Canadá es válido en Colombia?",
+          answer:
+            "Aunque puede homologarse mediante trámite de exequátur ante la Corte Suprema, el proceso tarda entre 1 y 2 años. Otorgar un testamento en Notaría colombiana o constituir una Fiducia Civil es mucho más rápido y económico.",
+        },
+      ],
+    },
+  },
+  {
+    id: "civil-litigation",
+    slug: "civil-litigation",
+    category: "civil-litigation",
+    name: {
+      en: "Civil Litigation & Dispute Resolution",
+      es: "Litigio Civil y Resolución de Disputas",
+    },
+    shortBadge: {
+      en: "Courtroom & Arbitration Defense",
+      es: "Defensa Judicial y Arbitraje",
+    },
+    heroHeadline: {
+      en: "Assertive Civil Litigation & Breach of Contract Defense in Colombia",
+      es: "Litigio Civil, Cobro de Obligaciones e Incumplimientos Contractuales",
+    },
+    heroSubtitle: {
+      en: "Protecting your financial interests in real estate defaults, commercial breaches, unpaid debts, and landlord-tenant restitution before Colombian civil courts and the Medellín Chamber of Commerce.",
+      es: "Protegemos tus inversiones y derechos en incumplimientos de compraventa, disputas comerciales, cobro ejecutivo de deudas y restitución de inmuebles ante juzgados civiles y centros de arbitraje.",
+    },
+    consultationFee: "$67 USD",
+    leadAttorney: "María Fernanda Duarte & Ana María Muñoz",
+    estimatedTimeline: {
+      en: "1 to 3 Months (Conciliation) / 6 to 18 Months (Court Proceedings)",
+      es: "1 a 3 Meses (Conciliación) / 6 a 18 Meses (Proceso Judicial)",
+    },
+    keyHighlights: {
+      en: [
+        "Enforcement of Promesas de Compraventa and recovery of earnest money deposits (Arras y Cláusula Penal).",
+        "Commercial collection lawsuits (Procesos Ejecutivos) to attach bank accounts and seize debtor properties.",
+        "Tenant eviction and property restitution (Restitución de Inmueble Arrendado) for unpaid rent.",
+        "Representation at mandatory pre-judicial conciliation hearings (Centro de Conciliación Cámara de Comercio).",
+      ],
+      es: [
+        "Demanda por incumplimiento de promesa de compraventa y cobro de arras y cláusula penal pecuniaria.",
+        "Procesos ejecutivos comerciales con medidas cautelares de embargo y secuestro de cuentas e inmuebles.",
+        "Procesos de restitución de inmueble arrendado por no pago de cánones o vencimiento de contrato.",
+        "Audiencias de conciliación prejudicial ante la Cámara de Comercio de Medellín para Antioquia.",
+      ],
+    },
+    requirements: {
+      en: [
+        {
+          title: "Contractual Documents",
+          desc: "Executed copies of Promesa de Compraventa, commercial contracts, promissory notes (pagarés), or lease agreements.",
+        },
+        {
+          title: "Proof of Non-Compliance & Notice",
+          desc: "Official notarized default records (Acta de Comparecencia), certified mail delivery slips (4-72), or bank return vouchers.",
+        },
+        {
+          title: "Identification & Representation Powers",
+          desc: "Valid passport or corporate registration (Certificado de Existencia y Representación Legal) and judicial power of attorney.",
+        },
+        {
+          title: "Accounting & Loss Quantification",
+          desc: "Invoices, wire transfer vouchers, penalty calculations, and documented damages.",
+        },
+      ],
+      es: [
+        {
+          title: "Documentos Contractuales",
+          desc: "Copia firmada de promesa de compraventa, contratos comerciales, pagarés, facturas o contrato de arrendamiento.",
+        },
+        {
+          title: "Pruebas de Incumplimiento y Notificación",
+          desc: "Actas notariales de comparecencia, envíos por correo certificado (4-72) y comprobantes de no pago.",
+        },
+        {
+          title: "Identificación y Poder Judicial",
+          desc: "Pasaporte vigente o Certificado de Existencia y Representación Legal y Poder Especial Judicial conferido.",
+        },
+        {
+          title: "Cuantificación de Perjuicios",
+          desc: "Comprobantes de pago, liquidación de cláusulas penales e intereses moratorios certificados.",
+        },
+      ],
+    },
+    stepByStepProcess: {
+      en: [
+        {
+          stepNumber: "01",
+          title: "Litigation Viability & Solvency Audit",
+          description:
+            "We evaluate the evidence, determine legal jurisdiction, and conduct a solvency search on the debtor's Colombian assets (property, vehicles, corporate shares).",
+          firmDeliverable: "Legal Actionability & Solvency Report",
+        },
+        {
+          stepNumber: "02",
+          title: "Pre-Judicial Demand & Conciliation",
+          description:
+            "We issue formal notice of default and file for an official conciliation hearing before the Medellín Chamber of Commerce to pursue quick resolution without protracted court battles.",
+          firmDeliverable: "Formal Notice Letter & Conciliation Hearing Record (Acta de Conciliación)",
+        },
+        {
+          stepNumber: "03",
+          title: "Lawsuit Filing with Precautionary Injunctions",
+          description:
+            "If conciliation fails, we file the formal civil lawsuit requesting immediate precautionary attachment (embargo y secuestro) of debtor bank accounts and properties.",
+          firmDeliverable: "Stamped Lawsuit Petition & Court Admission Order (Auto Admisorio)",
+        },
+        {
+          stepNumber: "04",
+          title: "Court Hearings & Judgment Enforcement",
+          description:
+            "We represent you through evidence hearings, cross-examinations, final arguments, and enforcement of the final judicial ruling (sentencia judicial).",
+          firmDeliverable: "Judicial Enforcement & Debt Liquidation Settlement",
+        },
+      ],
+      es: [
+        {
+          stepNumber: "01",
+          title: "Estudio de Viabilidad y Solvencia",
+          description:
+            "Evaluamos las pruebas, determinamos la jurisdicción competente y rastreamos activos embargables del deudor en Colombia.",
+          firmDeliverable: "Dictamen de Viabilidad Judicial y Rastreo de Bienes",
+        },
+        {
+          stepNumber: "02",
+          title: "Requerimiento Prejudicial y Conciliación",
+          description:
+            "Radicamos requerimiento formal y convocamos a audiencia de conciliación ante la Cámara de Comercio de Medellín para buscar acuerdos rápidos.",
+          firmDeliverable: "Requerimiento Formal y Acta de Conciliación Notarial",
+        },
+        {
+          stepNumber: "03",
+          title: "Radicación de Demanda y Medidas Cautelares",
+          description:
+            "En caso de no acuerdo, radicamos la demanda solicitando medidas cautelares de embargo preventivo de cuentas y bienes del demandado.",
+          firmDeliverable: "Radicado Judicial y Auto Admisorio de la Demanda",
+        },
+        {
+          stepNumber: "04",
+          title: "Audiencias Judiciales y Ejecución de Sentencia",
+          description:
+            "Acompañamos las audiencias de pruebas, alegatos de conclusión y la posterior ejecución coactiva de la sentencia judicial.",
+          firmDeliverable: "Sentencia Judicial Favorable y Liquidación del Crédito",
+        },
+      ],
+    },
+    faq: {
+      en: [
+        {
+          question: "Can a foreigner initiate a lawsuit in Colombia without being physically present?",
+          answer:
+            "Yes. You can grant a judicial power of attorney (Poder Especial) before a Colombian consulate abroad or with an apostille, and our attorneys will manage the entire trial on your behalf.",
+        },
+        {
+          question: "How long does a breach of contract lawsuit take in Medellín?",
+          answer:
+            "Pre-judicial conciliation takes 2 to 4 weeks. If a full verbal process (Proceso Declarativo) is required, judicial proceedings typically take 8 to 18 months depending on court congestion.",
+        },
+      ],
+      es: [
+        {
+          question: "¿Un extranjero puede demandar en Colombia sin estar físicamente en el país?",
+          answer:
+            "Sí. Es posible conferir un Poder Especial Judicial ante Consulado colombiano en el exterior o mediante apostilla, y nuestros abogados llevarán el proceso en su representación.",
+        },
+        {
+          question: "¿Cuánto tarda un proceso por incumplimiento de contrato en Medellín?",
+          answer:
+            "La conciliación extrajudicial toma de 2 a 4 semanas. Si se requiere proceso judicial declarativo, el trámite suele durar entre 8 y 18 meses según el juzgado civil.",
+        },
+      ],
+    },
+  },
+  {
+    id: "labour-law",
+    slug: "labour-law",
+    category: "labour-law",
+    name: {
+      en: "Labour Law & Employment Compliance",
+      es: "Derecho Laboral y Cumplimiento de Empleo",
+    },
+    shortBadge: {
+      en: "Workforce & UGPP Shield",
+      es: "Blindaje Laboral y UGPP",
+    },
+    heroHeadline: {
+      en: "Colombian Employment Structuring, Severance & UGPP Audit Defense",
+      es: "Contratación Laboral, Nómina Blindada y Defensa ante la UGPP",
+    },
+    heroSubtitle: {
+      en: "Protect your Colombian business against labor liabilities, disguised employment claims, and aggressive UGPP sanctions. We draft compliant bilingual employment contracts, structure executive compensation, and handle fair dismissals.",
+      es: "Blinda tu empresa en Colombia contra demandas laborales, presunción de contrato de trabajo y sanciones de la UGPP. Redactamos contratos laborales bilingües, estructuramos remuneración salarial y gestionamos despidos.",
+    },
+    consultationFee: "$67 USD",
+    leadAttorney: "María Fernanda Duarte & Ana María Muñoz",
+    estimatedTimeline: {
+      en: "3 to 5 Business Days for Contract Drafting",
+      es: "3 a 5 Días Hábiles para Elaboración de Contratos",
+    },
+    keyHighlights: {
+      en: [
+        "Bilingual employment agreements (Indefinite, Fixed-Term, Remote Work / Teletrabajo).",
+        "Independent contractor agreements (Prestación de Servicios) drafted to avoid disguised employment risks (Contrato Realidad).",
+        "Severance audits (Cesantías, Intereses, Prima de Servicios, Vacaciones) and settlement release deeds (Actas de Transacción).",
+        "Defense against UGPP audits, debt determinations, and penalty reduction appeals.",
+      ],
+      es: [
+        "Contratos de trabajo bilingües a término fijo, indefinido, obra o labor y teletrabajo.",
+        "Contratos de prestación de servicios independientes blindados contra el riesgo de Contrato Realidad.",
+        "Liquidación de prestaciones sociales (cesantías, primas, vacaciones) y actas de transacción laboral.",
+        "Defensa jurídica ante requerimientos para declarar y pliegos de cargos de la UGPP.",
+      ],
+    },
+    requirements: {
+      en: [
+        {
+          title: "Corporate Registration & Tax ID",
+          desc: "Chamber of Commerce Certificate (Cámara de Comercio) and DIAN tax certificate (RUT).",
+        },
+        {
+          title: "Proposed Job Description & Compensation",
+          desc: "Detail of base salary, non-salary benefits, working hours, and physical/remote work modalities.",
+        },
+        {
+          title: "Employee Documentation",
+          desc: "Cédula de Ciudadanía, Cédula de Extranjería with work permit, and Social Security affiliation history (PILA).",
+        },
+        {
+          title: "Internal Work Regulations (for 5+ employees)",
+          desc: "Company Internal Work Regulations (Reglamento Interno de Trabajo) and hygiene policies.",
+        },
+      ],
+      es: [
+        {
+          title: "Certificado de Cámara de Comercio y RUT",
+          desc: "Certificado de Existencia y Representación Legal de la empresa y Registro Único Tributario.",
+        },
+        {
+          title: "Perfil del Cargo y Esquema de Remuneración",
+          desc: "Descripción de funciones, salario básico, pagos no constitutivos de salario y modalidad presencial/remota.",
+        },
+        {
+          title: "Documentos del Trabajador",
+          desc: "Cédula de Ciudadanía o Cédula de Extranjería con visa que autorice trabajar e historial de PILA.",
+        },
+        {
+          title: "Reglamento Interno de Trabajo",
+          desc: "Reglamento Interno de Trabajo (obligatorio para empresas con más de 5 trabajadores).",
+        },
+      ],
+    },
+    stepByStepProcess: {
+      en: [
+        {
+          stepNumber: "01",
+          title: "Employment Diagnostic & Risk Assessment",
+          description:
+            "We analyze your hiring structure, contractor relationships, and payroll configuration to identify Contrato Realidad exposure or UGPP audit risks.",
+          firmDeliverable: "Labor Compliance & Liability Audit Memorandum",
+        },
+        {
+          stepNumber: "02",
+          title: "Bilingual Contract Drafting & Structuring",
+          description:
+            "We draft customized employment or contractor contracts with confidentiality, IP assignment, non-compete, and non-salary bonus clauses.",
+          firmDeliverable: "Complete Bilingual Employment / Contractor Pack",
+        },
+        {
+          stepNumber: "03",
+          title: "Payroll & Social Security Onboarding (PILA)",
+          description:
+            "We verify compliant registration with Health (EPS), Pension (AFP), Severance (Cesantías), and Occupational Risk (ARL) administrators.",
+          firmDeliverable: "Social Security Affiliation Checklist & Compliance Record",
+        },
+        {
+          stepNumber: "04",
+          title: "Termination, Severance & Mutual Exit Releases",
+          description:
+            "When ending employment, we calculate statutory indemnities and draft enforceable settlement deeds (Acta de Transacción / Conciliación) preventing future claims.",
+          firmDeliverable: "Liquidación Definitiva & Enforceable Release Agreement",
+        },
+      ],
+      es: [
+        {
+          stepNumber: "01",
+          title: "Diagnóstico Laboral y Mitigación de Riesgos",
+          description:
+            "Evaluamos tu estructura de contratación, pagos a contratistas y esquema de nómina para eliminar contingencias de Contrato Realidad y UGPP.",
+          firmDeliverable: "Informe de Auditoría Laboral y Mapa de Riesgos",
+        },
+        {
+          stepNumber: "02",
+          title: "Elaboración de Contratos y Acuerdos Bilingües",
+          description:
+            "Redactamos contratos a la medida con cláusulas de propiedad intelectual, confidencialidad, pactos de desalarización y metas claras.",
+          firmDeliverable: "Paquete Contractual Laboral Bilingüe Completo",
+        },
+        {
+          stepNumber: "03",
+          title: "Afiliación y Cumplimiento en Seguridad Social",
+          description:
+            "Verificamos la afiliación correcta a EPS, fondo de pensiones, caja de compensación y ARL según el nivel de riesgo de la actividad.",
+          firmDeliverable: "Checklist de Afiliación y Planilla Integrada PILA",
+        },
+        {
+          stepNumber: "04",
+          title: "Liquidaciones y Acuerdos de Terminación",
+          description:
+            "Calculamos liquidaciones finales y estructuramos actas de transacción laboral de mutuo acuerdo ante Notaría para evitar demandas.",
+          firmDeliverable: "Liquidación Laboral Definitiva y Acta de Transacción Blindada",
+        },
+      ],
+    },
+    faq: {
+      en: [
+        {
+          question: "Can I hire a Colombian worker as an independent contractor instead of an employee?",
+          answer:
+            "Only if they operate with true technical autonomy, provide their own equipment, and are not subject to continuous subordination or fixed work schedules. Otherwise, Colombian courts will reclassify the relationship as an employment contract with retroactive liability.",
+        },
+        {
+          question: "What social security benefits must employers pay in Colombia?",
+          answer:
+            "Employers must contribute to Health (8.5%), Pension (12%), ARL workplace insurance (0.522% to 6.96%), and Caja de Compensación (4%), plus semi-annual bonuses (Prima), severance (Cesantías + 12% interest), and 15 days of paid vacation per year.",
+        },
+      ],
+      es: [
+        {
+          question: "¿Puedo contratar a un trabajador como contratista independiente en vez de empleado?",
+          answer:
+            "Únicamente si cuenta con autonomía técnica, no tiene horario fijo ni subordinación continua. Si existen llamados de atención o control de horario, los jueces declaran el Contrato Realidad con sanciones retroactivas.",
+        },
+        {
+          question: "¿Cuáles son las prestaciones sociales obligatorias a cargo del empleador?",
+          answer:
+            "El empleador debe aportar a salud (8.5%), pensión (12%), ARL y Caja de Compensación (4%), además de pagar Prima de Servicios, Cesantías con intereses del 12% anual y 15 días hábiles de vacaciones.",
         },
       ],
     },

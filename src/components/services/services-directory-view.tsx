@@ -7,6 +7,9 @@ import {
   Building2,
   Heart,
   Landmark,
+  Scale,
+  Briefcase,
+  FileText,
   ArrowRight,
   ShieldCheck,
   Clock,
@@ -19,11 +22,14 @@ import {
 import { SERVICES_CATALOG, ServiceDetail } from "@/data/services-catalog";
 import { cn } from "@/lib/utils";
 
-const ICONS = {
+const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   visas: Plane,
   "real-estate": Building2,
   marriage: Heart,
   sas: Landmark,
+  "wills-trusts": FileText,
+  "civil-litigation": Scale,
+  "labour-law": Briefcase,
 };
 
 export function ServicesDirectoryView() {

@@ -74,19 +74,16 @@ export function Footer({ lang = "en" }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
           {/* Brand & Socials Column */}
           <div className="md:col-span-5 space-y-5">
-            <div className="flex items-center gap-2">
-              <span className="text-3xl font-extrabold tracking-tight text-white lowercase">
-                capital
-              </span>
-              <div className="w-8 h-8 rounded-full border-2 border-white p-[2px] flex items-center justify-center">
-                <div className="w-full h-full rounded-full bg-white text-[#16345F] flex items-center justify-center text-sm font-black">
-                  M
-                </div>
-              </div>
-              <span className="text-xs font-semibold text-gray-300 ml-1 tracking-wider uppercase">
+            <Link href="/" className="flex items-center gap-2">
+              <img
+                src="/assets/capital-m-logo-white.svg"
+                alt="Capital M Law"
+                className="h-8 sm:h-9 w-auto"
+              />
+              <span className="text-xs font-semibold text-gray-300 ml-0.5 tracking-wider uppercase">
                 Law
               </span>
-            </div>
+            </Link>
 
             <p className="text-xs text-gray-300 max-w-sm leading-relaxed">
               {isEs
