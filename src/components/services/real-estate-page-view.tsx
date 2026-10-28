@@ -312,8 +312,8 @@ export function RealEstatePageView() {
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-[#9BB8E0]/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-[#C01072]/10 blur-3xl" />
 
-        <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
+          <div className="flex flex-wrap justify-center items-center gap-2">
             <span className="rounded-full bg-[#C01072]/10 dark:bg-[#C01072]/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#C01072] dark:text-[#F472B6]">
               {lang === "en"
                 ? "Purchase Legal Assistance Service"
@@ -326,14 +326,14 @@ export function RealEstatePageView() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1] text-center">
             {lang === "en"
               ? "Secure Your Real Estate Investment in Colombia with Full Legal Protection"
               : "Protege tu inversión inmobiliaria en Colombia con total tranquilidad legal"}
           </h1>
 
           {/* 3 Overview Paragraphs */}
-          <div className="space-y-4 text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl pt-2">
+          <div className="space-y-4 text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl mx-auto text-center pt-2">
             {lang === "en" ? (
               <>
                 <p className="font-semibold text-[#16345F] dark:text-white">
@@ -362,7 +362,7 @@ export function RealEstatePageView() {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#16345F]/10 dark:border-white/10">
+          <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#16345F]/10 dark:border-white/10 w-full max-w-3xl mx-auto text-left">
             <div className="flex items-center gap-3">
               <span className="size-10 rounded-xl bg-[#16345F]/5 dark:bg-white/5 flex items-center justify-center text-[#16345F] dark:text-[#9BB8E0]">
                 <FileCheck2 className="size-5" />
@@ -407,7 +407,7 @@ export function RealEstatePageView() {
           </div>
 
           {/* Quick CTA Actions in Hero */}
-          <div className="pt-4 flex flex-wrap items-center gap-3">
+          <div className="pt-4 flex justify-center items-center gap-4 flex-wrap w-full">
             <a
               href={CALENDLY_URL}
               target="_blank"

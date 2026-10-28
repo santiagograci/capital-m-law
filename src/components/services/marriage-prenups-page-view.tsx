@@ -263,8 +263,8 @@ export function MarriagePrenupsPageView() {
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-[#00AA81]/15 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-[#C01072]/10 blur-3xl" />
 
-        <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
+          <div className="flex flex-wrap justify-center items-center gap-2">
             {/* Mint Green #00AA81 over Navy #16345F badge */}
             <span className="rounded-full bg-[#16345F] text-[#00AA81] border border-[#00AA81]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider shadow-xs">
               Family Law & Prenuptial Strategies
@@ -276,20 +276,20 @@ export function MarriagePrenupsPageView() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1] text-center">
             {lang === "en"
               ? "Protecting Your Family and Assets at Every Stage of Life"
               : "Protege a tu familia y tu patrimonio en cada etapa de la vida"}
           </h1>
 
-          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl">
+          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl mx-auto text-center">
             {lang === "en"
               ? "Empathetic, rigorous, and clear legal counsel for local and international families in Colombia."
               : "Acompañamiento legal empático, riguroso y transparente para parejas y familias locales e internacionales en Colombia."}
           </p>
 
           {/* Service Overview Description */}
-          <div className="space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed border-t border-[#16345F]/10 dark:border-white/10 pt-4">
+          <div className="space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed border-t border-[#16345F]/10 dark:border-white/10 pt-4 max-w-3xl mx-auto text-center">
             {lang === "en" ? (
               <>
                 <p className="font-semibold text-[#16345F] dark:text-white">
@@ -312,7 +312,7 @@ export function MarriagePrenupsPageView() {
           </div>
 
           {/* Quick CTAs in Hero */}
-          <div className="pt-4 flex flex-wrap items-center gap-3">
+          <div className="pt-4 flex justify-center items-center gap-4 flex-wrap w-full">
             <a
               href={CALENDLY_URL}
               target="_blank"

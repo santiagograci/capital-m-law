@@ -36,62 +36,86 @@ export function ServicesDirectoryView() {
 
   return (
     <div className="space-y-16">
+      {/* Top Utility: Language Switcher */}
+      <div className="flex justify-end items-center">
+        <div className="flex items-center gap-2 bg-white dark:bg-[#070E1A] p-1.5 rounded-2xl border border-[#16345F]/10 dark:border-white/10 shadow-xs">
+          <button
+            onClick={() => setLang("en")}
+            className={cn(
+              "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
+              lang === "en"
+                ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
+                : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white"
+            )}
+          >
+            English
+          </button>
+          <button
+            onClick={() => setLang("es")}
+            className={cn(
+              "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
+              lang === "es"
+                ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
+                : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white"
+            )}
+          >
+            Español
+          </button>
+        </div>
+      </div>
+
       {/* Hero */}
       <section className="legal-texture-bg relative overflow-hidden rounded-3xl bg-gradient-to-b from-white to-[#FAFBFD] dark:from-[#0F1E35] dark:to-[#0A1526] p-8 sm:p-12 lg:p-16 border border-[#16345F]/10 dark:border-white/10 shadow-sm">
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-[#9BB8E0]/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-[#C01072]/10 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="max-w-3xl space-y-4">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C01072]/20 bg-[#C01072]/5 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#C01072] dark:border-[#F472B6]/30 dark:bg-white/5 dark:text-[#F472B6]">
-              <ShieldCheck className="size-4" />
-              {lang === "en" ? "Boutique Legal Practice in Medellín" : "Práctica Legal Especializada en Medellín"}
-            </span>
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#C01072]/20 bg-[#C01072]/5 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#C01072] dark:border-[#F472B6]/30 dark:bg-white/5 dark:text-[#F472B6]">
+            <ShieldCheck className="size-4" />
+            {lang === "en" ? "Boutique Legal Practice in Medellín" : "Práctica Legal Especializada en Medellín"}
+          </span>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1]">
-              {lang === "en" ? (
-                <>
-                  Clear Legal Solutions for{" "}
-                  <span className="text-[#C01072] dark:text-[#F472B6]">Every Milestone</span> in Colombia.
-                </>
-              ) : (
-                <>
-                  Seguridad Jurídica para{" "}
-                  <span className="text-[#C01072] dark:text-[#F472B6]">Cada Etapa</span> en Colombia.
-                </>
-              )}
-            </h1>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1] text-center">
+            {lang === "en" ? (
+              <>
+                Clear Legal Solutions for{" "}
+                <span className="text-[#C01072] dark:text-[#F472B6]">Every Milestone</span> in Colombia.
+              </>
+            ) : (
+              <>
+                Seguridad Jurídica para{" "}
+                <span className="text-[#C01072] dark:text-[#F472B6]">Cada Etapa</span> en Colombia.
+              </>
+            )}
+          </h1>
 
-            <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-2xl">
-              {lang === "en"
-                ? "Explore our complete practice directory. Each service includes upfront legal roadmaps, transparent pricing, verified checklists, and direct attorney representation."
-                : "Explora nuestro directorio completo de servicios. Cada área cuenta con procesos paso a paso, requisitos claros, tarifas definidas y representación directa de nuestras abogadas."}
-            </p>
-          </div>
+          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-2xl mx-auto text-center">
+            {lang === "en"
+              ? "Explore our complete practice directory. Each service includes upfront legal roadmaps, transparent pricing, verified checklists, and direct attorney representation."
+              : "Explora nuestro directorio completo de servicios. Cada área cuenta con procesos paso a paso, requisitos claros, tarifas definidas y representación directa de nuestras abogadas."}
+          </p>
 
-          <div className="flex items-center gap-2 self-start md:self-auto bg-white dark:bg-[#070E1A] p-1.5 rounded-2xl border border-[#16345F]/10 dark:border-white/10 shadow-xs">
-            <button
-              onClick={() => setLang("en")}
-              className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all",
-                lang === "en"
-                  ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
-                  : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white"
-              )}
+          <div className="pt-2 flex justify-center items-center gap-4 flex-wrap w-full">
+            <a
+              href="https://calendly.com/capital-m-law-"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#C01072] hover:bg-[#A50E62] text-white font-bold text-sm px-7 py-3.5 rounded-2xl transition shadow-md hover:shadow-lg"
             >
-              English
-            </button>
-            <button
-              onClick={() => setLang("es")}
-              className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all",
-                lang === "es"
-                  ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
-                  : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white"
-              )}
+              <Calendar className="size-4" />
+              <span>{lang === "en" ? "Book Consultation · $67" : "Agendar Consulta · $67"}</span>
+              <ChevronRight className="size-4" />
+            </a>
+
+            <a
+              href="https://wa.me/573146022411?text=Hello%20Capital%20M%20Law!%20I'd%20like%20to%20inquire%20about%20your%20legal%20services."
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 border border-[#16345F]/15 dark:border-white/15 hover:bg-[#16345F]/5 dark:hover:bg-white/5 text-[#16345F] dark:text-white font-semibold text-sm px-6 py-3.5 rounded-2xl transition"
             >
-              Español
-            </button>
+              <MessageCircle className="size-4 text-emerald-600" />
+              <span>{lang === "en" ? "Quick Question on WhatsApp" : "Pregunta Rápida por WhatsApp"}</span>
+            </a>
           </div>
         </div>
       </section>
@@ -167,7 +191,7 @@ export function ServicesDirectoryView() {
                   href={`/services/${service.slug}`}
                   className="inline-flex items-center gap-1 text-sm font-bold text-[#16345F] dark:text-white group-hover:text-[#C01072] dark:group-hover:text-[#F472B6] transition-colors"
                 >
-                  <span>{lang === "en" ? "View Full Requirements & Process" : "Ver Requisitos y Proceso Paso a Paso"}</span>
+                  <span>{lang === "en" ? "Learn More" : "Saber más"}</span>
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </Link>
 
