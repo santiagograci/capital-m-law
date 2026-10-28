@@ -28,7 +28,6 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   marriage: Heart,
   sas: Landmark,
   "wills-trusts": FileText,
-  "civil-litigation": Scale,
   "labour-law": Briefcase,
 };
 

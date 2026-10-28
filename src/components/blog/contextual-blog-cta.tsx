@@ -63,7 +63,7 @@ const CATEGORY_MAPPINGS: Record<
     headline: "Getting Married in Colombia or Need Prenuptial Agreements?",
     description:
       "Protect your pre-marital assets with enforceable Capitulaciones drafted prior to your civil marriage before a Colombian Public Notary.",
-    serviceLink: "/services/marriage-and-prenuptial-agreements",
+    serviceLink: "/services/marriage-and-prenups",
     ctaButton: "Book Family Law Intake · $67",
   },
 };

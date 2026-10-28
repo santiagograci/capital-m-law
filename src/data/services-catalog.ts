@@ -1,7 +1,7 @@
 export interface ServiceDetail {
   id: string;
   slug: string;
-  category: "visas" | "real-estate" | "marriage" | "sas" | "wills-trusts" | "civil-litigation" | "labour-law";
+  category: "visas" | "real-estate" | "marriage" | "sas" | "wills-trusts" | "labour-law";
   name: { en: string; es: string };
   shortBadge: { en: string; es: string };
   heroHeadline: { en: string; es: string };
@@ -30,20 +30,20 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
     slug: "visas-and-immigration",
     category: "visas",
     name: {
-      en: "Visas & Immigration Practice",
-      es: "Gestión Integral de Visas e Inmigración",
+      en: "Visas & Immigration",
+      es: "Visas e Inmigración",
     },
     shortBadge: {
       en: "Cancillería & Migración Colombia",
       es: "Cancillería y Migración Colombia",
     },
     heroHeadline: {
-      en: "Strategic Visa & Residency Solutions for Colombia",
-      es: "Estrategia Migratoria Integral y Blindada en Colombia",
+      en: "Strategic Immigration Counsel for Your Move or Investment in Colombia",
+      es: "Estrategia legal para tu nueva vida o inversión en Colombia",
     },
     heroSubtitle: {
-      en: "From digital nomad and real estate investor visas to marriage residency, salvoconductos, and citizenship petitions. We handle document vetting, translation chains, and ministerial submissions.",
-      es: "Desde visas de nómada digital e inversionista inmobiliario hasta residencia por matrimonio, salvoconductos y nacionalidad. Auditoría documental, traducciones oficiales y radicación ministerial.",
+      en: "At Capital M, we do more than fill out forms on a portal. We design comprehensive immigration strategies for individuals, families, and businesses looking to settle or invest in Colombia.",
+      es: "En Capital M no nos limitamos a llenar formularios en una plataforma. Diseñamos estrategias migratorias integrales para personas, familias y empresas que buscan establecerse o hacer negocios en Colombia.",
     },
     consultationFee: "$67 USD",
     leadAttorney: "María Fernanda Duarte & Ana María Muñoz",
@@ -205,20 +205,20 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
     slug: "real-estate-transactions",
     category: "real-estate",
     name: {
-      en: "Real Estate Due Diligence & Closings",
-      es: "Estudio de Títulos y Cierres Inmobiliarios",
+      en: "Purchase Legal Assistance Service",
+      es: "Asistencia Legal en Compra de Propiedad e Inversión",
     },
     shortBadge: {
-      en: "Property Title Audit & Closing Security",
-      es: "Auditoría de Títulos y Seguridad Inmobiliaria",
+      en: "Real Estate & Landlord Law",
+      es: "Derecho Inmobiliario y Arrendamiento",
     },
     heroHeadline: {
-      en: "Shielding Foreign Property Buyers in Medellín",
-      es: "Protección Jurídica Total en Compra de Finca Raíz",
+      en: "Secure Your Real Estate Investment in Colombia with Full Legal Protection",
+      es: "Protege tu inversión inmobiliaria en Colombia con total tranquilidad legal",
     },
     heroSubtitle: {
-      en: "Never transfer earnest money before an attorney audits the title. We perform 20-year title searches, draft bilingual protective purchase agreements, and represent you through public deed registration.",
-      es: "Nunca entregues arras sin un estudio legal previo. Auditamos la tradición del inmueble a 20 años, redactamos promesas de compraventa blindadas y te acompañamos a notaría.",
+      en: "We offer an end-to-end legal service designed to safeguard your capital in Colombia. Due diligence, contract negotiation, foreign exchange compliance, and notary closing.",
+      es: "Manejamos un servicio integral diseñado para blindar tu patrimonio en Colombia. Estudio de títulos, promesa de compraventa, registro cambiario y acompañamiento a notaría.",
     },
     consultationFee: "$67 USD",
     leadAttorney: "María Fernanda Duarte",
@@ -377,23 +377,23 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
   },
   {
     id: "marriage",
-    slug: "marriage-and-prenuptial-agreements",
+    slug: "marriage-and-prenups",
     category: "marriage",
     name: {
       en: "Marriage & Prenuptial Agreements",
-      es: "Matrimonios y Capitulaciones Matrimoniales",
+      es: "Matrimonio, Capitulaciones y Familia",
     },
     shortBadge: {
-      en: "Family Law & Asset Protection",
-      es: "Derecho de Familia y Protección Patrimonial",
+      en: "Family Law & Prenuptial Strategies",
+      es: "Derecho de Familia y Capitulaciones",
     },
     heroHeadline: {
-      en: "Protecting Your Assets & Legally Formalizing Relationships in Colombia",
-      es: "Protección Patrimonial y Formalización Legal de Parejas",
+      en: "Protecting Your Family and Assets at Every Stage of Life",
+      es: "Protege a tu familia y tu patrimonio en cada etapa de la vida",
     },
     heroSubtitle: {
-      en: "Navigate Colombian family law with absolute peace of mind. We draft enforceable prenuptial agreements (*Capitulaciones*), formalize civil marriages before notaries, and handle spouse visa pathways.",
-      es: "Asegura tu patrimonio previo al matrimonio o unión marital de hecho. Redactamos capitulaciones blindadas, celebramos matrimonios civiles notariales y gestionamos la visa de cónyuge.",
+      en: "Empathetic, rigorous, and clear legal counsel for local and international families in Colombia.",
+      es: "Acompañamiento legal empático, riguroso y transparente para parejas y familias locales e internacionales en Colombia.",
     },
     consultationFee: "$67 USD",
     leadAttorney: "Ana María Muñoz",
@@ -731,19 +731,19 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
     category: "wills-trusts",
     name: {
       en: "Wills, Trusts & Estate Planning",
-      es: "Testamentos, Fideicomisos y Planificación Sucesoral",
+      es: "Testamentos, Fideicomisos y Planeación Patrimonial",
     },
     shortBadge: {
-      en: "Estate & Asset Shielding",
-      es: "Patrimonio y Blindaje Sucesoral",
+      en: "Estate Planning & Asset Protection",
+      es: "Planeación Patrimonial y Blindaje",
     },
     heroHeadline: {
-      en: "Cross-Border Wills, Trusts & Colombian Inheritance Structuring",
-      es: "Testamentos Notariales, Fiducias Civiles y Sucesión en Colombia",
+      en: "Prepare Your Legacy for the Future and Protect What Matters Most",
+      es: "Prepara tu patrimonio para el futuro y protege a quienes más amas",
     },
     heroSubtitle: {
-      en: "Protect your Colombian real estate and international assets. We draft enforceable open and closed wills, structure civil trusts to avoid probate delays, and harmonize foreign estate plans with Colombian forced heirship rules.",
-      es: "Protege tus inmuebles y patrimonio en Colombia. Redactamos testamentos solemnes notariales, constituimos fiducias civiles para evitar sucesiones engorrosas y armonizamos herencias transfronterizas bajo el Código Civil.",
+      en: "Transparent, forward-thinking estate planning in Colombia to safeguard your assets and ensure your exact wishes are honored.",
+      es: "Estructuración legal anticipada, transparente y sin burocracia para proteger tus activos en Colombia y garantizar que tu voluntad se cumpla punto por punto.",
     },
     consultationFee: "$67 USD",
     leadAttorney: "María Fernanda Duarte & Ana María Muñoz",
@@ -893,173 +893,6 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
     },
   },
   {
-    id: "civil-litigation",
-    slug: "civil-litigation",
-    category: "civil-litigation",
-    name: {
-      en: "Civil Litigation & Dispute Resolution",
-      es: "Litigio Civil y Resolución de Disputas",
-    },
-    shortBadge: {
-      en: "Courtroom & Arbitration Defense",
-      es: "Defensa Judicial y Arbitraje",
-    },
-    heroHeadline: {
-      en: "Assertive Civil Litigation & Breach of Contract Defense in Colombia",
-      es: "Litigio Civil, Cobro de Obligaciones e Incumplimientos Contractuales",
-    },
-    heroSubtitle: {
-      en: "Protecting your financial interests in real estate defaults, commercial breaches, unpaid debts, and landlord-tenant restitution before Colombian civil courts and the Medellín Chamber of Commerce.",
-      es: "Protegemos tus inversiones y derechos en incumplimientos de compraventa, disputas comerciales, cobro ejecutivo de deudas y restitución de inmuebles ante juzgados civiles y centros de arbitraje.",
-    },
-    consultationFee: "$67 USD",
-    leadAttorney: "María Fernanda Duarte & Ana María Muñoz",
-    estimatedTimeline: {
-      en: "1 to 3 Months (Conciliation) / 6 to 18 Months (Court Proceedings)",
-      es: "1 a 3 Meses (Conciliación) / 6 a 18 Meses (Proceso Judicial)",
-    },
-    keyHighlights: {
-      en: [
-        "Enforcement of Promesas de Compraventa and recovery of earnest money deposits (Arras y Cláusula Penal).",
-        "Commercial collection lawsuits (Procesos Ejecutivos) to attach bank accounts and seize debtor properties.",
-        "Tenant eviction and property restitution (Restitución de Inmueble Arrendado) for unpaid rent.",
-        "Representation at mandatory pre-judicial conciliation hearings (Centro de Conciliación Cámara de Comercio).",
-      ],
-      es: [
-        "Demanda por incumplimiento de promesa de compraventa y cobro de arras y cláusula penal pecuniaria.",
-        "Procesos ejecutivos comerciales con medidas cautelares de embargo y secuestro de cuentas e inmuebles.",
-        "Procesos de restitución de inmueble arrendado por no pago de cánones o vencimiento de contrato.",
-        "Audiencias de conciliación prejudicial ante la Cámara de Comercio de Medellín para Antioquia.",
-      ],
-    },
-    requirements: {
-      en: [
-        {
-          title: "Contractual Documents",
-          desc: "Executed copies of Promesa de Compraventa, commercial contracts, promissory notes (pagarés), or lease agreements.",
-        },
-        {
-          title: "Proof of Non-Compliance & Notice",
-          desc: "Official notarized default records (Acta de Comparecencia), certified mail delivery slips (4-72), or bank return vouchers.",
-        },
-        {
-          title: "Identification & Representation Powers",
-          desc: "Valid passport or corporate registration (Certificado de Existencia y Representación Legal) and judicial power of attorney.",
-        },
-        {
-          title: "Accounting & Loss Quantification",
-          desc: "Invoices, wire transfer vouchers, penalty calculations, and documented damages.",
-        },
-      ],
-      es: [
-        {
-          title: "Documentos Contractuales",
-          desc: "Copia firmada de promesa de compraventa, contratos comerciales, pagarés, facturas o contrato de arrendamiento.",
-        },
-        {
-          title: "Pruebas de Incumplimiento y Notificación",
-          desc: "Actas notariales de comparecencia, envíos por correo certificado (4-72) y comprobantes de no pago.",
-        },
-        {
-          title: "Identificación y Poder Judicial",
-          desc: "Pasaporte vigente o Certificado de Existencia y Representación Legal y Poder Especial Judicial conferido.",
-        },
-        {
-          title: "Cuantificación de Perjuicios",
-          desc: "Comprobantes de pago, liquidación de cláusulas penales e intereses moratorios certificados.",
-        },
-      ],
-    },
-    stepByStepProcess: {
-      en: [
-        {
-          stepNumber: "01",
-          title: "Litigation Viability & Solvency Audit",
-          description:
-            "We evaluate the evidence, determine legal jurisdiction, and conduct a solvency search on the debtor's Colombian assets (property, vehicles, corporate shares).",
-          firmDeliverable: "Legal Actionability & Solvency Report",
-        },
-        {
-          stepNumber: "02",
-          title: "Pre-Judicial Demand & Conciliation",
-          description:
-            "We issue formal notice of default and file for an official conciliation hearing before the Medellín Chamber of Commerce to pursue quick resolution without protracted court battles.",
-          firmDeliverable: "Formal Notice Letter & Conciliation Hearing Record (Acta de Conciliación)",
-        },
-        {
-          stepNumber: "03",
-          title: "Lawsuit Filing with Precautionary Injunctions",
-          description:
-            "If conciliation fails, we file the formal civil lawsuit requesting immediate precautionary attachment (embargo y secuestro) of debtor bank accounts and properties.",
-          firmDeliverable: "Stamped Lawsuit Petition & Court Admission Order (Auto Admisorio)",
-        },
-        {
-          stepNumber: "04",
-          title: "Court Hearings & Judgment Enforcement",
-          description:
-            "We represent you through evidence hearings, cross-examinations, final arguments, and enforcement of the final judicial ruling (sentencia judicial).",
-          firmDeliverable: "Judicial Enforcement & Debt Liquidation Settlement",
-        },
-      ],
-      es: [
-        {
-          stepNumber: "01",
-          title: "Estudio de Viabilidad y Solvencia",
-          description:
-            "Evaluamos las pruebas, determinamos la jurisdicción competente y rastreamos activos embargables del deudor en Colombia.",
-          firmDeliverable: "Dictamen de Viabilidad Judicial y Rastreo de Bienes",
-        },
-        {
-          stepNumber: "02",
-          title: "Requerimiento Prejudicial y Conciliación",
-          description:
-            "Radicamos requerimiento formal y convocamos a audiencia de conciliación ante la Cámara de Comercio de Medellín para buscar acuerdos rápidos.",
-          firmDeliverable: "Requerimiento Formal y Acta de Conciliación Notarial",
-        },
-        {
-          stepNumber: "03",
-          title: "Radicación de Demanda y Medidas Cautelares",
-          description:
-            "En caso de no acuerdo, radicamos la demanda solicitando medidas cautelares de embargo preventivo de cuentas y bienes del demandado.",
-          firmDeliverable: "Radicado Judicial y Auto Admisorio de la Demanda",
-        },
-        {
-          stepNumber: "04",
-          title: "Audiencias Judiciales y Ejecución de Sentencia",
-          description:
-            "Acompañamos las audiencias de pruebas, alegatos de conclusión y la posterior ejecución coactiva de la sentencia judicial.",
-          firmDeliverable: "Sentencia Judicial Favorable y Liquidación del Crédito",
-        },
-      ],
-    },
-    faq: {
-      en: [
-        {
-          question: "Can a foreigner initiate a lawsuit in Colombia without being physically present?",
-          answer:
-            "Yes. You can grant a judicial power of attorney (Poder Especial) before a Colombian consulate abroad or with an apostille, and our attorneys will manage the entire trial on your behalf.",
-        },
-        {
-          question: "How long does a breach of contract lawsuit take in Medellín?",
-          answer:
-            "Pre-judicial conciliation takes 2 to 4 weeks. If a full verbal process (Proceso Declarativo) is required, judicial proceedings typically take 8 to 18 months depending on court congestion.",
-        },
-      ],
-      es: [
-        {
-          question: "¿Un extranjero puede demandar en Colombia sin estar físicamente en el país?",
-          answer:
-            "Sí. Es posible conferir un Poder Especial Judicial ante Consulado colombiano en el exterior o mediante apostilla, y nuestros abogados llevarán el proceso en su representación.",
-        },
-        {
-          question: "¿Cuánto tarda un proceso por incumplimiento de contrato en Medellín?",
-          answer:
-            "La conciliación extrajudicial toma de 2 a 4 semanas. Si se requiere proceso judicial declarativo, el trámite suele durar entre 8 y 18 meses según el juzgado civil.",
-        },
-      ],
-    },
-  },
-  {
     id: "labour-law",
     slug: "labour-law",
     category: "labour-law",
@@ -1072,12 +905,12 @@ export const SERVICES_CATALOG: ServiceDetail[] = [
       es: "Blindaje Laboral y UGPP",
     },
     heroHeadline: {
-      en: "Colombian Employment Structuring, Severance & UGPP Audit Defense",
-      es: "Contratación Laboral, Nómina Blindada y Defensa ante la UGPP",
+      en: "Strategic Employment Law: Hire Talent in Colombia with Total Legal Confidence",
+      es: "Gestión laboral estratégica: Contrata talento en Colombia con seguridad jurídica",
     },
     heroSubtitle: {
-      en: "Protect your Colombian business against labor liabilities, disguised employment claims, and aggressive UGPP sanctions. We draft compliant bilingual employment contracts, structure executive compensation, and handle fair dismissals.",
-      es: "Blinda tu empresa en Colombia contra demandas laborales, presunción de contrato de trabajo y sanciones de la UGPP. Redactamos contratos laborales bilingües, estructuramos remuneración salarial y gestionamos despidos.",
+      en: "Balancing business agility and local labor compliance. Customized employment contracts, RIT, terminations, and statutory severance under Colombian law.",
+      es: "Contratación equilibrada y cumplimiento de la legislación local. Redacción de contratos, Reglamentos Internos de Trabajo (RIT), liquidaciones y debido proceso.",
     },
     consultationFee: "$67 USD",
     leadAttorney: "María Fernanda Duarte & Ana María Muñoz",

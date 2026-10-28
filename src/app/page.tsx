@@ -533,7 +533,7 @@ export default function CapitalMLawApp() {
                 href={activeService.slug ? `/services/${activeService.slug}` : `/services`}
                 className="inline-flex items-center gap-2 border border-[#16345F]/20 dark:border-white/20 hover:border-[#C01072] hover:text-[#C01072] dark:hover:text-[#F472B6] text-[#16345F] dark:text-white font-semibold text-sm px-5 py-3 rounded-xl transition"
               >
-                {lang === "es" ? "Ver requisitos y proceso completo →" : "View requirements & full process →"}
+                {lang === "es" ? "Conoce más →" : "Learn more →"}
               </a>
             </div>
           </div>
