@@ -43,6 +43,10 @@ import {
 } from "@/components/ui/micro-interactions";
 import type { AttorneyBio } from "@/types/team";
 import type { LifeMoment } from "@/types/life";
+import type {
+  GooglePlaceReview,
+  GoogleReviewsResponse,
+} from "@/app/api/reviews/route";
 
 interface HomePageViewProps {
   initialTeam?: AttorneyBio[];
@@ -63,6 +67,9 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
   // Dynamic state for Team & Life (initialized from server with client refresh)
   const [teamData, setTeamData] = useState<AttorneyBio[]>(initialTeam ?? []);
   const [lifeData, setLifeData] = useState<LifeMoment[]>(initialLife ?? []);
+  const [totalReviews, setTotalReviews] = useState<number>(53);
+  const [googleRating, setGoogleRating] = useState<number>(4.8);
+  const [googleReviews, setGoogleReviews] = useState<GooglePlaceReview[]>([]);
 
   useEffect(() => {
     if (initialTeam && initialTeam.length > 0) {
@@ -82,6 +89,22 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setLifeData(data);
+      })
+      .catch(() => {});
+
+    fetch("/api/reviews")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: GoogleReviewsResponse | null) => {
+        if (!data) return;
+        if (typeof data.totalReviews === "number") {
+          setTotalReviews(data.totalReviews);
+        }
+        if (typeof data.rating === "number") {
+          setGoogleRating(data.rating);
+        }
+        if (Array.isArray(data.reviews) && data.reviews.length > 0) {
+          setGoogleReviews(data.reviews);
+        }
       })
       .catch(() => {});
   }, [initialTeam, initialLife]);
@@ -605,7 +628,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
 
           <div className="rounded-2xl bg-white dark:bg-[#0F223D] border border-gray-200 dark:border-white/10 p-5 shadow-xs text-left">
             <p className="text-3xl sm:text-4xl font-black text-[#16345F] dark:text-white">
-              <AnimatedCounter value={53} suffix="+" />
+              <AnimatedCounter value={totalReviews} suffix="+" />
             </p>
             <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#C01072] dark:text-[#F472B6]">
               {lang === "es" ? "Casos 5★ Verificados" : "Verified 5★ Client Cases"}
@@ -965,7 +988,12 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
 
       {/* 9. PRUEBA SOCIAL, CALIFICACIÓN GOOGLE & TARJETAS PROFESIONALES */}
       <section id="forum">
-        <SocialProofReviews lang={lang} />
+        <SocialProofReviews
+          lang={lang}
+          totalReviews={totalReviews}
+          rating={googleRating}
+          initialReviews={googleReviews}
+        />
       </section>
 
       {/* 10. BLOG & REDES SOCIALES */}
