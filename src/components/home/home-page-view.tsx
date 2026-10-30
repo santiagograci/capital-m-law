@@ -768,13 +768,13 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
 
           <div className="rounded-2xl bg-white dark:bg-[#0F223D] border border-gray-200 dark:border-white/10 p-5 shadow-xs text-left">
             <p className="text-3xl sm:text-4xl font-black text-[#00AA81]">
-              <AnimatedCounter value={20} suffix={lang === "es" ? " Años" : " Yrs"} />
+              <AnimatedCounter value={100} suffix="%" />
             </p>
             <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#16345F] dark:text-white">
-              {lang === "es" ? "Estudio de Títulos" : "Title Due Diligence"}
+              TRUSTED PROVIDERS
             </p>
             <p className="mt-0.5 text-[11px] text-[#706F6F] dark:text-gray-400">
-              {lang === "es" ? "Auditoría histórica inmobiliaria" : "Historical property lien audit"}
+              Bilingual legal counsel & certified advisory
             </p>
           </div>
 
