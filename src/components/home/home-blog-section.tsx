@@ -7,6 +7,7 @@ import type { BlogPostSummary } from "@/types/blog";
 import { CategoryBadge } from "@/components/blog/category-badge";
 import { CoverImage } from "@/components/blog/cover-image";
 import { formatPostDate } from "@/lib/blog/utils";
+import { mediaData } from "@/data/media";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -164,15 +165,10 @@ export function HomeBlogSection({
           )}
         </div>
 
-        {/* Redes Sociales: YouTube & Instagram con Miniaturas Reales */}
+        {/* Redes Sociales: YouTube & Instagram con Contenido Real */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
           {/* Card YouTube */}
-          <a
-            href="https://www.youtube.com/@capitalemelaw"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 hover:border-red-300 dark:hover:border-red-900/50 flex flex-col justify-between space-y-4"
-          >
+          <div className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 hover:border-red-300 dark:hover:border-red-900/50 flex flex-col justify-between space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="size-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
@@ -180,27 +176,38 @@ export function HomeBlogSection({
                 </div>
                 <div className="text-left">
                   <h3 className="text-base font-extrabold text-[#16345F] dark:text-white leading-tight">
-                    YouTube Channel
+                    {mediaData.youtube.badge}
                   </h3>
-                  <p className="text-xs text-red-600 font-semibold">@capitalemelaw</p>
+                  <p className="text-xs text-red-600 font-semibold">
+                    {mediaData.youtube.channelHandle}
+                  </p>
                 </div>
               </div>
 
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-3 py-1.5 rounded-xl group-hover:bg-red-600 group-hover:text-white transition-colors">
-                <span>{lang === "es" ? "Ver videos" : "Watch videos"}</span>
-                <ArrowUpRight className="size-3.5" />
-              </span>
+              <a
+                href={mediaData.youtube.channelUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-3 py-1.5 rounded-xl hover:bg-red-600 hover:text-white transition-colors"
+              >
+                <span>{mediaData.youtube.actionText}</span>
+              </a>
             </div>
 
             {/* Video Thumbnail Preview */}
-            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-inner group/thumb">
+            <a
+              href={mediaData.youtube.channelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative block aspect-video rounded-2xl overflow-hidden shadow-inner group/thumb"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/assets/social/youtube-thumb.jpg"
                 alt="Capital M Law YouTube Video Thumbnail"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
 
               {/* Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
@@ -211,23 +218,18 @@ export function HomeBlogSection({
 
               {/* Title Overlay */}
               <div className="absolute bottom-3 left-4 right-4 text-left">
-                <span className="inline-block bg-black/75 backdrop-blur text-white font-mono text-[10px] px-2 py-0.5 rounded-md font-semibold mb-1">
-                  12:45
+                <span className="inline-block bg-red-600/90 backdrop-blur text-white font-mono text-[10px] px-2 py-0.5 rounded-md font-semibold mb-1">
+                  {mediaData.youtube.channelHandle}
                 </span>
                 <p className="text-white text-xs sm:text-sm font-bold line-clamp-1 drop-shadow-md">
                   {youtubeCardText}
                 </p>
               </div>
-            </div>
-          </a>
+            </a>
+          </div>
 
-          {/* Card Instagram Feed */}
-          <a
-            href="https://www.instagram.com/capitalm.law/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 hover:border-[#C01072]/40 dark:hover:border-[#C01072]/30 flex flex-col justify-between space-y-4"
-          >
+          {/* Card Instagram Feed (2 Real Reels) */}
+          <div className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 hover:border-[#C01072]/40 dark:hover:border-[#C01072]/30 flex flex-col justify-between space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="size-10 rounded-xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white flex items-center justify-center shadow-xs">
@@ -235,61 +237,74 @@ export function HomeBlogSection({
                 </div>
                 <div className="text-left">
                   <h3 className="text-base font-extrabold text-[#16345F] dark:text-white leading-tight">
-                    Instagram Community
+                    {mediaData.instagram.badge}
                   </h3>
-                  <p className="text-xs text-[#C01072] dark:text-[#F472B6] font-semibold">@capitalm.law</p>
+                  <p className="text-xs text-[#C01072] dark:text-[#F472B6] font-semibold">
+                    {mediaData.instagram.handle}
+                  </p>
                 </div>
               </div>
 
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-[#C01072] dark:text-[#F472B6] bg-pink-50 dark:bg-pink-950/40 px-3 py-1.5 rounded-xl group-hover:bg-[#C01072] group-hover:text-white transition-colors">
-                <span>{lang === "es" ? "Seguir" : "Follow"}</span>
-                <ArrowUpRight className="size-3.5" />
-              </span>
+              <a
+                href={mediaData.instagram.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#C01072] dark:text-[#F472B6] bg-pink-50 dark:bg-pink-950/40 px-3 py-1.5 rounded-xl hover:bg-[#C01072] hover:text-white transition-colors"
+              >
+                <span>{mediaData.instagram.actionText}</span>
+              </a>
             </div>
 
-            {/* Instagram Multi-Photo Feed Grid */}
+            {/* Instagram 2-Column Reels Grid */}
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-inner bg-gray-100 dark:bg-gray-800 p-2">
-              <div className="grid grid-cols-3 gap-2 h-full">
-                <div className="relative rounded-xl overflow-hidden group/item h-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/social/instagram-post-1.jpg"
-                    alt="Instagram Post 1"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                </div>
-                <div className="relative rounded-xl overflow-hidden group/item h-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/social/instagram-post-2.jpg"
-                    alt="Instagram Post 2"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                </div>
-                <div className="relative rounded-xl overflow-hidden group/item h-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/social/instagram-post-3.jpg"
-                    alt="Instagram Post 3"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                </div>
-              </div>
+              <div className="grid grid-cols-2 gap-2.5 h-full">
+                {mediaData.instagram.reels.map((reel, idx) => (
+                  <a
+                    key={reel.id}
+                    href={reel.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={reel.title}
+                    className="relative rounded-xl overflow-hidden group/reel h-full block"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={reel.thumbnail}
+                      alt={reel.title}
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          idx === 0
+                            ? "/assets/social/instagram-post-1.jpg"
+                            : "/assets/social/instagram-post-2.jpg";
+                      }}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/reel:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent group-hover/reel:from-black/50 transition-colors" />
 
-              {/* Bottom Badge Bar */}
-              <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-left">
-                <span className="bg-black/75 backdrop-blur text-white text-[11px] font-semibold px-3 py-1 rounded-xl shadow-xs">
-                  {instagramCardText}
-                </span>
-                <span className="bg-[#C01072] text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-xs">
-                  Reels & Tips
-                </span>
+                    {/* Subtle Top-Right Badge */}
+                    <span className="absolute top-2.5 right-2.5 bg-[#C01072]/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">
+                      Reels & Tips
+                    </span>
+
+                    {/* Center Play Icon on Hover */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="size-10 rounded-full bg-white/25 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/reel:scale-110 group-hover/reel:bg-[#C01072]">
+                        <Play className="size-4 fill-current translate-x-0.5" />
+                      </div>
+                    </div>
+
+                    {/* Bottom Reel Label */}
+                    <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-left">
+                      <span className="text-[11px] font-bold text-white drop-shadow-xs truncate">
+                        {reel.title}
+                      </span>
+                      <ArrowUpRight className="size-3.5 text-white/90 shrink-0 transition-transform group-hover/reel:translate-x-0.5 group-hover/reel:-translate-y-0.5" />
+                    </div>
+                  </a>
+                ))}
               </div>
             </div>
-          </a>
+          </div>
         </div>
       </div>
     </section>
