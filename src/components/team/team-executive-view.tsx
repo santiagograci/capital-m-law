@@ -15,6 +15,7 @@ import {
   Sparkles,
   ArrowRight,
   Quote,
+  Check,
   CheckCircle2,
 } from "lucide-react";
 import { ATTORNEYS, AttorneyBio } from "@/data/team-data";
@@ -311,6 +312,80 @@ export function TeamExecutiveView({ initialMembers }: TeamExecutiveViewProps) {
           );
         })}
       </div>
+
+      {/* Why Choose Capital M? Section */}
+      <section className="legal-texture-bg relative overflow-hidden rounded-3xl bg-[#0B172A] dark:bg-[#0F1E35] p-8 sm:p-12 lg:p-16 border border-white/10 shadow-xl">
+        <div className="relative z-10 text-center max-w-3xl mx-auto space-y-3">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            Why Choose Capital M?
+          </h2>
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+            A collaborative, client-centered standard of legal representation in Colombia.
+          </p>
+        </div>
+
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto mt-12">
+          {/* Card 1 */}
+          <div className="rounded-2xl bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 sm:p-8 shadow-lg hover:border-[#10B981]/40 transition-all duration-300 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 flex items-center justify-center shrink-0">
+                <Check className="size-4 text-[#10B981] stroke-[2.5]" />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                High-Touch client experience
+              </h3>
+            </div>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              We break away from cold, traditional legal speak. You’ll always receive clear answers, empathetic support, and regular follow-ups so you never have to guess where your case stands.
+            </p>
+          </div>
+
+          {/* Card 2 */}
+          <div className="rounded-2xl bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 sm:p-8 shadow-lg hover:border-[#10B981]/40 transition-all duration-300 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 flex items-center justify-center shrink-0">
+                <Check className="size-4 text-[#10B981] stroke-[2.5]" />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                Strategic Roadmap & Milestones
+              </h3>
+            </div>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Every project begins with a clear scope and a tailored roadmap. During execution, we hold strategy sessions with you to adjust timelines, review milestones, and refine our approach together.
+            </p>
+          </div>
+
+          {/* Card 3 */}
+          <div className="rounded-2xl bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 sm:p-8 shadow-lg hover:border-[#10B981]/40 transition-all duration-300 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 flex items-center justify-center shrink-0">
+                <Check className="size-4 text-[#10B981] stroke-[2.5]" />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                Proactive Updates & Transparency
+              </h3>
+            </div>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              No radio silence. We keep you updated proactively as major milestones are reached, ensuring you enjoy total transparency and confidence from day one to resolution.
+            </p>
+          </div>
+
+          {/* Card 4 */}
+          <div className="rounded-2xl bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 sm:p-8 shadow-lg hover:border-[#10B981]/40 transition-all duration-300 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-xl bg-[#10B981]/15 border border-[#10B981]/30 flex items-center justify-center shrink-0">
+                <Check className="size-4 text-[#10B981] stroke-[2.5]" />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                Global & local expert Network
+              </h3>
+            </div>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Beyond legal representation, we connect you with our vetted network of trusted professionals in Colombia and abroad—including certified translators, accountants, real estate advisors, and notarization partners—making your entire journey effortless.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Global Bottom CTA */}
       <section className="legal-texture-bg relative overflow-hidden rounded-3xl bg-[#16345F] p-8 sm:p-12 text-white">
