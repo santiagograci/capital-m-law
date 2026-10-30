@@ -1,12 +1,23 @@
 "use server";
 
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import type { ActionResult, LifeMoment } from "@/types/life";
 import { requireStaff } from "@/lib/blog/auth";
 import { mutateLifeMoments } from "./store";
 import { LIFE_TAG } from "./queries";
 import { saveMediaUpload, ALLOWED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from "@/lib/media-store";
+
+function revalidateLifeRoutes(momentId?: string) {
+  updateTag(LIFE_TAG);
+  if (momentId) updateTag(`life-moment:${momentId}`);
+  revalidatePath("/", "layout");
+  revalidatePath("/");
+  revalidatePath("/life-at-capital-m");
+  revalidatePath("/admin");
+  revalidatePath("/admin/life");
+  revalidatePath("/api/life");
+}
 
 function slugify(text: string): string {
   return text
@@ -94,7 +105,7 @@ export async function createLifeMomentAction(
         result: newMoment,
       };
     });
-    updateTag(LIFE_TAG);
+    revalidateLifeRoutes(newMoment.id);
   } catch (err) {
     console.error("[life/actions] Error creating life moment:", err);
     return { ok: false, message: "Error al guardar el momento en el servidor." };
@@ -172,8 +183,7 @@ export async function updateLifeMomentAction(
       };
     });
 
-    updateTag(LIFE_TAG);
-    updateTag(`life-moment:${momentId}`);
+    revalidateLifeRoutes(momentId);
   } catch (err) {
     console.error("[life/actions] Error updating life moment:", err);
     return { ok: false, message: "Error al actualizar el momento en el servidor." };
@@ -192,7 +202,7 @@ export async function deleteLifeMomentAction(momentId: string): Promise<ActionRe
         result: true,
       };
     });
-    updateTag(LIFE_TAG);
+    revalidateLifeRoutes(momentId);
     return { ok: true, message: "Elemento eliminado de la galería." };
   } catch (err) {
     console.error("[life/actions] Error deleting life moment:", err);
@@ -212,7 +222,7 @@ export async function toggleLifeMomentActiveAction(momentId: string): Promise<Ac
         result: true,
       };
     });
-    updateTag(LIFE_TAG);
+    revalidateLifeRoutes(momentId);
     return { ok: true };
   } catch (err) {
     console.error("[life/actions] Error toggling life moment:", err);
@@ -246,7 +256,7 @@ export async function reorderLifeMomentAction(
         result: true,
       };
     });
-    updateTag(LIFE_TAG);
+    revalidateLifeRoutes(momentId);
     return { ok: true };
   } catch (err) {
     console.error("[life/actions] Error reordering life moment:", err);

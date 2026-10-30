@@ -1,12 +1,23 @@
 "use server";
 
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import type { ActionResult, AttorneyBio } from "@/types/team";
 import { requireStaff } from "@/lib/blog/auth";
 import { mutateTeamMembers } from "./store";
 import { TEAM_TAG } from "./queries";
 import { saveMediaUpload, ALLOWED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from "@/lib/media-store";
+
+function revalidateTeamRoutes(memberId?: string) {
+  updateTag(TEAM_TAG);
+  if (memberId) updateTag(`team-member:${memberId}`);
+  revalidatePath("/", "layout");
+  revalidatePath("/");
+  revalidatePath("/team");
+  revalidatePath("/admin");
+  revalidatePath("/admin/team");
+  revalidatePath("/api/team");
+}
 
 function slugify(text: string): string {
   return text
@@ -163,7 +174,7 @@ export async function createTeamMemberAction(
         result: newMember,
       };
     });
-    updateTag(TEAM_TAG);
+    revalidateTeamRoutes(newMember.id);
   } catch (err) {
     console.error("[team/actions] Error creating team member:", err);
     return { ok: false, message: "Error al guardar el perfil en el servidor." };
@@ -296,8 +307,7 @@ export async function updateTeamMemberAction(
       };
     });
 
-    updateTag(TEAM_TAG);
-    updateTag(`team-member:${memberId}`);
+    revalidateTeamRoutes(memberId);
   } catch (err) {
     console.error("[team/actions] Error updating team member:", err);
     return { ok: false, message: "Error al actualizar el perfil en el servidor." };
@@ -316,7 +326,7 @@ export async function deleteTeamMemberAction(memberId: string): Promise<ActionRe
         result: true,
       };
     });
-    updateTag(TEAM_TAG);
+    revalidateTeamRoutes(memberId);
     return { ok: true, message: "Miembro eliminado con éxito." };
   } catch (err) {
     console.error("[team/actions] Error deleting team member:", err);
@@ -336,7 +346,7 @@ export async function toggleTeamMemberActiveAction(memberId: string): Promise<Ac
         result: true,
       };
     });
-    updateTag(TEAM_TAG);
+    revalidateTeamRoutes(memberId);
     return { ok: true };
   } catch (err) {
     console.error("[team/actions] Error toggling team active:", err);
@@ -371,7 +381,7 @@ export async function reorderTeamMemberAction(
         result: true,
       };
     });
-    updateTag(TEAM_TAG);
+    revalidateTeamRoutes(memberId);
     return { ok: true };
   } catch (err) {
     console.error("[team/actions] Error reordering team member:", err);

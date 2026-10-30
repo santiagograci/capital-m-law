@@ -1,6 +1,6 @@
 "use server";
 
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { BLOG_CATEGORIES, type ActionResult, type BlogCategory, type BlogPost } from "@/types/blog";
 import { createSession, destroySession, requireStaff, verifyPassword } from "./auth";
@@ -13,6 +13,18 @@ import {
   saveUpload,
 } from "./store";
 import { computeReadingTime, parseTags, slugify } from "./utils";
+
+function revalidateBlogRoutes(slug?: string) {
+  updateTag(BLOG_TAG);
+  if (slug) updateTag(`blog-post:${slug}`);
+  revalidatePath("/", "layout");
+  revalidatePath("/");
+  revalidatePath("/blog");
+  if (slug) revalidatePath(`/blog/${slug}`);
+  revalidatePath("/admin");
+  revalidatePath("/admin/blog");
+  revalidatePath("/api/blog/recent");
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                   Auth                                     */
@@ -135,7 +147,7 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
 
     if ("error" in saved) return { ok: false, message: saved.error };
 
-    updateTag(BLOG_TAG);
+    revalidateBlogRoutes(saved.slug);
     return {
       ok: true,
       message: id ? "Post updated successfully." : "Post published successfully.",
@@ -162,7 +174,7 @@ export async function toggleFeaturedAction(formData: FormData): Promise<void> {
       ),
       result: null,
     }));
-    updateTag(BLOG_TAG);
+    revalidateBlogRoutes();
   } catch (err) {
     console.error("[blog/actions] Error toggling featured:", err);
   }
@@ -177,7 +189,7 @@ export async function deletePostAction(formData: FormData): Promise<void> {
       result: posts.find((p) => p.id === id) ?? null,
     }));
     if (removed) await deleteUpload(removed.coverImage);
-    updateTag(BLOG_TAG);
+    revalidateBlogRoutes(removed?.slug);
   } catch (err) {
     console.error("[blog/actions] Error deleting post:", err);
   }

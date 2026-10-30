@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,17 +12,8 @@ import { PostCard } from "@/components/blog/post-card";
 import { PostContent } from "@/components/blog/post-content";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { ContextualBlogCta } from "@/components/blog/contextual-blog-cta";
-import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog/queries";
+import { getPostBySlug, getRelatedPosts } from "@/lib/blog/queries";
 import { formatPostDate } from "@/lib/blog/utils";
-
-/**
- * Cache Components requires ≥1 param. Existing posts are prerendered at build;
- * new posts render on first visit and are then stored (ISR-style).
- */
-export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts.length > 0 ? posts.map((p) => ({ slug: p.slug })) : [{ slug: "welcome" }];
-}
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
   const { slug } = await params;

@@ -42,7 +42,7 @@ export function HomeBlogSection({
     let isMounted = true;
     async function loadRecentPosts() {
       try {
-        const res = await fetch("/api/blog/recent");
+        const res = await fetch("/api/blog/recent", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (isMounted && Array.isArray(data)) {

@@ -57,24 +57,25 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
   const [lifeData, setLifeData] = useState<LifeMoment[]>(initialLife ?? []);
 
   useEffect(() => {
-    // Refresh client data if needed
-    if (!initialTeam || initialTeam.length === 0) {
-      fetch("/api/team")
-        .then((res) => (res.ok ? res.json() : []))
-        .then((data) => {
-          if (Array.isArray(data) && data.length > 0) setTeamData(data);
-        })
-        .catch(() => {});
+    if (initialTeam && initialTeam.length > 0) {
+      setTeamData(initialTeam);
     }
+    fetch("/api/team", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setTeamData(data);
+      })
+      .catch(() => {});
 
-    if (!initialLife || initialLife.length === 0) {
-      fetch("/api/life")
-        .then((res) => (res.ok ? res.json() : []))
-        .then((data) => {
-          if (Array.isArray(data) && data.length > 0) setLifeData(data);
-        })
-        .catch(() => {});
+    if (initialLife && initialLife.length > 0) {
+      setLifeData(initialLife);
     }
+    fetch("/api/life", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setLifeData(data);
+      })
+      .catch(() => {});
   }, [initialTeam, initialLife]);
 
   // Estados de carruseles
