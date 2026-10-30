@@ -375,7 +375,12 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
   const currentIntent = t.hero.intents.find((i) => i.id === selectedIntent) || t.hero.intents[0];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0A1526] text-[#16345F] dark:text-[#E2E8F0] legal-texture-bg pb-20 sm:pb-0 transition-colors duration-300">
+    <div className="relative min-h-screen bg-white dark:bg-[#0A1526] text-[#16345F] dark:text-[#E2E8F0] pb-20 sm:pb-0 transition-colors duration-300">
+      {/* Capa de textura de fondo de iconos legales (balanza, documento, maletín) */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[url('/assets/legal-pattern.svg')] bg-[length:130px_130px] bg-repeat opacity-[0.06] dark:opacity-[0.04] dark:invert dark:mix-blend-screen pointer-events-none z-0"
+      />
       
       {/* 1. TOP UTILITY BAR (Bilingüe + Modo Noche + Contacto) */}
       <div className="border-b border-gray-200 dark:border-white/10 bg-white/95 dark:bg-[#0A1526]/95 backdrop-blur-sm py-2 px-4 text-xs">

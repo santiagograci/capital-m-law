@@ -38,13 +38,13 @@
   background-size: 130px 130px;
   pointer-events: none;
   z-index: 0;
-  color: #16345F;
-  opacity: 0.035;
-  transition: opacity 0.3s ease, color 0.3s ease;
+  opacity: 0.06;
+  transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 .dark .legal-texture-bg::before {
-  color: #9BB8E0;
+  filter: invert(1);
+  mix-blend-mode: screen;
   opacity: 0.04;
 }
 
