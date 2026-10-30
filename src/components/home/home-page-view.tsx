@@ -16,6 +16,7 @@ import {
   MessageCircle,
   ChevronRight,
   ChevronLeft,
+  Check,
   CheckCircle2,
   Heart,
   Camera,
@@ -937,29 +938,89 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
       </section>
 
       {/* 6. ABOUT US */}
-      <section id="about" className="py-20 px-4 max-w-[1000px] mx-auto space-y-12 relative z-10">
+      <section id="about" className="py-20 px-4 max-w-[1240px] mx-auto space-y-12 relative z-10">
         <h2 className="text-4xl font-black text-center text-[#16345F] dark:text-white">{t.aboutUs.mainTitle}</h2>
 
-        <div className="space-y-10">
-          <div className="space-y-3">
-            <h3 className="text-2xl font-bold text-[#C01072] dark:text-[#F472B6]">{t.aboutUs.whoTitle}</h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-              {t.aboutUs.whoBody}
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* Columna izquierda: Who we are & What we do */}
+          <div className="space-y-10">
+            <div className="space-y-3">
+              <h3 className="text-2xl font-bold text-[#C01072] dark:text-[#F472B6]">{t.aboutUs.whoTitle}</h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                {t.aboutUs.whoBody}
+              </p>
+            </div>
+
+            <div className="space-y-3 border-t border-gray-100 dark:border-white/10 pt-8">
+              <h3 className="text-2xl font-bold text-[#16345F] dark:text-white">{t.aboutUs.whatTitle}</h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                {t.aboutUs.whatIntro}
+              </p>
+              <ul className="space-y-2 text-sm sm:text-base text-gray-700 dark:text-gray-300 pl-4 list-disc">
+                <li>{t.aboutUs.whatExpats}</li>
+                <li>{t.aboutUs.whatLocal}</li>
+              </ul>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 pt-2">
+                {t.aboutUs.whatOutro}
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-3 border-t border-gray-100 dark:border-white/10 pt-8">
-            <h3 className="text-2xl font-bold text-[#16345F] dark:text-white">{t.aboutUs.whatTitle}</h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-              {t.aboutUs.whatIntro}
-            </p>
-            <ul className="space-y-2 text-sm sm:text-base text-gray-700 dark:text-gray-300 pl-4 list-disc">
-              <li>{t.aboutUs.whatExpats}</li>
-              <li>{t.aboutUs.whatLocal}</li>
-            </ul>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 pt-2">
-              {t.aboutUs.whatOutro}
-            </p>
+          {/* Columna derecha: Why Choose Capital M? */}
+          <div className="rounded-3xl bg-[#0F223D] border border-white/10 p-8 sm:p-10 shadow-xl space-y-8">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white">
+              Why Choose Capital M?
+            </h3>
+
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-[#10B981] shrink-0 stroke-[2.5]" />
+                  <h4 className="text-base sm:text-lg font-bold text-white">
+                    High-Touch client experience
+                  </h4>
+                </div>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed pl-8">
+                  We break away from cold, traditional legal speak. You’ll always receive clear answers, empathetic support, and regular follow-ups so you never have to guess where your case stands.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-[#10B981] shrink-0 stroke-[2.5]" />
+                  <h4 className="text-base sm:text-lg font-bold text-white">
+                    Strategic Roadmap & Milestones
+                  </h4>
+                </div>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed pl-8">
+                  Every project begins with a clear scope and a tailored roadmap. During execution, we hold strategy sessions with you to adjust timelines, review milestones, and refine our approach together.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-[#10B981] shrink-0 stroke-[2.5]" />
+                  <h4 className="text-base sm:text-lg font-bold text-white">
+                    Proactive Updates & Transparency
+                  </h4>
+                </div>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed pl-8">
+                  No radio silence. We keep you updated proactively as major milestones are reached, ensuring you enjoy total transparency and confidence from day one to resolution.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-[#10B981] shrink-0 stroke-[2.5]" />
+                  <h4 className="text-base sm:text-lg font-bold text-white">
+                    Global & local expert Network
+                  </h4>
+                </div>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed pl-8">
+                  Beyond legal representation, we connect you with our vetted network of trusted professionals in Colombia and abroad—including certified translators, accountants, real estate advisors, and notarization partners—making your entire journey effortless.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

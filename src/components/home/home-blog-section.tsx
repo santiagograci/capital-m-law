@@ -166,7 +166,7 @@ export function HomeBlogSection({
         </div>
 
         {/* Redes Sociales: YouTube & Instagram con Contenido Real */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 items-stretch">
           {/* Card YouTube */}
           <div className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 hover:border-red-300 dark:hover:border-red-900/50 flex flex-col justify-between space-y-4">
             <div className="flex items-center justify-between">
@@ -194,41 +194,38 @@ export function HomeBlogSection({
               </a>
             </div>
 
-            {/* Video Thumbnail Preview */}
+            {/* Embedded Official YouTube Player (autoplay=0) */}
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner bg-black border border-gray-200/60 dark:border-white/10">
+              <iframe
+                src={mediaData.youtube.embedUrl}
+                title={mediaData.youtube.latestVideoTitle}
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </div>
+
+            {/* Channel Footer Link */}
             <a
               href={mediaData.youtube.channelUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative block aspect-video rounded-2xl overflow-hidden shadow-inner group/thumb"
+              className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 dark:bg-white/[0.04] px-4 py-3 border border-gray-100 dark:border-white/5 hover:border-red-500/30 transition-colors group/ytlink"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/social/youtube-thumb.jpg"
-                alt="Capital M Law YouTube Video Thumbnail"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover/thumb:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
-
-              {/* Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="size-14 rounded-full bg-red-600 text-white flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover/thumb:scale-110">
-                  <Play className="size-6 fill-current translate-x-0.5" />
-                </div>
-              </div>
-
-              {/* Title Overlay */}
-              <div className="absolute bottom-3 left-4 right-4 text-left">
-                <span className="inline-block bg-red-600/90 backdrop-blur text-white font-mono text-[10px] px-2 py-0.5 rounded-md font-semibold mb-1">
+              <div className="text-left min-w-0">
+                <span className="inline-block bg-red-600 text-white font-mono text-[10px] px-2 py-0.5 rounded-md font-semibold mb-1">
                   {mediaData.youtube.channelHandle}
                 </span>
-                <p className="text-white text-xs sm:text-sm font-bold line-clamp-1 drop-shadow-md">
+                <p className="text-xs sm:text-sm font-bold text-[#16345F] dark:text-white truncate">
                   {youtubeCardText}
                 </p>
               </div>
+              <ArrowUpRight className="size-4 text-red-600 shrink-0 transition-transform group-hover/ytlink:translate-x-0.5 group-hover/ytlink:-translate-y-0.5" />
             </a>
           </div>
 
-          {/* Card Instagram Feed (2 Real Reels) */}
+          {/* Card Instagram Feed (2 Real Vertical 9:16 Reels) */}
           <div className="group bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl transition-all duration-300 hover:border-[#C01072]/40 dark:hover:border-[#C01072]/30 flex flex-col justify-between space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -255,54 +252,46 @@ export function HomeBlogSection({
               </a>
             </div>
 
-            {/* Instagram 2-Column Reels Grid */}
-            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-inner bg-gray-100 dark:bg-gray-800 p-2">
-              <div className="grid grid-cols-2 gap-2.5 h-full">
-                {mediaData.instagram.reels.map((reel, idx) => (
-                  <a
-                    key={reel.id}
-                    href={reel.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={reel.title}
-                    className="relative rounded-xl overflow-hidden group/reel h-full block"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={reel.thumbnail}
-                      alt={reel.title}
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          idx === 0
-                            ? "/assets/social/instagram-post-1.jpg"
-                            : "/assets/social/instagram-post-2.jpg";
-                      }}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover/reel:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent group-hover/reel:from-black/50 transition-colors" />
+            {/* Instagram 2-Column 9:16 Vertical Reels Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {mediaData.instagram.reels.map((reel) => (
+                <a
+                  key={reel.id}
+                  href={reel.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={reel.title}
+                  className="relative aspect-[9/16] max-h-[290px] w-full rounded-2xl overflow-hidden group/reel block bg-slate-900 border border-gray-200/60 dark:border-white/10 shadow-sm"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={reel.thumbnail}
+                    alt={reel.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover/reel:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent group-hover/reel:from-black/55 transition-colors" />
 
-                    {/* Subtle Top-Right Badge */}
-                    <span className="absolute top-2.5 right-2.5 bg-[#C01072]/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">
-                      Reels & Tips
+                  {/* Subtle Top-Right Badge */}
+                  <span className="absolute top-2.5 right-2.5 bg-[#C01072]/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">
+                    Reels & Tips
+                  </span>
+
+                  {/* Center Play Icon on Hover */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="size-11 rounded-full bg-white/25 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/reel:scale-110 group-hover/reel:bg-[#C01072]">
+                      <Play className="size-4 fill-current translate-x-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Bottom Reel Label */}
+                  <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between gap-1.5 text-left">
+                    <span className="text-[11px] font-bold text-white drop-shadow-xs line-clamp-1">
+                      {reel.title}
                     </span>
-
-                    {/* Center Play Icon on Hover */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="size-10 rounded-full bg-white/25 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/reel:scale-110 group-hover/reel:bg-[#C01072]">
-                        <Play className="size-4 fill-current translate-x-0.5" />
-                      </div>
-                    </div>
-
-                    {/* Bottom Reel Label */}
-                    <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-left">
-                      <span className="text-[11px] font-bold text-white drop-shadow-xs truncate">
-                        {reel.title}
-                      </span>
-                      <ArrowUpRight className="size-3.5 text-white/90 shrink-0 transition-transform group-hover/reel:translate-x-0.5 group-hover/reel:-translate-y-0.5" />
-                    </div>
-                  </a>
-                ))}
-              </div>
+                    <ArrowUpRight className="size-3.5 text-white/90 shrink-0 transition-transform group-hover/reel:translate-x-0.5 group-hover/reel:-translate-y-0.5" />
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
         </div>
