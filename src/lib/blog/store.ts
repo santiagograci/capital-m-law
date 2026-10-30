@@ -163,6 +163,20 @@ export const ALLOWED_IMAGE_TYPES = new Set(Object.values(MIME_BY_EXT));
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 
 export async function saveUpload(file: File): Promise<string> {
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const blob = await put(file.name, file, {
+        access: "public",
+        addRandomSuffix: true,
+        allowOverwrite: true,
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+      return blob.url;
+    } catch (err) {
+      console.warn("[blog/store] Could not upload to Vercel Blob, falling back:", err);
+    }
+  }
+
   const ext =
     Object.entries(MIME_BY_EXT).find(([, mime]) => mime === file.type)?.[0] ?? ".jpg";
   const name = `${crypto.randomUUID()}${ext}`;

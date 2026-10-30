@@ -36,9 +36,11 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    // Sube el archivo a Vercel Blob usando put(file.name, file, { access: 'public' })
+    // Sube el archivo a Vercel Blob con addRandomSuffix: true y allowOverwrite: true
     const blob = await put(file.name, file, {
       access: "public",
+      addRandomSuffix: true,
+      allowOverwrite: true,
       token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
