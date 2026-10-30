@@ -54,7 +54,6 @@ export async function createTeamMemberAction(
     return { ok: false, message: "El rol en inglés y español es obligatorio." };
   }
 
-  // Handle Image (File upload takes precedence, then image URL, then fallback)
   let imageUrl = String(formData.get("imageUrl") ?? "").trim();
   const imageFile = formData.get("imageFile");
 
@@ -67,7 +66,7 @@ export async function createTeamMemberAction(
     }
     try {
       imageUrl = await saveMediaUpload(imageFile);
-    } catch (err) {
+    } catch {
       return { ok: false, message: "Error al guardar la imagen en el servidor." };
     }
   }
@@ -155,17 +154,21 @@ export async function createTeamMemberAction(
     updatedAt: now,
   };
 
-  await mutateTeamMembers((members) => {
-    // calculate order as last + 1
-    const maxOrder = members.reduce((m, item) => Math.max(m, item.order ?? 0), 0);
-    newMember.order = maxOrder + 1;
-    return {
-      members: [...members, newMember],
-      result: newMember,
-    };
-  });
+  try {
+    await mutateTeamMembers((members) => {
+      const maxOrder = members.reduce((m, item) => Math.max(m, item.order ?? 0), 0);
+      newMember.order = maxOrder + 1;
+      return {
+        members: [...members, newMember],
+        result: newMember,
+      };
+    });
+    updateTag(TEAM_TAG);
+  } catch (err) {
+    console.error("[team/actions] Error creating team member:", err);
+    return { ok: false, message: "Error al guardar el perfil en el servidor." };
+  }
 
-  updateTag(TEAM_TAG);
   redirect("/admin/team");
 }
 
@@ -199,7 +202,7 @@ export async function updateTeamMemberAction(
     }
     try {
       imageUrl = await saveMediaUpload(imageFile);
-    } catch (err) {
+    } catch {
       return { ok: false, message: "Error al guardar la imagen en el servidor." };
     }
   }
@@ -211,120 +214,134 @@ export async function updateTeamMemberAction(
   const order = Number(formData.get("order") ?? 1);
   const now = new Date().toISOString();
 
-  await mutateTeamMembers((members) => {
-    const existing = members.find((m) => m.id === memberId);
-    if (!existing) {
-      throw new Error(`Miembro no encontrado: ${memberId}`);
-    }
+  try {
+    await mutateTeamMembers((members) => {
+      const existing = members.find((m) => m.id === memberId);
+      if (!existing) {
+        throw new Error(`Miembro no encontrado: ${memberId}`);
+      }
 
-    const updated: AttorneyBio = {
-      ...existing,
-      name,
-      role: { en: roleEn, es: roleEs },
-      titleTag: {
-        en: String(formData.get("titleTagEn") ?? roleEn).trim(),
-        es: String(formData.get("titleTagEs") ?? roleEs).trim(),
-      },
-      image: imageUrl || existing.image,
-      credentials: {
-        en: String(formData.get("credentialsEn") ?? existing.credentials.en).trim(),
-        es: String(formData.get("credentialsEs") ?? existing.credentials.es).trim(),
-      },
-      barRegistration: barRegistration || existing.barRegistration,
-      languages: {
-        en: String(formData.get("languagesEn") ?? existing.languages.en).trim(),
-        es: String(formData.get("languagesEs") ?? existing.languages.es).trim(),
-      },
-      experienceYears: Number.isFinite(experienceYears) ? experienceYears : existing.experienceYears,
-      consultationFee: consultationFee || existing.consultationFee,
-      summary: {
-        en: String(formData.get("summaryEn") ?? "").trim(),
-        es: String(formData.get("summaryEs") ?? "").trim(),
-      },
-      specialties: {
-        en: parseLines(String(formData.get("specialtiesEn") ?? "")),
-        es: parseLines(String(formData.get("specialtiesEs") ?? "")),
-      },
-      fullBio: {
-        en: parseLines(String(formData.get("fullBioEn") ?? "")),
-        es: parseLines(String(formData.get("fullBioEs") ?? "")),
-      },
-      pillars: {
-        en: parsePillars(
-          formData.getAll("pillarTitleEn") as string[],
-          formData.getAll("pillarDescEn") as string[],
-        ),
-        es: parsePillars(
-          formData.getAll("pillarTitleEs") as string[],
-          formData.getAll("pillarDescEs") as string[],
-        ),
-      },
-      practiceAreas: {
-        en: [
-          {
-            title: "Primary Practice Areas",
-            items: parseLines(String(formData.get("practiceItemsEn") ?? "")),
-          },
-        ],
-        es: [
-          {
-            title: "Áreas Principales de Práctica",
-            items: parseLines(String(formData.get("practiceItemsEs") ?? "")),
-          },
-        ],
-      },
-      education: {
-        en: parseLines(String(formData.get("educationEn") ?? "")),
-        es: parseLines(String(formData.get("educationEs") ?? "")),
-      },
-      quote: {
-        en: String(formData.get("quoteEn") ?? "").trim(),
-        es: String(formData.get("quoteEs") ?? "").trim(),
-      },
-      order: Number.isFinite(order) ? order : existing.order,
-      active,
-      updatedAt: now,
-    };
+      const updated: AttorneyBio = {
+        ...existing,
+        name,
+        role: { en: roleEn, es: roleEs },
+        titleTag: {
+          en: String(formData.get("titleTagEn") ?? roleEn).trim(),
+          es: String(formData.get("titleTagEs") ?? roleEs).trim(),
+        },
+        image: imageUrl || existing.image,
+        credentials: {
+          en: String(formData.get("credentialsEn") ?? existing.credentials.en).trim(),
+          es: String(formData.get("credentialsEs") ?? existing.credentials.es).trim(),
+        },
+        barRegistration: barRegistration || existing.barRegistration,
+        languages: {
+          en: String(formData.get("languagesEn") ?? existing.languages.en).trim(),
+          es: String(formData.get("languagesEs") ?? existing.languages.es).trim(),
+        },
+        experienceYears: Number.isFinite(experienceYears) ? experienceYears : existing.experienceYears,
+        consultationFee: consultationFee || existing.consultationFee,
+        summary: {
+          en: String(formData.get("summaryEn") ?? "").trim(),
+          es: String(formData.get("summaryEs") ?? "").trim(),
+        },
+        specialties: {
+          en: parseLines(String(formData.get("specialtiesEn") ?? "")),
+          es: parseLines(String(formData.get("specialtiesEs") ?? "")),
+        },
+        fullBio: {
+          en: parseLines(String(formData.get("fullBioEn") ?? "")),
+          es: parseLines(String(formData.get("fullBioEs") ?? "")),
+        },
+        pillars: {
+          en: parsePillars(
+            formData.getAll("pillarTitleEn") as string[],
+            formData.getAll("pillarDescEn") as string[],
+          ),
+          es: parsePillars(
+            formData.getAll("pillarTitleEs") as string[],
+            formData.getAll("pillarDescEs") as string[],
+          ),
+        },
+        practiceAreas: {
+          en: [
+            {
+              title: "Primary Practice Areas",
+              items: parseLines(String(formData.get("practiceItemsEn") ?? "")),
+            },
+          ],
+          es: [
+            {
+              title: "Áreas Principales de Práctica",
+              items: parseLines(String(formData.get("practiceItemsEs") ?? "")),
+            },
+          ],
+        },
+        education: {
+          en: parseLines(String(formData.get("educationEn") ?? "")),
+          es: parseLines(String(formData.get("educationEs") ?? "")),
+        },
+        quote: {
+          en: String(formData.get("quoteEn") ?? "").trim(),
+          es: String(formData.get("quoteEs") ?? "").trim(),
+        },
+        order: Number.isFinite(order) ? order : existing.order,
+        active,
+        updatedAt: now,
+      };
 
-    return {
-      members: members.map((m) => (m.id === memberId ? updated : m)),
-      result: updated,
-    };
-  });
+      return {
+        members: members.map((m) => (m.id === memberId ? updated : m)),
+        result: updated,
+      };
+    });
 
-  updateTag(TEAM_TAG);
-  updateTag(`team-member:${memberId}`);
+    updateTag(TEAM_TAG);
+    updateTag(`team-member:${memberId}`);
+  } catch (err) {
+    console.error("[team/actions] Error updating team member:", err);
+    return { ok: false, message: "Error al actualizar el perfil en el servidor." };
+  }
+
   redirect("/admin/team");
 }
 
 export async function deleteTeamMemberAction(memberId: string): Promise<ActionResult> {
   await requireStaff();
 
-  await mutateTeamMembers((members) => {
-    return {
-      members: members.filter((m) => m.id !== memberId),
-      result: true,
-    };
-  });
-
-  updateTag(TEAM_TAG);
-  return { ok: true, message: "Miembro eliminado con éxito." };
+  try {
+    await mutateTeamMembers((members) => {
+      return {
+        members: members.filter((m) => m.id !== memberId),
+        result: true,
+      };
+    });
+    updateTag(TEAM_TAG);
+    return { ok: true, message: "Miembro eliminado con éxito." };
+  } catch (err) {
+    console.error("[team/actions] Error deleting team member:", err);
+    return { ok: false, message: "No se pudo eliminar el miembro." };
+  }
 }
 
 export async function toggleTeamMemberActiveAction(memberId: string): Promise<ActionResult> {
   await requireStaff();
 
-  await mutateTeamMembers((members) => {
-    return {
-      members: members.map((m) =>
-        m.id === memberId ? { ...m, active: !m.active, updatedAt: new Date().toISOString() } : m,
-      ),
-      result: true,
-    };
-  });
-
-  updateTag(TEAM_TAG);
-  return { ok: true };
+  try {
+    await mutateTeamMembers((members) => {
+      return {
+        members: members.map((m) =>
+          m.id === memberId ? { ...m, active: !m.active, updatedAt: new Date().toISOString() } : m,
+        ),
+        result: true,
+      };
+    });
+    updateTag(TEAM_TAG);
+    return { ok: true };
+  } catch (err) {
+    console.error("[team/actions] Error toggling team active:", err);
+    return { ok: false, message: "Error al cambiar el estado." };
+  }
 }
 
 export async function reorderTeamMemberAction(
@@ -333,27 +350,31 @@ export async function reorderTeamMemberAction(
 ): Promise<ActionResult> {
   await requireStaff();
 
-  await mutateTeamMembers((members) => {
-    const sorted = [...members].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    const idx = sorted.findIndex((m) => m.id === memberId);
-    if (idx < 0) return { members, result: false };
+  try {
+    await mutateTeamMembers((members) => {
+      const sorted = [...members].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      const idx = sorted.findIndex((m) => m.id === memberId);
+      if (idx < 0) return { members, result: false };
 
-    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (targetIdx < 0 || targetIdx >= sorted.length) return { members, result: false };
+      const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= sorted.length) return { members, result: false };
 
-    // Swap orders
-    const currentOrder = sorted[idx].order ?? idx + 1;
-    const targetOrder = sorted[targetIdx].order ?? targetIdx + 1;
+      // Swap orders
+      const currentOrder = sorted[idx].order ?? idx + 1;
+      const targetOrder = sorted[targetIdx].order ?? targetIdx + 1;
 
-    sorted[idx].order = targetOrder;
-    sorted[targetIdx].order = currentOrder;
+      sorted[idx].order = targetOrder;
+      sorted[targetIdx].order = currentOrder;
 
-    return {
-      members: sorted,
-      result: true,
-    };
-  });
-
-  updateTag(TEAM_TAG);
-  return { ok: true };
+      return {
+        members: sorted,
+        result: true,
+      };
+    });
+    updateTag(TEAM_TAG);
+    return { ok: true };
+  } catch (err) {
+    console.error("[team/actions] Error reordering team member:", err);
+    return { ok: false, message: "Error al reordenar." };
+  }
 }

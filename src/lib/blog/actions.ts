@@ -155,22 +155,30 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
 export async function toggleFeaturedAction(formData: FormData): Promise<void> {
   await requireStaff();
   const id = str(formData, "id");
-  await mutatePosts((posts) => ({
-    posts: posts.map((p) =>
-      p.id === id ? { ...p, featured: !p.featured, updatedAt: new Date().toISOString() } : p,
-    ),
-    result: null,
-  }));
-  updateTag(BLOG_TAG);
+  try {
+    await mutatePosts((posts) => ({
+      posts: posts.map((p) =>
+        p.id === id ? { ...p, featured: !p.featured, updatedAt: new Date().toISOString() } : p,
+      ),
+      result: null,
+    }));
+    updateTag(BLOG_TAG);
+  } catch (err) {
+    console.error("[blog/actions] Error toggling featured:", err);
+  }
 }
 
 export async function deletePostAction(formData: FormData): Promise<void> {
   await requireStaff();
   const id = str(formData, "id");
-  const removed = await mutatePosts((posts) => ({
-    posts: posts.filter((p) => p.id !== id),
-    result: posts.find((p) => p.id === id) ?? null,
-  }));
-  if (removed) await deleteUpload(removed.coverImage);
-  updateTag(BLOG_TAG);
+  try {
+    const removed = await mutatePosts((posts) => ({
+      posts: posts.filter((p) => p.id !== id),
+      result: posts.find((p) => p.id === id) ?? null,
+    }));
+    if (removed) await deleteUpload(removed.coverImage);
+    updateTag(BLOG_TAG);
+  } catch (err) {
+    console.error("[blog/actions] Error deleting post:", err);
+  }
 }

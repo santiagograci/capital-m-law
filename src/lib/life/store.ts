@@ -4,9 +4,18 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { LifeMoment } from "@/types/life";
 
+/**
+ * Resilient persistence for Life at Capital M supporting both local dev and
+ * Vercel Serverless Functions (/var/task is read-only; /tmp is writable).
+ */
+
 const ROOT = process.cwd();
 const LIFE_FILE = path.join(ROOT, "content", "life", "moments.json");
+const TMP_LIFE_FILE = path.join("/tmp", "capital-m-law", "content", "life", "moments.json");
 
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+let inMemoryMoments: LifeMoment[] | null = null;
 let writeQueue: Promise<unknown> = Promise.resolve();
 
 function getInitialMoments(): LifeMoment[] {
@@ -108,29 +117,62 @@ function getInitialMoments(): LifeMoment[] {
 }
 
 async function readRaw(): Promise<LifeMoment[]> {
+  // 1. In-memory
+  if (inMemoryMoments !== null && inMemoryMoments.length > 0) {
+    return inMemoryMoments;
+  }
+
+  // 2. /tmp
+  try {
+    const tmpRaw = await fs.readFile(TMP_LIFE_FILE, "utf8");
+    const parsed = JSON.parse(tmpRaw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      inMemoryMoments = parsed as LifeMoment[];
+      return inMemoryMoments;
+    }
+  } catch {}
+
+  // 3. Bundled static
   try {
     const raw = await fs.readFile(LIFE_FILE, "utf8");
     const parsed = JSON.parse(raw) as unknown;
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed as LifeMoment[];
+      inMemoryMoments = parsed as LifeMoment[];
+      return inMemoryMoments;
     }
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
-      console.error("Error reading life moments file:", err);
-    }
-  }
+  } catch {}
 
-  // Seed default moments if file doesn't exist
+  // 4. Default seed
   const initial = getInitialMoments();
-  await writeRaw(initial);
+  inMemoryMoments = initial;
+  writeRaw(initial).catch(() => {});
   return initial;
 }
 
 async function writeRaw(moments: LifeMoment[]): Promise<void> {
-  await fs.mkdir(path.dirname(LIFE_FILE), { recursive: true });
-  const tmp = `${LIFE_FILE}.${process.pid}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(moments, null, 2) + "\n", "utf8");
-  await fs.rename(tmp, LIFE_FILE);
+  inMemoryMoments = moments;
+
+  // 1. /tmp
+  try {
+    await fs.mkdir(path.dirname(TMP_LIFE_FILE), { recursive: true });
+    const tmpFile = `${TMP_LIFE_FILE}.${process.pid}.${Date.now()}.tmp`;
+    await fs.writeFile(tmpFile, JSON.stringify(moments, null, 2) + "\n", "utf8");
+    await fs.rename(tmpFile, TMP_LIFE_FILE);
+  } catch (err) {
+    console.warn("[life/store] Could not write to /tmp (retained in-memory):", err);
+  }
+
+  // 2. Local dev
+  if (!IS_SERVERLESS) {
+    try {
+      await fs.mkdir(path.dirname(LIFE_FILE), { recursive: true });
+      const localTmp = `${LIFE_FILE}.${process.pid}.${Date.now()}.tmp`;
+      await fs.writeFile(localTmp, JSON.stringify(moments, null, 2) + "\n", "utf8");
+      await fs.rename(localTmp, LIFE_FILE);
+    } catch (err) {
+      console.warn("[life/store] Local file write skipped:", err);
+    }
+  }
 }
 
 export async function readAllLifeMoments(): Promise<LifeMoment[]> {
