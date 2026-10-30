@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { PageTransitionProvider } from "@/components/transitions/page-transition-provider";
+import { FloatingContactButton } from "@/components/ui/micro-interactions";
+import { BackToTop } from "@/components/ui/back-to-top";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -24,7 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} scroll-smooth`}>
       <body className="antialiased selection:bg-[#C01072]/20 selection:text-[#C01072]">
-        <PageTransitionProvider>{children}</PageTransitionProvider>
+        <PageTransitionProvider>
+          {children}
+          <FloatingContactButton />
+          <BackToTop />
+        </PageTransitionProvider>
       </body>
     </html>
   );

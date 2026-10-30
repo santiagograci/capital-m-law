@@ -24,6 +24,7 @@ import {
   Stamp,
   Sparkles,
 } from "lucide-react";
+import { MagneticWrapper } from "@/components/ui/micro-interactions";
 
 export type ServiceThemeKey =
   | "visas"
@@ -767,18 +768,20 @@ export function CorporateNavLink({
   const { navigateWithCorporateLogo } = usePageTransition();
 
   return (
-    <a
-      href={href}
-      className={className}
-      onClick={(e) => {
-        if (isModifiedClick(e)) return;
-        e.preventDefault();
-        onClick?.();
-        navigateWithCorporateLogo(href, label);
-      }}
-    >
-      {children}
-    </a>
+    <MagneticWrapper strength={0.32}>
+      <a
+        href={href}
+        className={className}
+        onClick={(e) => {
+          if (isModifiedClick(e)) return;
+          e.preventDefault();
+          onClick?.();
+          navigateWithCorporateLogo(href, label);
+        }}
+      >
+        {children}
+      </a>
+    </MagneticWrapper>
   );
 }
 
@@ -802,16 +805,18 @@ export function ServiceLearnMoreLink({
   const { navigateToService } = usePageTransition();
 
   return (
-    <a
-      href={href}
-      className={className}
-      onClick={(e) => {
-        if (isModifiedClick(e)) return;
-        e.preventDefault();
-        navigateToService(serviceKey, href, serviceTitle);
-      }}
-    >
-      {children}
-    </a>
+    <MagneticWrapper strength={0.28}>
+      <a
+        href={href}
+        className={className}
+        onClick={(e) => {
+          if (isModifiedClick(e)) return;
+          e.preventDefault();
+          navigateToService(serviceKey, href, serviceTitle);
+        }}
+      >
+        {children}
+      </a>
+    </MagneticWrapper>
   );
 }

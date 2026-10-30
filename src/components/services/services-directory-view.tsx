@@ -22,6 +22,7 @@ import {
 import { SERVICES_CATALOG, ServiceDetail } from "@/data/services-catalog";
 import { cn } from "@/lib/utils";
 import { ServiceLearnMoreLink } from "@/components/transitions/page-transition-provider";
+import { TiltGlassCard } from "@/components/ui/micro-interactions";
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   visas: Plane,
@@ -103,11 +104,13 @@ export function ServicesDirectoryView() {
           const Icon = ICONS[service.category] || ShieldCheck;
 
           return (
-            <article
+            <TiltGlassCard
               key={service.id}
-              className="group bg-white dark:bg-[#0F1E35] rounded-3xl border border-[#16345F]/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-all duration-300 flex flex-col justify-between p-8 sm:p-10 space-y-8"
+              maxTilt={4.5}
+              sheenSize={440}
+              className="group bg-white dark:bg-[#0F1E35] rounded-3xl border border-[#16345F]/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-shadow duration-300 flex flex-col justify-between p-8 sm:p-10 space-y-8"
             >
-              <div className="space-y-6">
+              <div className="relative z-10 space-y-6">
                 <div className="flex items-center justify-between gap-4">
                   <div className="size-14 rounded-2xl bg-[#16345F]/5 dark:bg-white/5 flex items-center justify-center text-[#16345F] dark:text-[#9BB8E0] group-hover:bg-[#C01072] group-hover:text-white transition-colors duration-300">
                     <Icon className="size-7" />
@@ -183,7 +186,7 @@ export function ServicesDirectoryView() {
                   {lang === "en" ? "Book · $67" : "Agendar · $67"}
                 </a>
               </div>
-            </article>
+            </TiltGlassCard>
           );
         })}
       </div>

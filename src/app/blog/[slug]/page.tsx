@@ -12,6 +12,7 @@ import { PostCard } from "@/components/blog/post-card";
 import { PostContent } from "@/components/blog/post-content";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { ContextualBlogCta } from "@/components/blog/contextual-blog-cta";
+import { ReadingProgressBar } from "@/components/ui/micro-interactions";
 import { getPostBySlug, getRelatedPosts } from "@/lib/blog/queries";
 import { formatPostDate } from "@/lib/blog/utils";
 
@@ -195,6 +196,7 @@ function ArticleSkeleton() {
 export default function BlogPostPage({ params }: PageProps<"/blog/[slug]">) {
   return (
     <main className="pb-8">
+      <ReadingProgressBar />
       <Suspense fallback={<ArticleSkeleton />}>
         <Article params={params} />
       </Suspense>

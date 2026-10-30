@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Star, ShieldCheck, CheckCircle, ExternalLink, ChevronLeft, ChevronRight, Award, MapPin } from "lucide-react";
 import { FIGMA_REVIEWS } from "@/data/home-data";
+import { AnimatedCounter } from "@/components/ui/micro-interactions";
 
 interface SocialProofReviewsProps {
   lang: "en" | "es";
@@ -67,7 +68,10 @@ export function SocialProofReviews({ lang }: SocialProofReviewsProps) {
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-400">
             <span className="flex text-amber-500">★★★★★</span>
-            <span>4.8 / 5.0 Google Reviews (53+ Verified Expat Clients)</span>
+            <span>
+              <AnimatedCounter value={4.8} decimals={1} /> / 5.0 Google Reviews (
+              <AnimatedCounter value={53} suffix="+" /> Verified Expat Clients)
+            </span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-black text-[#16345F] dark:text-white">
@@ -91,9 +95,13 @@ export function SocialProofReviews({ lang }: SocialProofReviewsProps) {
               <CheckCircle className="size-3.5 text-[#34D399]" />
             </div>
             <div className="flex items-center gap-1 text-xs text-amber-500 font-bold">
-              <span>4.8</span>
+              <span>
+                <AnimatedCounter value={4.8} decimals={1} />
+              </span>
               <span>★★★★★</span>
-              <span className="text-[#706F6F] dark:text-gray-400 font-normal">(53 reviews)</span>
+              <span className="text-[#706F6F] dark:text-gray-400 font-normal">
+                (<AnimatedCounter value={53} /> reviews)
+              </span>
             </div>
             <a
               href="https://maps.google.com/?q=Capital+M+Law+Medellin"

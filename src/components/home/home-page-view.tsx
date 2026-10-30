@@ -37,6 +37,10 @@ import {
   CorporateNavLink,
   ServiceLearnMoreLink,
 } from "@/components/transitions/page-transition-provider";
+import {
+  AnimatedCounter,
+  TiltGlassCard,
+} from "@/components/ui/micro-interactions";
 import type { AttorneyBio } from "@/types/team";
 import type { LifeMoment } from "@/types/life";
 
@@ -584,6 +588,57 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
           </div>
 
         </div>
+
+        {/* 3.5 METRICAS Y ESTADÍSTICAS CLAVE DE LA FIRMA (ANIMATED NUMBER COUNT-UP) */}
+        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="rounded-2xl bg-white dark:bg-[#0F223D] border border-gray-200 dark:border-white/10 p-5 shadow-xs text-left">
+            <p className="text-3xl sm:text-4xl font-black text-[#C01072] dark:text-[#F472B6]">
+              <AnimatedCounter value={8} suffix="+" />
+            </p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#16345F] dark:text-white">
+              {lang === "es" ? "Años de Experiencia" : "Years of Experience"}
+            </p>
+            <p className="mt-0.5 text-[11px] text-[#706F6F] dark:text-gray-400">
+              {lang === "es" ? "Derecho Migratorio e Inmobiliario" : "Colombian Expat & Corporate Law"}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white dark:bg-[#0F223D] border border-gray-200 dark:border-white/10 p-5 shadow-xs text-left">
+            <p className="text-3xl sm:text-4xl font-black text-[#16345F] dark:text-white">
+              <AnimatedCounter value={53} suffix="+" />
+            </p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#C01072] dark:text-[#F472B6]">
+              {lang === "es" ? "Casos 5★ Verificados" : "Verified 5★ Client Cases"}
+            </p>
+            <p className="mt-0.5 text-[11px] text-[#706F6F] dark:text-gray-400">
+              {lang === "es" ? "Expatriados e inversionistas" : "Google Maps verified reviews"}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white dark:bg-[#0F223D] border border-gray-200 dark:border-white/10 p-5 shadow-xs text-left">
+            <p className="text-3xl sm:text-4xl font-black text-[#00AA81]">
+              <AnimatedCounter value={20} suffix={lang === "es" ? " Años" : " Yrs"} />
+            </p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#16345F] dark:text-white">
+              {lang === "es" ? "Estudio de Títulos" : "Title Due Diligence"}
+            </p>
+            <p className="mt-0.5 text-[11px] text-[#706F6F] dark:text-gray-400">
+              {lang === "es" ? "Auditoría histórica inmobiliaria" : "Historical property lien audit"}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white dark:bg-[#0F223D] border border-gray-200 dark:border-white/10 p-5 shadow-xs text-left">
+            <p className="text-3xl sm:text-4xl font-black text-[#16345F] dark:text-[#9BB8E0]">
+              <AnimatedCounter value={100} suffix="%" />
+            </p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#C01072] dark:text-[#F472B6]">
+              {lang === "es" ? "Representación Bilingüe" : "Bilingual Counsel"}
+            </p>
+            <p className="mt-0.5 text-[11px] text-[#706F6F] dark:text-gray-400">
+              {lang === "es" ? "Inglés y Español sin intermediarios" : "Direct English & Spanish attorneys"}
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* 4. SERVICIOS INTERACTIVOS */}
@@ -595,27 +650,37 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               const active = activeService.id === s.id;
               const displayName = lang === "es" ? s.nameEs : s.name;
               return (
-                <button
+                <TiltGlassCard
                   key={s.id}
-                  onClick={() => setActiveService(s)}
-                  className={`w-full py-5 px-3 flex items-center justify-between text-left transition cursor-pointer group ${
-                    active 
-                      ? "bg-gray-50/80 dark:bg-white/5 font-bold" 
-                      : "hover:bg-gray-50/40 dark:hover:bg-white/5 font-medium"
-                  }`}
+                  maxTilt={3.5}
+                  sheenSize={280}
+                  className="rounded-2xl"
                 >
-                  <span className="text-lg sm:text-xl text-[#16345F] dark:text-white">{displayName}</span>
-                  <ChevronRight
-                    className="w-6 h-6 transition-transform group-hover:translate-x-1"
-                    style={{ color: active ? "#C01072" : s.arrowColor }}
-                  />
-                </button>
+                  <button
+                    onClick={() => setActiveService(s)}
+                    className={`relative z-10 w-full py-5 px-3 flex items-center justify-between text-left transition cursor-pointer group ${
+                      active 
+                        ? "bg-gray-50/80 dark:bg-white/5 font-bold" 
+                        : "hover:bg-gray-50/40 dark:hover:bg-white/5 font-medium"
+                    }`}
+                  >
+                    <span className="text-lg sm:text-xl text-[#16345F] dark:text-white">{displayName}</span>
+                    <ChevronRight
+                      className="w-6 h-6 transition-transform group-hover:translate-x-1"
+                      style={{ color: active ? "#C01072" : s.arrowColor }}
+                    />
+                  </button>
+                </TiltGlassCard>
               );
             })}
           </div>
 
-          <div className="lg:col-span-7 bg-white dark:bg-[#0F223D] rounded-3xl p-8 sm:p-10 border border-gray-200 dark:border-white/10 shadow-sm space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 dark:border-white/10 pb-4">
+          <TiltGlassCard
+            maxTilt={4}
+            sheenSize={460}
+            className="lg:col-span-7 bg-white dark:bg-[#0F223D] rounded-3xl p-8 sm:p-10 border border-gray-200 dark:border-white/10 shadow-sm space-y-6"
+          >
+            <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 dark:border-white/10 pb-4">
               <div>
                 <h3 className="text-2xl sm:text-3xl font-black text-[#16345F] dark:text-white">
                   {lang === "es" ? activeService.titleEs : activeService.title}
@@ -670,7 +735,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
                 {lang === "es" ? "Conoce más →" : "Learn more →"}
               </ServiceLearnMoreLink>
             </div>
-          </div>
+          </TiltGlassCard>
 
         </div>
       </section>
