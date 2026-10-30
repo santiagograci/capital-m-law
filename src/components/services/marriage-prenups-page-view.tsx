@@ -26,8 +26,10 @@ import {
   ExternalLink,
   ShieldAlert,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { submitWeb3ContactForm } from "@/lib/web3forms";
 
 export const CALENDLY_URL = "https://calendly.com/capital-m-law-";
 export const WHATSAPP_URL = "https://wa.me/573146022411";
@@ -40,6 +42,8 @@ export function MarriagePrenupsPageView() {
 
   // Form state
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     contact: "",
@@ -47,9 +51,29 @@ export function MarriagePrenupsPageView() {
     situation: "",
   });
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSubmitted(true);
+    setFormSubmitting(true);
+    setFormError(null);
+    const isEmail = formData.contact.includes("@");
+    const result = await submitWeb3ContactForm({
+      name: formData.name,
+      email: isEmail ? formData.contact : "info@capitaleme.com",
+      phone: isEmail ? "" : formData.contact,
+      service: `Marriage & Prenups (${formData.service})`,
+      message: `${formData.situation}\n\nContacto proporcionado: ${formData.contact}`,
+    });
+    setFormSubmitting(false);
+    if (result.success) {
+      setFormSubmitted(true);
+      setFormData({ name: "", contact: "", service: "marriage", situation: "" });
+    } else {
+      setFormError(
+        lang === "es"
+          ? "No se pudo enviar el mensaje. Por favor intenta contactarnos directamente por WhatsApp."
+          : "Could not send your message. Please try contacting us directly via WhatsApp."
+      );
+    }
   };
 
   const DIAGNOSTIC_CARDS = [
@@ -789,12 +813,28 @@ export function MarriagePrenupsPageView() {
                 />
               </div>
 
+              {formError && (
+                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-600 dark:text-red-400">
+                  {formError}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full bg-[#16345F] hover:bg-[#C01072] text-white font-bold text-xs sm:text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                disabled={formSubmitting}
+                className="w-full bg-[#16345F] hover:bg-[#C01072] disabled:opacity-60 text-white font-bold text-xs sm:text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Send className="size-4" />
-                <span>{lang === "en" ? "Submit Confidential Inquiry" : "Enviar Consulta Confidencial"}</span>
+                {formSubmitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>{lang === "en" ? "Sending..." : "Enviando..."}</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="size-4" />
+                    <span>{lang === "en" ? "Submit Confidential Inquiry" : "Enviar Consulta Confidencial"}</span>
+                  </>
+                )}
               </button>
             </form>
           )}

@@ -28,7 +28,10 @@ import {
   Sun,
   Moon,
   Globe,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
+import { WEB3FORMS_ACCESS_KEY } from "@/lib/web3forms";
 import { HomeBlogSection } from "@/components/home/home-blog-section";
 import { BookingPaymentModal, CALENDLY_URL } from "@/components/home/booking-payment-modal";
 import { SocialProofReviews } from "@/components/home/social-proof-reviews";
@@ -63,6 +66,64 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
   const [selectedIntent, setSelectedIntent] = useState("visa");
   const [selectedServiceForm, setSelectedServiceForm] = useState(CONTENT.en.form.matters[0]);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPhone, setFormPhone] = useState("");
+  const [formMessage, setFormMessage] = useState("");
+  const [formTerms, setFormTerms] = useState(false);
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormSubmitting(true);
+    setFormError(null);
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `Nueva Consulta Web: ${selectedServiceForm || "General"} - ${formName}`,
+          from_name: "Web Capital M Law",
+          name: formName,
+          email: formEmail,
+          phone: formPhone,
+          service: selectedServiceForm,
+          message: formMessage,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data?.success === true) {
+        setFormSubmitted(true);
+        setFormName("");
+        setFormEmail("");
+        setFormPhone("");
+        setFormMessage("");
+        setFormTerms(false);
+      } else {
+        setFormError(
+          lang === "es"
+            ? "No se pudo enviar el mensaje. Por favor intenta contactarnos directamente por WhatsApp."
+            : "Could not send your message. Please try contacting us directly via WhatsApp."
+        );
+      }
+    } catch {
+      setFormError(
+        lang === "es"
+          ? "No se pudo enviar el mensaje. Por favor intenta contactarnos directamente por WhatsApp."
+          : "Could not send your message. Please try contacting us directly via WhatsApp."
+      );
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
 
   // Dynamic state for Team & Life (initialized from server with client refresh)
   const [teamData, setTeamData] = useState<AttorneyBio[]>(initialTeam ?? []);
@@ -534,33 +595,62 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               </div>
 
               {formSubmitted ? (
-                <div className="p-6 bg-white/20 rounded-2xl text-center space-y-2">
-                  <CheckCircle2 className="w-10 h-10 mx-auto text-[#9BB8E0]" />
-                  <h3 className="font-bold text-lg">{t.form.successTitle}</h3>
+                <div className="p-6 bg-white/20 rounded-2xl text-center space-y-3">
+                  <CheckCircle2 className="w-10 h-10 mx-auto text-[#00AA81]" />
+                  <h3 className="font-bold text-lg">
+                    ¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.
+                  </h3>
                   <p className="text-xs text-white/90">{t.form.successDesc}</p>
+                  <button
+                    type="button"
+                    onClick={() => setFormSubmitted(false)}
+                    className="mt-2 inline-block rounded-xl bg-white/15 hover:bg-white/25 px-4 py-2 text-xs font-semibold text-white transition cursor-pointer"
+                  >
+                    {lang === "es" ? "Enviar otra consulta" : "Send another inquiry"}
+                  </button>
                 </div>
               ) : (
-                <form onSubmit={(e) => { e.preventDefault(); setFormSubmitted(true); }} className="space-y-3.5">
+                <form onSubmit={handleContactSubmit} className="space-y-3.5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
                       required
                       type="text"
+                      name="name"
+                      value={formName}
+                      onChange={(e) => setFormName(e.target.value)}
                       placeholder={t.form.namePlaceholder}
                       className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/90 text-gray-800 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#9BB8E0]"
                     />
                     <input
                       required
                       type="email"
+                      name="email"
+                      value={formEmail}
+                      onChange={(e) => setFormEmail(e.target.value)}
                       placeholder={t.form.emailPlaceholder}
                       className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/90 text-gray-800 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#9BB8E0]"
                     />
                   </div>
+
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formPhone}
+                    onChange={(e) => setFormPhone(e.target.value)}
+                    placeholder={
+                      lang === "es"
+                        ? "Tu número de teléfono / WhatsApp (opcional)"
+                        : "Your phone / WhatsApp number (optional)"
+                    }
+                    className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/90 text-gray-800 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#9BB8E0]"
+                  />
 
                   <div>
                     <label className="block text-[11px] font-semibold text-white/80 mb-1">
                       {t.form.matterLabel}
                     </label>
                     <select
+                      name="service"
                       value={selectedServiceForm}
                       onChange={(e) => setSelectedServiceForm(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/90 text-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#9BB8E0]"
@@ -574,9 +664,22 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
                   <textarea
                     required
                     rows={3}
+                    name="message"
+                    value={formMessage}
+                    onChange={(e) => setFormMessage(e.target.value)}
                     placeholder={t.form.msgPlaceholder}
                     className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/90 text-gray-800 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#9BB8E0]"
                   />
+
+                  {formError && (
+                    <div
+                      role="alert"
+                      className="p-3 rounded-xl bg-red-500/20 border border-red-400/40 text-xs text-white flex items-start gap-2"
+                    >
+                      <AlertCircle className="w-4 h-4 text-red-300 shrink-0 mt-0.5" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
 
                   <div className="p-2.5 rounded-xl bg-white/10 text-[11px] text-white/90 flex items-center gap-2">
                     <Lock className="w-3.5 h-3.5 text-[#9BB8E0] shrink-0" />
@@ -584,15 +687,31 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
                   </div>
 
                   <label className="flex items-center gap-2 text-xs text-white/90 cursor-pointer">
-                    <input type="checkbox" required className="w-4 h-4 rounded text-[#C01072]" />
+                    <input
+                      type="checkbox"
+                      required
+                      checked={formTerms}
+                      onChange={(e) => setFormTerms(e.target.checked)}
+                      className="w-4 h-4 rounded text-[#C01072]"
+                    />
                     <span>{t.form.termsLabel}</span>
                   </label>
 
                   <button
                     type="submit"
-                    className="w-full bg-white text-[#16345F] hover:bg-[#C01072] hover:text-white font-bold py-3.5 rounded-xl text-xs shadow-md transition cursor-pointer"
+                    disabled={formSubmitting}
+                    className="w-full bg-white text-[#16345F] hover:bg-[#C01072] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed font-bold py-3.5 rounded-xl text-xs shadow-md transition cursor-pointer inline-flex items-center justify-center gap-2"
                   >
-                    {t.form.submitBtn}
+                    {formSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>
+                          {lang === "es" ? "Enviando consulta..." : "Sending inquiry..."}
+                        </span>
+                      </>
+                    ) : (
+                      <span>{t.form.submitBtn}</span>
+                    )}
                   </button>
 
                   <div className="text-center text-[10px] text-white/70 font-semibold uppercase tracking-wider">{t.form.orText}</div>
