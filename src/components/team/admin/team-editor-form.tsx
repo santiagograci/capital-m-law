@@ -36,12 +36,42 @@ export function TeamEditorForm({ member }: TeamEditorFormProps) {
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=85"
   );
   const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewFileUrl(objectUrl);
+    if (!file) return;
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewFileUrl(objectUrl);
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || `Error en la subida (${res.status})`);
+      }
+
+      const data = (await res.json()) as { url: string };
+      if (data?.url) {
+        setImageUrl(data.url);
+        setPreviewFileUrl(data.url);
+      }
+    } catch (err) {
+      console.error("[team-editor-form] Error al subir imagen:", err);
+      setUploadError(err instanceof Error ? err.message : "Error al subir la imagen.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -118,17 +148,36 @@ export function TeamEditorForm({ member }: TeamEditorFormProps) {
               <label className="block text-xs font-bold text-[#16345F] dark:text-gray-300">
                 Subir Archivo de Imagen (PC):
               </label>
-              <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-[#16345F]/20 dark:border-white/20 p-3 text-xs font-semibold text-[#16345F] dark:text-gray-200 hover:bg-[#16345F]/5 dark:hover:bg-white/5 cursor-pointer transition">
-                <Upload className="size-4 text-[#C01072]" />
-                <span>Seleccionar Imagen local...</span>
+              <label
+                className={cn(
+                  "flex items-center justify-center gap-2 rounded-xl border border-dashed border-[#16345F]/20 dark:border-white/20 p-3 text-xs font-semibold text-[#16345F] dark:text-gray-200 hover:bg-[#16345F]/5 dark:hover:bg-white/5 cursor-pointer transition",
+                  uploading && "opacity-60 pointer-events-none"
+                )}
+              >
+                {uploading ? (
+                  <>
+                    <LoaderCircle className="size-4 animate-spin text-[#C01072]" />
+                    <span className="text-[#C01072]">Subiendo imagen...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="size-4 text-[#C01072]" />
+                    <span>Seleccionar Imagen local...</span>
+                  </>
+                )}
                 <input
                   type="file"
-                  name="imageFile"
                   accept="image/jpeg,image/png,image/webp,image/avif"
+                  disabled={uploading}
                   onChange={handleFileChange}
                   className="hidden"
                 />
               </label>
+              {uploadError && (
+                <p className="text-[11px] font-semibold text-rose-600 dark:text-rose-400">
+                  ⚠️ {uploadError}
+                </p>
+              )}
             </div>
 
             {/* Or URL */}
@@ -137,11 +186,11 @@ export function TeamEditorForm({ member }: TeamEditorFormProps) {
                 O URL de imagen externa:
               </label>
               <input
-                type="url"
+                type="text"
                 name="imageUrl"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
+                placeholder="https://... o /images/..."
                 className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0A1526] px-3.5 py-2 text-xs text-[#16345F] dark:text-white outline-none focus:border-[#C01072]"
               />
             </div>

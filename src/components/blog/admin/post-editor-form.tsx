@@ -78,9 +78,47 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
   const [tab, setTab] = useState<"write" | "preview">("write");
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [handledState, setHandledState] = useState(state);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadCoverError, setUploadCoverError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleCoverFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFilePreview(URL.createObjectURL(file));
+    setUploadingCover(true);
+    setUploadCoverError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || `Upload error (${res.status})`);
+      }
+
+      const data = (await res.json()) as { url: string };
+      if (data?.url) {
+        set("coverUrl", data.url);
+        set("coverMode", "url");
+        setFilePreview(data.url);
+      }
+    } catch (err) {
+      console.error("[post-editor-form] Error al subir cover:", err);
+      setUploadCoverError(err instanceof Error ? err.message : "Error al subir la imagen.");
+    } finally {
+      setUploadingCover(false);
+    }
+  };
 
   // Reset after a successful *create* (React "adjust state on prop change" pattern).
   if (state !== handledState) {
@@ -360,10 +398,10 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
           {values.coverMode === "url" && (
             <input
               name="coverUrl"
-              type="url"
+              type="text"
               value={values.coverUrl}
               onChange={(e) => set("coverUrl", e.target.value)}
-              placeholder="https://images.unsplash.com/…"
+              placeholder="https://images.unsplash.com/… o /images/…"
               className={cn(inputCls, "h-11 text-xs")}
             />
           )}
@@ -373,25 +411,34 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
             className={cn(
               "flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-[#9BB8E0] p-5 text-center text-xs text-[#706F6F] transition hover:bg-[#9BB8E0]/10",
               values.coverMode !== "upload" && "hidden",
+              uploadingCover && "opacity-60 pointer-events-none"
             )}
           >
-            <ImagePlus className="size-6 text-[#16345F] dark:text-[#9BB8E0]" />
+            {uploadingCover ? (
+              <LoaderCircle className="size-6 animate-spin text-[#C01072]" />
+            ) : (
+              <ImagePlus className="size-6 text-[#16345F] dark:text-[#9BB8E0]" />
+            )}
             <span>
-              <span className="font-semibold text-[#16345F] dark:text-white">Choose image</span> · JPG, PNG, WEBP · max 5 MB
+              {uploadingCover ? (
+                <span className="font-semibold text-[#C01072]">Subiendo imagen...</span>
+              ) : (
+                <>
+                  <span className="font-semibold text-[#16345F] dark:text-white">Choose image</span> · JPG, PNG, WEBP · max 10 MB
+                </>
+              )}
             </span>
             <input
               ref={fileRef}
               type="file"
-              name="coverFile"
+              disabled={uploadingCover}
               accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
               className="sr-only"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                setFilePreview(f ? URL.createObjectURL(f) : null);
-              }}
+              onChange={handleCoverFileChange}
             />
           </label>
 
+          {uploadCoverError && <p className="text-xs font-medium text-[#C01072]">⚠️ {uploadCoverError}</p>}
           {errors.cover && <p className="text-xs font-medium text-[#C01072]">{errors.cover}</p>}
 
           {currentCover && (
