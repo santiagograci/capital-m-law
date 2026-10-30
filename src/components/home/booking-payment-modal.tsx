@@ -29,6 +29,7 @@ interface BookingModalProps {
 }
 
 export const CALENDLY_URL = "https://calendly.com/capital-m-law-";
+export const BOLD_CHECKOUT_URL = "https://checkout.bold.co/payment/LNK_JTIV4A6HM0";
 
 const AVAILABLE_TIMES = [
   "09:00 AM COT",
@@ -225,14 +226,25 @@ export function BookingPaymentModal({
                       : "Official fee: $67 USD · Fully credited toward your final legal retainer"}
                   </span>
                 </div>
-                <a
-                  href={CALENDLY_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#C01072] hover:bg-[#A50E62] text-white font-bold text-center transition"
-                >
-                  {lang === "es" ? "Abrir en pantalla completa →" : "Open in full window →"}
-                </a>
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <a
+                    href={BOLD_CHECKOUT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#16345F] hover:bg-[#C01072] text-white font-bold text-center transition inline-flex items-center justify-center gap-1.5"
+                  >
+                    <CreditCard className="size-3.5" />
+                    <span>{lang === "es" ? "Pagar Consulta (Bold)" : "Pay Consultation"}</span>
+                  </a>
+                  <a
+                    href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#C01072] hover:bg-[#A50E62] text-white font-bold text-center transition"
+                  >
+                    {lang === "es" ? "Abrir en pantalla completa →" : "Open in full window →"}
+                  </a>
+                </div>
               </div>
             </div>
           ) : (
@@ -356,18 +368,22 @@ export function BookingPaymentModal({
                   </div>
 
                   {/* Actions */}
-                  <div className="pt-2 flex items-center justify-between border-t border-gray-100 dark:border-white/10">
+                  <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 dark:border-white/10">
                     <div className="text-xs text-gray-500">
                       <span className="font-bold text-[#16345F] dark:text-white">$67 USD</span>{" "}
                       {lang === "es" ? "por sesión de 45 min" : "for 45-min session"}
                     </div>
-                    <button
-                      type="submit"
-                      className="px-6 py-3 rounded-xl bg-[#C01072] hover:bg-[#A50E62] text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-md"
-                    >
-                      <span>{lang === "es" ? "Continuar al Pago ($67)" : "Proceed to Payment ($67)"}</span>
-                      <ArrowRight className="size-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={BOLD_CHECKOUT_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 rounded-xl bg-[#C01072] hover:bg-[#A50E62] text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-md"
+                      >
+                        <span>{lang === "es" ? "Pagar Consulta ($67)" : "Pay Consultation ($67)"}</span>
+                        <ArrowRight className="size-4" />
+                      </a>
+                    </div>
                   </div>
                 </form>
               )}
@@ -511,24 +527,16 @@ export function BookingPaymentModal({
                     >
                       {lang === "es" ? "Regresar" : "Back"}
                     </button>
-                    <button
-                      type="button"
-                      disabled={isProcessing}
-                      onClick={handleConfirmBookingAndPay}
-                      className="px-8 py-3 rounded-xl bg-[#16345F] hover:bg-[#C01072] text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                    <a
+                      href={BOLD_CHECKOUT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-8 py-3 rounded-xl bg-[#16345F] hover:bg-[#C01072] text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-md"
                     >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin" />
-                          <span>{lang === "es" ? "Procesando $67..." : "Processing $67..."}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="size-3.5" />
-                          <span>{lang === "es" ? "Confirmar y Pagar $67 USD" : "Confirm & Pay $67 USD"}</span>
-                        </>
-                      )}
-                    </button>
+                      <Lock className="size-3.5" />
+                      <span>{lang === "es" ? "Pagar Consulta ($67 USD)" : "Pay Consultation ($67 USD)"}</span>
+                      <ExternalLink className="size-3.5" />
+                    </a>
                   </div>
                 </div>
               )}

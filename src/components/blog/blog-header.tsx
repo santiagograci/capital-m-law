@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Moon, Sun } from "lucide-react";
+import { Calendar, CreditCard, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CorporateNavLink } from "@/components/transitions/page-transition-provider";
 
@@ -115,6 +115,15 @@ export function BlogHeader() {
           >
             {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
+          <a
+            href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-[#16345F]/20 dark:border-white/20 px-3.5 py-2.5 text-xs font-semibold text-[#16345F] dark:text-white transition hover:border-[#C01072] hover:bg-[#C01072] hover:text-white"
+          >
+            <CreditCard className="size-3.5" />
+            <span>Pay Consultation</span>
+          </a>
           <a
             href="https://calendly.com/capital-m-law-"
             target="_blank"

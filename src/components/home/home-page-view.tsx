@@ -401,7 +401,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" /> {t.topBar.whatsapp}
             </a>
             <a
-              href="https://calendly.com/capital-m-law-"
+              href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 hover:underline font-bold text-[#16345F] dark:text-white"
@@ -494,6 +494,15 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
           </div>
 
           <div className="hidden md:flex justify-self-end items-center gap-2">
+            <a
+              href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border border-[#16345F]/20 dark:border-white/20 hover:border-[#C01072] hover:bg-[#C01072] hover:text-white text-[#16345F] dark:text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition inline-flex items-center gap-1.5"
+            >
+              <Lock className="w-3.5 h-3.5 text-[#C01072] group-hover:text-white" />
+              <span>{lang === "es" ? "Pagar Consulta" : "Pay Consultation"}</span>
+            </a>
             <a
               href="https://calendly.com/capital-m-law-"
               target="_blank"
@@ -867,6 +876,15 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
                 <Calendar className="w-4 h-4 text-[#9BB8E0]" />
                 {lang === "es" ? activeService.ctaTextEs : activeService.ctaText} · $67
                 <ChevronRight className="w-4 h-4" />
+              </a>
+              <a
+                href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#C01072] hover:bg-[#A50E62] text-white font-bold text-sm px-5 py-3 rounded-xl transition shadow-md"
+              >
+                <Lock className="w-4 h-4" />
+                <span>{lang === "es" ? "Pagar Consulta" : "Pay Consultation"}</span>
               </a>
               <ServiceLearnMoreLink
                 href={activeService.slug ? `/services/${activeService.slug}` : `/services`}

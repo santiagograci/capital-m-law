@@ -54,10 +54,12 @@ export function NavbarGlass({ onOpenBooking }: NavbarGlassProps) {
               Direct WhatsApp: +57 314 602 2411
             </a>
             <a
-              href="#payment-portal"
+              href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden md:flex items-center gap-1 text-white/80 hover:text-white transition-colors"
             >
-              Client Portal / Pay Invoice
+              Pay Consultation / Make a Payment
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>

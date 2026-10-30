@@ -2,7 +2,7 @@
 
 import React, { type SVGProps } from "react";
 import Link from "next/link";
-import { Mail, Phone, MapPin, ExternalLink, Calendar } from "lucide-react";
+import { Mail, Phone, MapPin, ExternalLink, Calendar, CreditCard } from "lucide-react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -162,6 +162,17 @@ export function Footer({ lang = "en" }: FooterProps) {
                 >
                   <Calendar className="size-3" />
                   <span>{isEs ? "Agendar en Calendly ($67)" : "Book on Calendly ($67)"}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[#00AA81] hover:text-[#34D399] font-bold transition-colors"
+                >
+                  <CreditCard className="size-3" />
+                  <span>{isEs ? "Pagar Consulta (Bold)" : "Pay Consultation"}</span>
                 </a>
               </li>
             </ul>
