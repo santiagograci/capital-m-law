@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { SERVICES_CATALOG, ServiceDetail } from "@/data/services-catalog";
 import { cn } from "@/lib/utils";
+import { ServiceLearnMoreLink } from "@/components/transitions/page-transition-provider";
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   visas: Plane,
@@ -118,7 +119,7 @@ export function ServicesDirectoryView() {
 
                 <div className="space-y-2">
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-[#16345F] dark:text-white group-hover:text-[#C01072] dark:group-hover:text-[#F472B6] transition-colors">
-                    <Link href={`/services/${service.slug}`} className="after:absolute after:inset-0 after:content-['']">
+                    <Link href={`/services/${service.slug}`}>
                       {service.name[lang]}
                     </Link>
                   </h2>
@@ -163,13 +164,15 @@ export function ServicesDirectoryView() {
 
               {/* Action buttons (relocate z-index so links work) */}
               <div className="relative z-10 pt-4 border-t border-[#16345F]/10 dark:border-white/10 flex items-center justify-between gap-4">
-                <Link
+                <ServiceLearnMoreLink
                   href={`/services/${service.slug}`}
+                  serviceKey={service.category || service.slug}
+                  serviceTitle={service.name[lang]}
                   className="inline-flex items-center gap-1 text-sm font-bold text-[#16345F] dark:text-white group-hover:text-[#C01072] dark:group-hover:text-[#F472B6] transition-colors"
                 >
                   <span>{lang === "en" ? "Learn More" : "Saber más"}</span>
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                </Link>
+                </ServiceLearnMoreLink>
 
                 <a
                   href="https://calendly.com/capital-m-law-"

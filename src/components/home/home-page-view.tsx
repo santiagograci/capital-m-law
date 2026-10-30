@@ -33,6 +33,10 @@ import { HomeBlogSection } from "@/components/home/home-blog-section";
 import { BookingPaymentModal, CALENDLY_URL } from "@/components/home/booking-payment-modal";
 import { SocialProofReviews } from "@/components/home/social-proof-reviews";
 import { Footer } from "@/components/Footer";
+import {
+  CorporateNavLink,
+  ServiceLearnMoreLink,
+} from "@/components/transitions/page-transition-provider";
 import type { AttorneyBio } from "@/types/team";
 import type { LifeMoment } from "@/types/life";
 
@@ -377,9 +381,27 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
           <div className="col-span-2 md:col-span-1 justify-self-center mt-3 md:mt-0">
             <div className="flex items-center gap-5 sm:gap-7 bg-[#C01072] text-white px-7 sm:px-9 py-2.5 rounded-full font-medium text-xs sm:text-sm shadow-md">
               <a href="#about" className="hover:text-white/80 transition-colors">{t.nav.about}</a>
-              <a href="/services" className="hover:text-white/80 transition-colors">{t.nav.services}</a>
-              <a href="/blog" className="hover:text-white/80 transition-colors">Blog</a>
-              <a href="#contact" className="hover:text-white/80 transition-colors">{t.nav.contact}</a>
+              <CorporateNavLink
+                href="/services"
+                label={t.nav.services}
+                className="hover:text-white/80 transition-colors"
+              >
+                {t.nav.services}
+              </CorporateNavLink>
+              <CorporateNavLink
+                href="/blog"
+                label="Blog"
+                className="hover:text-white/80 transition-colors"
+              >
+                Blog
+              </CorporateNavLink>
+              <CorporateNavLink
+                href="#contact"
+                label={t.nav.contact}
+                className="hover:text-white/80 transition-colors"
+              >
+                {t.nav.contact}
+              </CorporateNavLink>
             </div>
           </div>
 
@@ -639,12 +661,14 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
                 {lang === "es" ? activeService.ctaTextEs : activeService.ctaText} · $67
                 <ChevronRight className="w-4 h-4" />
               </a>
-              <a
+              <ServiceLearnMoreLink
                 href={activeService.slug ? `/services/${activeService.slug}` : `/services`}
+                serviceKey={activeService.slug || activeService.id}
+                serviceTitle={lang === "es" ? activeService.titleEs : activeService.title}
                 className="inline-flex items-center gap-2 border border-[#16345F]/20 dark:border-white/20 hover:border-[#C01072] hover:text-[#C01072] dark:hover:text-[#F472B6] text-[#16345F] dark:text-white font-semibold text-sm px-5 py-3 rounded-xl transition"
               >
                 {lang === "es" ? "Conoce más →" : "Learn more →"}
-              </a>
+              </ServiceLearnMoreLink>
             </div>
           </div>
 

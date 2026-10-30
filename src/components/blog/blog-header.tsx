@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Calendar, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CorporateNavLink } from "@/components/transitions/page-transition-provider";
 
 function useThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -31,29 +32,50 @@ function NavLinks() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/#about", label: "About" },
-    { href: "/services", label: "Services", active: pathname?.startsWith("/services") ?? false },
-    { href: "/blog", label: "Blog", active: pathname?.startsWith("/blog") ?? false },
-    { href: "/#contact", label: "Contact" },
+    { href: "/#about", label: "About", useCorporateTransition: false },
+    {
+      href: "/services",
+      label: "Services",
+      active: pathname?.startsWith("/services") ?? false,
+      useCorporateTransition: true,
+    },
+    {
+      href: "/blog",
+      label: "Blog",
+      active: pathname?.startsWith("/blog") ?? false,
+      useCorporateTransition: true,
+    },
+    { href: "/#contact", label: "Contact", useCorporateTransition: true },
   ];
 
   return (
-    <ul className="hidden items-center gap-1 md:flex">
-      {links.map((l) => (
-        <li key={l.href}>
-          <Link
-            href={l.href}
-            className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              l.active
-                ? "text-[#C01072] font-semibold dark:text-[#F472B6]"
-                : "text-[#706F6F] hover:text-[#16345F] dark:text-gray-300 dark:hover:text-white",
+    <ul className="flex items-center gap-0.5 sm:gap-1">
+      {links.map((l) => {
+        const linkClasses = cn(
+          "rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-colors",
+          l.active
+            ? "text-[#C01072] font-semibold dark:text-[#F472B6]"
+            : "text-[#706F6F] hover:text-[#16345F] dark:text-gray-300 dark:hover:text-white"
+        );
+
+        return (
+          <li key={l.href}>
+            {l.useCorporateTransition ? (
+              <CorporateNavLink
+                href={l.href}
+                label={l.label}
+                className={linkClasses}
+              >
+                {l.label}
+              </CorporateNavLink>
+            ) : (
+              <Link href={l.href} className={linkClasses}>
+                {l.label}
+              </Link>
             )}
-          >
-            {l.label}
-          </Link>
-        </li>
-      ))}
+          </li>
+        );
+      })}
     </ul>
   );
 }
