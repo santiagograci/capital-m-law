@@ -394,8 +394,8 @@ export function WillsTrustsPageView() {
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-[#00AA81]/15 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-[#16345F]/10 blur-3xl" />
 
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
-          <div className="flex flex-wrap justify-center items-center gap-2">
+        <div className="relative z-10 max-w-4xl space-y-6">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Mint Green #00AA81 over Navy #16345F badge */}
             <span className="rounded-full bg-[#16345F] text-[#00AA81] border border-[#00AA81]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider shadow-xs">
               Estate Planning & Asset Protection
@@ -407,20 +407,20 @@ export function WillsTrustsPageView() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1] text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1]">
             {lang === "en"
               ? "Prepare Your Legacy for the Future and Protect What Matters Most"
               : "Prepara tu patrimonio para el futuro y protege a quienes más amas"}
           </h1>
 
-          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl mx-auto text-center">
+          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl">
             {lang === "en"
               ? "Transparent, forward-thinking estate planning in Colombia to safeguard your assets and ensure your exact wishes are honored."
               : "Estructuración legal anticipada, transparente y sin burocracia para proteger tus activos en Colombia y garantizar que tu voluntad se cumpla punto por punto."}
           </p>
 
           {/* Service Overview Description */}
-          <div className="space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed border-t border-[#16345F]/10 dark:border-white/10 pt-4 max-w-3xl mx-auto text-center">
+          <div className="space-y-4 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed border-t border-[#16345F]/10 dark:border-white/10 pt-4 max-w-3xl">
             {lang === "en" ? (
               <>
                 <p className="font-semibold text-[#16345F] dark:text-white">
@@ -443,7 +443,7 @@ export function WillsTrustsPageView() {
           </div>
 
           {/* Quick CTAs in Hero */}
-          <div className="pt-4 flex justify-center items-center gap-4 flex-wrap w-full">
+          <div className="pt-4 flex flex-wrap items-center gap-4">
             <a
               href={CALENDLY_URL}
               target="_blank"

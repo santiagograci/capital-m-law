@@ -255,8 +255,8 @@ export function LabourLawPageView() {
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-[#16345F]/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-[#C01072]/10 blur-3xl" />
 
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
-          <div className="flex flex-wrap justify-center items-center gap-2">
+        <div className="relative z-10 max-w-4xl space-y-6">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-[#16345F]/10 dark:bg-white/10 text-[#16345F] dark:text-[#9BB8E0] px-3.5 py-1 text-xs font-bold uppercase tracking-wider">
               Labour Law & Employment
             </span>
@@ -267,19 +267,19 @@ export function LabourLawPageView() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1] text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1]">
             {lang === "en"
               ? "Strategic Employment Law: Hire Talent in Colombia with Total Legal Confidence"
               : "Gestión laboral estratégica: Contrata talento en Colombia con seguridad jurídica"}
           </h1>
 
-          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl mx-auto text-center">
+          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl">
             {lang === "en"
               ? "Balancing business agility and local labor compliance. Customized employment contracts, RIT, terminations, and statutory severance under Colombian law."
               : "Contratación equilibrada y cumplimiento riguroso de la legislación local. Redacción de contratos blindados, Reglamentos Internos de Trabajo (RIT), liquidaciones y debido proceso disciplinario."}
           </p>
 
-          <div className="pt-4 flex justify-center items-center gap-4 flex-wrap w-full">
+          <div className="pt-4 flex flex-wrap items-center gap-4">
             <a
               href={CALENDLY_URL}
               target="_blank"

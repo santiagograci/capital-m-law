@@ -1,9 +1,12 @@
 import { TeamExecutiveView } from "@/components/team/team-executive-view";
+import { getActiveTeamMembers } from "@/lib/team/queries";
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const members = await getActiveTeamMembers();
+
   return (
     <main>
-      <TeamExecutiveView />
+      <TeamExecutiveView initialMembers={members} />
     </main>
   );
 }

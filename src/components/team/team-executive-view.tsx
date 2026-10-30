@@ -20,10 +20,15 @@ import {
 import { ATTORNEYS, AttorneyBio } from "@/data/team-data";
 import { cn } from "@/lib/utils";
 
-export function TeamExecutiveView() {
+interface TeamExecutiveViewProps {
+  initialMembers?: AttorneyBio[];
+}
+
+export function TeamExecutiveView({ initialMembers }: TeamExecutiveViewProps) {
+  const attorneys = initialMembers && initialMembers.length > 0 ? initialMembers : ATTORNEYS;
   const [lang, setLang] = useState<"en" | "es">("en");
   const [expandedAttorney, setExpandedAttorney] = useState<string | null>(
-    ATTORNEYS[0].id
+    attorneys[0]?.id ?? null
   );
 
   return (
@@ -90,7 +95,7 @@ export function TeamExecutiveView() {
 
       {/* Attorney Profiles */}
       <div className="space-y-12">
-        {ATTORNEYS.map((attorney, idx) => {
+        {attorneys.map((attorney, idx) => {
           const isExpanded = expandedAttorney === attorney.id;
 
           return (

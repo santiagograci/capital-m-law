@@ -68,8 +68,8 @@ export function ServiceDetailView({ service }: ServiceDetailViewProps) {
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-[#9BB8E0]/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-[#C01072]/10 blur-3xl" />
 
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
-          <div className="flex flex-wrap justify-center items-center gap-2">
+        <div className="relative z-10 max-w-4xl space-y-6">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-[#C01072]/10 dark:bg-[#C01072]/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#C01072] dark:text-[#F472B6]">
               {service.shortBadge[lang]}
             </span>
@@ -79,48 +79,16 @@ export function ServiceDetailView({ service }: ServiceDetailViewProps) {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1] text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#16345F] dark:text-white leading-[1.1]">
             {service.heroHeadline[lang]}
           </h1>
 
-          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl mx-auto text-center">
+          <p className="text-base sm:text-lg text-[#706F6F] dark:text-gray-300 leading-relaxed max-w-3xl">
             {service.heroSubtitle[lang]}
           </p>
 
-          {/* Centered Hero CTAs */}
-          <div className="pt-2 flex justify-center items-center gap-4 flex-wrap w-full">
-            <a
-              href="https://calendly.com/capital-m-law-"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#C01072] hover:bg-[#A50E62] text-white font-bold text-sm px-7 py-3.5 rounded-2xl transition shadow-md hover:shadow-lg group"
-            >
-              <Calendar className="size-4" />
-              <span>
-                {lang === "en"
-                  ? `Book Consultation · ${service.consultationFee}`
-                  : `Agendar Asesoría · ${service.consultationFee}`}
-              </span>
-              <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
-            </a>
-
-            <a
-              href={`https://wa.me/573146022411?text=Hi%20Capital%20M!%20I'd%20like%20to%20inquire%20about%20your%20service:%20${encodeURIComponent(
-                service.name.en
-              )}.`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 border border-[#16345F]/15 dark:border-white/15 hover:bg-[#16345F]/5 dark:hover:bg-white/5 text-[#16345F] dark:text-white font-semibold text-sm px-6 py-3.5 rounded-2xl transition"
-            >
-              <MessageCircle className="size-4 text-emerald-600" />
-              <span>
-                {lang === "en" ? "Quick Question on WhatsApp" : "Pregunta Rápida por WhatsApp"}
-              </span>
-            </a>
-          </div>
-
           {/* Quick Metrics Bar */}
-          <div className="pt-6 w-full max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#16345F]/10 dark:border-white/10 text-left">
+          <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#16345F]/10 dark:border-white/10">
             <div className="flex items-center gap-3">
               <span className="size-10 rounded-xl bg-[#16345F]/5 dark:bg-white/5 flex items-center justify-center text-[#16345F] dark:text-[#9BB8E0]">
                 <Clock className="size-5" />
