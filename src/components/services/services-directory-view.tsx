@@ -33,6 +33,15 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "labour-law": Briefcase,
 };
 
+const ANCHOR_IDS: Record<string, string> = {
+  visas: "visas-immigration",
+  "real-estate": "real-estate",
+  marriage: "family-law",
+  sas: "commercial-law",
+  "wills-trusts": "tax-planning",
+  "labour-law": "labour-law",
+};
+
 export function ServicesDirectoryView() {
   const [lang, setLang] = useState<"en" | "es">("en");
 
@@ -102,14 +111,15 @@ export function ServicesDirectoryView() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {SERVICES_CATALOG.map((service) => {
           const Icon = ICONS[service.category] || ShieldCheck;
+          const anchorId = ANCHOR_IDS[service.category] || service.id;
 
           return (
-            <TiltGlassCard
-              key={service.id}
-              maxTilt={4.5}
-              sheenSize={440}
-              className="group bg-white dark:bg-[#0F1E35] rounded-3xl border border-[#16345F]/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-shadow duration-300 flex flex-col justify-between p-8 sm:p-10 space-y-8"
-            >
+            <div key={service.id} id={anchorId} className="scroll-mt-28">
+              <TiltGlassCard
+                maxTilt={4.5}
+                sheenSize={440}
+                className="h-full group bg-white dark:bg-[#0F1E35] rounded-3xl border border-[#16345F]/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-shadow duration-300 flex flex-col justify-between p-8 sm:p-10 space-y-8"
+              >
               <div className="relative z-10 space-y-6">
                 <div className="flex items-center justify-between gap-4">
                   <div className="size-14 rounded-2xl bg-[#16345F]/5 dark:bg-white/5 flex items-center justify-center text-[#16345F] dark:text-[#9BB8E0] group-hover:bg-[#C01072] group-hover:text-white transition-colors duration-300">
@@ -186,13 +196,17 @@ export function ServicesDirectoryView() {
                   {lang === "en" ? "Book · $67" : "Agendar · $67"}
                 </a>
               </div>
-            </TiltGlassCard>
+              </TiltGlassCard>
+            </div>
           );
         })}
       </div>
 
-      {/* Global Consultation Banner */}
-      <section className="legal-texture-bg relative overflow-hidden rounded-3xl bg-[#16345F] p-8 sm:p-12 text-white">
+      {/* General Consultation Banner */}
+      <section
+        id="general-legal-advice"
+        className="scroll-mt-28 legal-texture-bg relative overflow-hidden rounded-3xl bg-[#16345F] p-8 sm:p-12 text-white"
+      >
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="max-w-xl space-y-3">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[#9BB8E0]">

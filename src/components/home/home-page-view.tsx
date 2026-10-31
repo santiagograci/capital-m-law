@@ -43,6 +43,10 @@ import {
   ServiceLearnMoreLink,
 } from "@/components/transitions/page-transition-provider";
 import {
+  ServicesDropdown,
+  MobileNavMenu,
+} from "@/components/navigation/services-dropdown";
+import {
   AnimatedCounter,
   TiltGlassCard,
 } from "@/components/ui/micro-interactions";
@@ -473,16 +477,23 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
             </a>
           </div>
 
-          <div className="col-span-2 md:col-span-1 justify-self-center mt-3 md:mt-0">
+          <div className="justify-self-end md:hidden">
+            <MobileNavMenu
+              aboutHref="#about"
+              aboutLabel={t.nav.about}
+              servicesLabel={t.nav.services}
+              contactLabel={t.nav.contact}
+            />
+          </div>
+
+          <div className="hidden md:block md:col-span-1 justify-self-center">
             <div className="flex items-center gap-5 sm:gap-7 bg-[#C01072] text-white px-7 sm:px-9 py-2.5 rounded-full font-medium text-xs sm:text-sm shadow-md">
               <a href="#about" className="hover:text-white/80 transition-colors">{t.nav.about}</a>
-              <CorporateNavLink
-                href="/services"
+              <ServicesDropdown
                 label={t.nav.services}
-                className="hover:text-white/80 transition-colors"
-              >
-                {t.nav.services}
-              </CorporateNavLink>
+                triggerClassName="hover:text-white/80 font-medium text-xs sm:text-sm"
+                align="center"
+              />
               <CorporateNavLink
                 href="/blog"
                 label="Blog"

@@ -6,6 +6,10 @@ import { usePathname } from "next/navigation";
 import { Calendar, CreditCard, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CorporateNavLink } from "@/components/transitions/page-transition-provider";
+import {
+  ServicesDropdown,
+  MobileNavMenu,
+} from "@/components/navigation/services-dropdown";
 
 function useThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -54,7 +58,7 @@ function NavLinks() {
   ];
 
   return (
-    <ul className="flex items-center gap-0.5 sm:gap-1">
+    <ul className="hidden md:flex items-center gap-0.5 sm:gap-1">
       {links.map((l) => {
         const linkClasses = cn(
           "rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-colors",
@@ -62,6 +66,18 @@ function NavLinks() {
             ? "text-[#C01072] font-semibold dark:text-[#F472B6]"
             : "text-[#706F6F] hover:text-[#16345F] dark:text-gray-300 dark:hover:text-white"
         );
+
+        if (l.href === "/services") {
+          return (
+            <li key={l.href}>
+              <ServicesDropdown
+                label={l.label}
+                triggerClassName={linkClasses}
+                align="center"
+              />
+            </li>
+          );
+        }
 
         return (
           <li key={l.href}>
@@ -133,12 +149,13 @@ export function BlogHeader() {
             href="https://calendly.com/capital-m-law-"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#C01072] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(192,16,114,0.7)] transition hover:bg-[#A50E62]"
+            className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-[#C01072] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(192,16,114,0.7)] transition hover:bg-[#A50E62]"
           >
             <Calendar className="size-4" />
             <span className="hidden sm:inline">Book Consultation · $67</span>
             <span className="sm:hidden">Book · $67</span>
           </a>
+          <MobileNavMenu />
         </div>
       </nav>
     </header>
