@@ -2,15 +2,16 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
-  Scale,
   Plane,
   Building2,
   Heart,
   Landmark,
+  FileText,
   Briefcase,
-  Calculator,
   ArrowUpRight,
   Menu,
   X,
@@ -18,66 +19,20 @@ import {
   CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NAV_SERVICES, type NavServiceItem } from "@/data/navServices";
+import { usePageTransition } from "@/components/transitions/page-transition-provider";
 
-export interface DropdownServiceItem {
-  id: string;
-  title: string;
-  description: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-export const NAVBAR_SERVICES_LIST: DropdownServiceItem[] = [
-  {
-    id: "general-legal-advice",
-    title: "General Legal Advice",
-    description: "Comprehensive legal guidance for your business and personal needs.",
-    href: "/services#general-legal-advice",
-    icon: Scale,
-  },
-  {
-    id: "visas-immigration",
-    title: "Visas & Immigration",
-    description: "Colombian visa services and immigration assistance.",
-    href: "/services#visas-immigration",
-    icon: Plane,
-  },
-  {
-    id: "real-estate",
-    title: "Real Estate",
-    description: "Property purchase assistance and real estate legal services.",
-    href: "/services#real-estate",
-    icon: Building2,
-  },
-  {
-    id: "family-law",
-    title: "Family Law",
-    description: "Family law services and legal assistance.",
-    href: "/services#family-law",
-    icon: Heart,
-  },
-  {
-    id: "commercial-law",
-    title: "Commercial Law & Business Investment",
-    description: "Contracts, IP protection, and business investment opportunities.",
-    href: "/services#commercial-law",
-    icon: Landmark,
-  },
-  {
-    id: "labour-law",
-    title: "Labour Law",
-    description: "Hiring, firing, and managing employees in Colombia.",
-    href: "/services#labour-law",
-    icon: Briefcase,
-  },
-  {
-    id: "tax-planning",
-    title: "Tax Planning",
-    description: "Individual income tax planning and optimization.",
-    href: "/services#tax-planning",
-    icon: Calculator,
-  },
-];
+const SERVICE_ICONS: Record<
+  NavServiceItem["iconKey"],
+  React.ComponentType<{ className?: string }>
+> = {
+  visas: Plane,
+  "real-estate": Building2,
+  marriage: Heart,
+  sas: Landmark,
+  "wills-trusts": FileText,
+  "labour-law": Briefcase,
+};
 
 interface ServicesDropdownProps {
   label?: string;
@@ -91,6 +46,8 @@ export function ServicesDropdown({
   align = "center",
 }: ServicesDropdownProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const { navigateWithCorporateLogo } = usePageTransition();
   const containerRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -138,6 +95,39 @@ export function ServicesDropdown({
     };
   }, []);
 
+  const handleSelectService = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    service: NavServiceItem
+  ) => {
+    e.preventDefault();
+    setOpen(false);
+
+    if (pathname === "/services") {
+      window.history.pushState(null, "", service.href);
+      const targetEl = document.getElementById(service.anchorId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      window.dispatchEvent(
+        new CustomEvent("capm-highlight-service", {
+          detail: { anchorId: service.anchorId },
+        })
+      );
+    } else {
+      navigateWithCorporateLogo(service.href, service.title);
+    }
+  };
+
+  const handleViewAll = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setOpen(false);
+    if (pathname === "/services") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigateWithCorporateLogo("/services", "Services");
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -164,63 +154,67 @@ export function ServicesDropdown({
         />
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          aria-label="Legal Services"
-          className={cn(
-            "absolute top-full mt-3 w-[92vw] max-w-[640px] z-50 backdrop-blur-xl bg-slate-950/90 border border-slate-800 shadow-2xl rounded-2xl p-6 transition-all duration-200 animate-in fade-in slide-in-from-top-2",
-            align === "center"
-              ? "left-1/2 -translate-x-1/2"
-              : "left-0"
-          )}
-        >
-          {/* 2-Column Compact Service Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {NAVBAR_SERVICES_LIST.map((service) => {
-              const Icon = service.icon;
-              return (
-                <Link
-                  key={service.id}
-                  href={service.href}
-                  role="menuitem"
-                  onClick={() => setOpen(false)}
-                  className="group/item flex items-start gap-3.5 rounded-xl p-3 border border-transparent hover:border-white/10 hover:bg-white/[0.06] transition-all duration-200"
-                >
-                  <div className="size-9 rounded-lg bg-[#C01072]/15 border border-[#C01072]/30 text-[#F472B6] group-hover/item:bg-[#C01072] group-hover/item:text-white flex items-center justify-center shrink-0 mt-0.5 transition-colors">
-                    <Icon className="size-4" />
-                  </div>
-                  <div className="space-y-0.5 min-w-0">
-                    <p className="text-xs sm:text-sm font-bold text-white group-hover/item:text-[#F472B6] transition-colors leading-snug">
-                      {service.title}
-                    </p>
-                    <p className="text-[11px] text-slate-400 group-hover/item:text-slate-300 leading-relaxed line-clamp-2">
-                      {service.description}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="menu"
+            aria-label="Legal Services"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className={cn(
+              "absolute top-full mt-3 w-[92vw] max-w-[640px] z-50 backdrop-blur-xl bg-slate-950/90 border border-slate-800 shadow-2xl rounded-2xl p-6",
+              align === "center" ? "left-1/2 -translate-x-1/2" : "left-0"
+            )}
+          >
+            {/* 2-Column Homologated Service Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {NAV_SERVICES.map((service) => {
+                const Icon = SERVICE_ICONS[service.iconKey] || Plane;
+                return (
+                  <a
+                    key={service.id}
+                    href={service.href}
+                    role="menuitem"
+                    onClick={(e) => handleSelectService(e, service)}
+                    className="group flex items-start gap-3.5 rounded-xl p-3 border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-pink-500/40 transform hover:scale-[1.02] transition-all duration-200"
+                  >
+                    <div className="size-9 rounded-lg bg-pink-500/15 border border-pink-500/30 text-pink-400 group-hover:bg-pink-500 group-hover:text-white flex items-center justify-center shrink-0 mt-0.5 transition-colors duration-200">
+                      <Icon className="size-4" />
+                    </div>
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="text-xs sm:text-sm font-bold text-white group-hover:text-pink-400 transition-colors leading-snug">
+                        {service.title}
+                      </p>
+                      <p className="text-[11px] text-slate-400 group-hover:text-slate-300 leading-relaxed line-clamp-2">
+                        {service.subtitle}
+                      </p>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
 
-          {/* Bottom Separator & Highlighted All Services CTA */}
-          <div className="mt-4 pt-4 border-t border-slate-800">
-            <a
-              href="https://capital-m-law.vercel.app/services"
-              onClick={() => setOpen(false)}
-              className="group/all flex items-center justify-between gap-3 rounded-xl bg-white/[0.04] hover:bg-[#C01072]/15 border border-white/10 hover:border-[#C01072]/40 px-4 py-3 text-xs sm:text-sm font-semibold text-slate-200 hover:text-white transition-all"
-            >
-              <span>
-                Looking for something else?{" "}
-                <strong className="text-[#F472B6] group-hover/all:underline">
-                  View all legal services
-                </strong>
-              </span>
-              <ArrowUpRight className="size-4 text-[#F472B6] shrink-0 transition-transform duration-200 group-hover/all:translate-x-0.5 group-hover/all:-translate-y-0.5" />
-            </a>
-          </div>
-        </div>
-      )}
+            {/* Bottom Separator & Highlighted All Services CTA */}
+            <div className="mt-4 pt-4 border-t border-slate-800">
+              <Link
+                href="/services"
+                onClick={handleViewAll}
+                className="group/all flex items-center justify-between gap-3 rounded-xl bg-white/[0.04] hover:bg-pink-500/15 border border-white/10 hover:border-pink-500/40 px-4 py-3 text-xs sm:text-sm font-semibold text-slate-200 hover:text-white transition-all"
+              >
+                <span>
+                  Looking for something else?{" "}
+                  <strong className="text-pink-400 group-hover/all:underline">
+                    View all legal services ↗
+                  </strong>
+                </span>
+                <ArrowUpRight className="size-4 text-pink-400 shrink-0 transition-transform duration-200 group-hover/all:translate-x-0.5 group-hover/all:-translate-y-0.5" />
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -240,6 +234,32 @@ export function MobileNavMenu({
 }: MobileNavMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
+  const pathname = usePathname();
+  const { navigateWithCorporateLogo } = usePageTransition();
+
+  const handleMobileSelectService = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    service: NavServiceItem
+  ) => {
+    e.preventDefault();
+    setServicesExpanded(false);
+    setMenuOpen(false);
+
+    if (pathname === "/services") {
+      window.history.pushState(null, "", service.href);
+      const targetEl = document.getElementById(service.anchorId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      window.dispatchEvent(
+        new CustomEvent("capm-highlight-service", {
+          detail: { anchorId: service.anchorId },
+        })
+      );
+    } else {
+      navigateWithCorporateLogo(service.href, service.title);
+    }
+  };
 
   return (
     <div className="md:hidden">
@@ -253,118 +273,141 @@ export function MobileNavMenu({
         {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
 
-      {menuOpen && (
-        <div className="fixed inset-x-4 top-[76px] z-50 max-h-[82vh] overflow-y-auto backdrop-blur-xl bg-slate-950/95 border border-slate-800 shadow-2xl rounded-2xl p-5 text-white space-y-3">
-          <div className="space-y-1">
-            <Link
-              href={aboutHref}
-              onClick={() => setMenuOpen(false)}
-              className="block rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
-            >
-              {aboutLabel}
-            </Link>
-
-            {/* Mobile Services Accordion */}
-            <div className="rounded-xl border border-slate-800/80 bg-white/[0.02] overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setServicesExpanded((prev) => !prev)}
-                aria-expanded={servicesExpanded}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-bold text-white hover:bg-white/5 transition cursor-pointer"
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="fixed inset-x-4 top-[76px] z-50 max-h-[82vh] overflow-y-auto backdrop-blur-xl bg-slate-950/95 border border-slate-800 shadow-2xl rounded-2xl p-5 text-white space-y-3"
+          >
+            <div className="space-y-1">
+              <Link
+                href={aboutHref}
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
               >
-                <span>{servicesLabel}</span>
-                <ChevronDown
-                  className={cn(
-                    "size-4 text-[#F472B6] transition-transform duration-200",
-                    servicesExpanded && "rotate-180"
+                {aboutLabel}
+              </Link>
+
+              {/* Mobile Services Accordion */}
+              <div className="rounded-xl border border-slate-800/80 bg-white/[0.02] overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setServicesExpanded((prev) => !prev)}
+                  aria-expanded={servicesExpanded}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-bold text-white hover:bg-white/5 transition cursor-pointer"
+                >
+                  <span>{servicesLabel}</span>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-pink-400 transition-transform duration-200",
+                      servicesExpanded && "rotate-180"
+                    )}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {servicesExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-3 pb-3 pt-1 space-y-2 border-t border-slate-800/80">
+                        {NAV_SERVICES.map((service) => {
+                          const Icon = SERVICE_ICONS[service.iconKey] || Plane;
+                          return (
+                            <a
+                              key={service.id}
+                              href={service.href}
+                              onClick={(e) =>
+                                handleMobileSelectService(e, service)
+                              }
+                              className="group flex items-start gap-3 rounded-xl p-2.5 border border-transparent hover:border-pink-500/40 hover:bg-white/5 transition"
+                            >
+                              <div className="size-8 rounded-lg bg-pink-500/15 border border-pink-500/30 text-pink-400 group-hover:bg-pink-500 group-hover:text-white flex items-center justify-center shrink-0 mt-0.5 transition-colors">
+                                <Icon className="size-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-xs font-bold text-white leading-snug">
+                                  {service.title}
+                                </p>
+                                <p className="text-[11px] text-slate-400 leading-snug mt-0.5">
+                                  {service.subtitle}
+                                </p>
+                              </div>
+                            </a>
+                          );
+                        })}
+
+                        <Link
+                          href="/services"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setServicesExpanded(false);
+                            setMenuOpen(false);
+                            if (pathname !== "/services") {
+                              navigateWithCorporateLogo("/services", "Services");
+                            }
+                          }}
+                          className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-pink-500/15 border border-pink-500/40 px-3.5 py-2.5 text-xs font-semibold text-pink-400 hover:bg-pink-500 hover:text-white transition"
+                        >
+                          <span>
+                            Looking for something else? View all legal services ↗
+                          </span>
+                        </Link>
+                      </div>
+                    </motion.div>
                   )}
-                />
-              </button>
+                </AnimatePresence>
+              </div>
 
-              {servicesExpanded && (
-                <div className="px-3 pb-3 pt-1 space-y-2 border-t border-slate-800/80">
-                  {NAVBAR_SERVICES_LIST.map((service) => {
-                    const Icon = service.icon;
-                    return (
-                      <Link
-                        key={service.id}
-                        href={service.href}
-                        onClick={() => {
-                          setServicesExpanded(false);
-                          setMenuOpen(false);
-                        }}
-                        className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-white/10 transition"
-                      >
-                        <div className="size-8 rounded-lg bg-[#C01072]/20 border border-[#C01072]/30 text-[#F472B6] flex items-center justify-center shrink-0 mt-0.5">
-                          <Icon className="size-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-white leading-snug">
-                            {service.title}
-                          </p>
-                          <p className="text-[11px] text-slate-400 leading-snug mt-0.5">
-                            {service.description}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
+              <Link
+                href="/blog"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
+              >
+                Blog
+              </Link>
 
-                  <a
-                    href="https://capital-m-law.vercel.app/services"
-                    onClick={() => {
-                      setServicesExpanded(false);
-                      setMenuOpen(false);
-                    }}
-                    className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-[#C01072]/15 border border-[#C01072]/40 px-3.5 py-2.5 text-xs font-semibold text-[#F472B6] hover:bg-[#C01072] hover:text-white transition"
-                  >
-                    <span>Looking for something else? View all legal services ↗</span>
-                  </a>
-                </div>
-              )}
+              <Link
+                href="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
+              >
+                {contactLabel}
+              </Link>
             </div>
 
-            <Link
-              href="/blog"
-              onClick={() => setMenuOpen(false)}
-              className="block rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
-            >
-              Blog
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={() => setMenuOpen(false)}
-              className="block rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
-            >
-              {contactLabel}
-            </Link>
-          </div>
-
-          <div className="pt-3 border-t border-slate-800 grid grid-cols-1 gap-2">
-            <a
-              href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition"
-            >
-              <CreditCard className="size-3.5 text-[#F472B6]" />
-              <span>Pay Consultation</span>
-            </a>
-            <a
-              href="https://calendly.com/capital-m-law-"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-xl bg-[#C01072] hover:bg-[#A50E62] px-4 py-2.5 text-xs font-bold text-white shadow-md transition"
-            >
-              <Calendar className="size-3.5" />
-              <span>Book Consultation · $67</span>
-            </a>
-          </div>
-        </div>
-      )}
+            <div className="pt-3 border-t border-slate-800 grid grid-cols-1 gap-2">
+              <a
+                href="https://checkout.bold.co/payment/LNK_JTIV4A6HM0"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition"
+              >
+                <CreditCard className="size-3.5 text-pink-400" />
+                <span>Pay Consultation</span>
+              </a>
+              <a
+                href="https://calendly.com/capital-m-law-"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#C01072] hover:bg-[#A50E62] px-4 py-2.5 text-xs font-bold text-white shadow-md transition"
+              >
+                <Calendar className="size-3.5" />
+                <span>Book Consultation · $67</span>
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

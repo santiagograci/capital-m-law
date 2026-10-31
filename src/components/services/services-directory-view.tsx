@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Plane,
@@ -35,15 +35,71 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 
 const ANCHOR_IDS: Record<string, string> = {
   visas: "visas-immigration",
-  "real-estate": "real-estate",
-  marriage: "family-law",
-  sas: "commercial-law",
-  "wills-trusts": "tax-planning",
+  "real-estate": "real-estate-purchase",
+  marriage: "family-prenuptial",
+  sas: "corporate-sas",
+  "wills-trusts": "estate-planning",
   "labour-law": "labour-law",
 };
 
 export function ServicesDirectoryView() {
   const [lang, setLang] = useState<"en" | "es">("en");
+  const [highlightedAnchor, setHighlightedAnchor] = useState<string | null>(null);
+
+  useEffect(() => {
+    let highlightTimer: ReturnType<typeof setTimeout> | null = null;
+    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const triggerHighlightAndScroll = (anchorId: string, shouldScroll = true) => {
+      if (!anchorId) return;
+      if (highlightTimer) clearTimeout(highlightTimer);
+      if (scrollTimer) clearTimeout(scrollTimer);
+
+      setHighlightedAnchor(anchorId);
+
+      if (shouldScroll) {
+        scrollTimer = setTimeout(() => {
+          const el = document.getElementById(anchorId);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 120);
+      }
+
+      highlightTimer = setTimeout(() => {
+        setHighlightedAnchor(null);
+      }, 1500);
+    };
+
+    const initialHash = window.location.hash.replace(/^#/, "");
+    if (initialHash) {
+      triggerHighlightAndScroll(initialHash, true);
+    }
+
+    const handleCustomHighlight = (e: Event) => {
+      const customEvent = e as CustomEvent<{ anchorId?: string }>;
+      if (customEvent.detail?.anchorId) {
+        triggerHighlightAndScroll(customEvent.detail.anchorId, false);
+      }
+    };
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (hash) {
+        triggerHighlightAndScroll(hash, true);
+      }
+    };
+
+    window.addEventListener("capm-highlight-service", handleCustomHighlight);
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("capm-highlight-service", handleCustomHighlight);
+      window.removeEventListener("hashchange", handleHashChange);
+      if (highlightTimer) clearTimeout(highlightTimer);
+      if (scrollTimer) clearTimeout(scrollTimer);
+    };
+  }, []);
 
   return (
     <div className="space-y-16">
@@ -112,13 +168,18 @@ export function ServicesDirectoryView() {
         {SERVICES_CATALOG.map((service) => {
           const Icon = ICONS[service.category] || ShieldCheck;
           const anchorId = ANCHOR_IDS[service.category] || service.id;
+          const isHighlighted = highlightedAnchor === anchorId;
 
           return (
             <div key={service.id} id={anchorId} className="scroll-mt-28">
               <TiltGlassCard
                 maxTilt={4.5}
                 sheenSize={440}
-                className="h-full group bg-white dark:bg-[#0F1E35] rounded-3xl border border-[#16345F]/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-shadow duration-300 flex flex-col justify-between p-8 sm:p-10 space-y-8"
+                className={cn(
+                  "h-full group bg-white dark:bg-[#0F1E35] rounded-3xl border border-[#16345F]/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-all duration-500 flex flex-col justify-between p-8 sm:p-10 space-y-8",
+                  isHighlighted &&
+                    "ring-2 ring-pink-500 border-pink-500/80 dark:border-pink-500/80 shadow-[0_0_35px_rgba(236,72,153,0.45)] scale-[1.01]"
+                )}
               >
               <div className="relative z-10 space-y-6">
                 <div className="flex items-center justify-between gap-4">
