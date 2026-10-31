@@ -45,7 +45,12 @@ function NavLinks() {
       active: pathname?.startsWith("/blog") ?? false,
       useCorporateTransition: true,
     },
-    { href: "/#contact", label: "Contact", useCorporateTransition: true },
+    {
+      href: "/contact",
+      label: "Contact",
+      active: pathname?.startsWith("/contact") ?? false,
+      useCorporateTransition: false,
+    },
   ];
 
   return (

@@ -144,6 +144,11 @@ export function Footer({ lang = "en" }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/contact" className="hover:text-[#9BB8E0] transition-colors">
+                  {isEs ? "Contacto & Promesas" : "Contact & Promises"}
+                </Link>
+              </li>
+              <li>
                 <Link href="/privacy-policy" className="hover:text-[#9BB8E0] transition-colors">
                   {isEs ? "Política de Privacidad" : "Privacy Policy"}
                 </Link>

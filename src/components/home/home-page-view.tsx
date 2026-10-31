@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   CONTENT,
   FIGMA_SERVICES,
@@ -489,13 +490,12 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               >
                 Blog
               </CorporateNavLink>
-              <CorporateNavLink
-                href="#contact"
-                label={t.nav.contact}
+              <Link
+                href="/contact"
                 className="hover:text-white/80 transition-colors"
               >
                 {t.nav.contact}
-              </CorporateNavLink>
+              </Link>
             </div>
           </div>
 
