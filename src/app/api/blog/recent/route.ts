@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 86400; // 24 horas (ISR)
 
 import { NextResponse } from "next/server";
 import { getPostSummaries } from "@/lib/blog/queries";
@@ -8,7 +7,9 @@ export async function GET() {
   try {
     const posts = await getPostSummaries();
     return NextResponse.json(posts.slice(0, 3), {
-      headers: { "Cache-Control": "no-store, max-age=0" },
+      headers: {
+        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
+      },
     });
   } catch (error) {
     console.error("Failed to fetch recent blog posts:", error);

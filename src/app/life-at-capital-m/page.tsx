@@ -3,7 +3,9 @@ import Image from "next/image";
 import { Camera, MapPin, User } from "lucide-react";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { Footer } from "@/components/Footer";
-import { photos } from "@/data/gallery";
+import { getGalleryPhotos } from "@/data/gallery";
+
+export const revalidate = 86400; // 24 horas (ISR)
 
 export const metadata: Metadata = {
   title: "Life at Capital M | Capital M Law Medellín",
@@ -12,7 +14,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/life-at-capital-m" },
 };
 
-export default function LifeAtCapitalMPage() {
+export default async function LifeAtCapitalMPage() {
+  const galleryItems = await getGalleryPhotos();
+
   return (
     <div className="min-h-screen bg-[#FAFBFD] dark:bg-[#0A1526]">
       <BlogHeader />
@@ -34,45 +38,45 @@ export default function LifeAtCapitalMPage() {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {photos.map((photo) => (
+          {galleryItems.map((blob) => (
             <article
-              key={photo.url}
+              key={blob.pathname || blob.url}
               className="group overflow-hidden rounded-3xl border border-[#16345F]/10 dark:border-white/10 bg-white dark:bg-[#0F1E35] shadow-sm transition hover:shadow-md flex flex-col justify-between"
             >
               <div className="aspect-[16/10] w-full overflow-hidden bg-gray-100 dark:bg-white/5 relative">
                 <Image
-                  src={photo.url}
-                  alt={photo.alt}
+                  src={blob.url}
+                  alt={blob.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover transition duration-500 group-hover:scale-105"
                 />
                 <span className="absolute top-4 left-4 rounded-full bg-[#16345F]/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-white">
-                  {photo.tag.en} · {photo.tag.es}
+                  {blob.tag.en} · {blob.tag.es}
                 </span>
               </div>
               <div className="p-6 space-y-3">
                 <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-[#00AA81]">
                   <span className="inline-flex items-center gap-1">
                     <MapPin className="size-3.5" />
-                    {photo.location}
+                    {blob.location}
                   </span>
                   <span className="inline-flex items-center gap-1 text-[#706F6F] dark:text-gray-400">
                     <User className="size-3.5" />
-                    {photo.client}
+                    {blob.client}
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-[#16345F] dark:text-white">
-                  {photo.title.en}
+                  {blob.title.en}
                 </h2>
                 <p className="text-xs font-semibold text-[#C01072] dark:text-[#F472B6]">
-                  {photo.title.es}
+                  {blob.title.es}
                 </p>
                 <p className="text-sm text-[#706F6F] dark:text-gray-300 leading-relaxed">
-                  {photo.caption.en}
+                  {blob.caption.en}
                 </p>
                 <p className="text-xs text-[#706F6F]/80 dark:text-gray-400 italic">
-                  {photo.caption.es}
+                  {blob.caption.es}
                 </p>
               </div>
             </article>

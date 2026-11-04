@@ -28,6 +28,7 @@ interface HomeBlogSectionProps {
   title: string;
   youtubeCardText: string;
   instagramCardText: string;
+  initialPosts?: BlogPostSummary[];
 }
 
 export function HomeBlogSection({
@@ -35,15 +36,22 @@ export function HomeBlogSection({
   title,
   youtubeCardText,
   instagramCardText,
+  initialPosts,
 }: HomeBlogSectionProps) {
-  const [posts, setPosts] = useState<BlogPostSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<BlogPostSummary[]>(initialPosts ?? []);
+  const [loading, setLoading] = useState(!initialPosts || initialPosts.length === 0);
 
   useEffect(() => {
+    if (initialPosts && initialPosts.length > 0) {
+      setPosts(initialPosts);
+      setLoading(false);
+      return;
+    }
+
     let isMounted = true;
     async function loadRecentPosts() {
       try {
-        const res = await fetch("/api/blog/recent", { cache: "no-store" });
+        const res = await fetch("/api/blog/recent");
         if (res.ok) {
           const data = await res.json();
           if (isMounted && Array.isArray(data)) {
@@ -60,7 +68,7 @@ export function HomeBlogSection({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [initialPosts]);
 
   return (
     <section

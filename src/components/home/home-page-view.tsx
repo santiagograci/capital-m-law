@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { photos } from "@/data/gallery";
+import { photos, type GalleryPhoto } from "@/data/gallery";
 import {
   CONTENT,
   FIGMA_SERVICES,
@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/micro-interactions";
 import type { AttorneyBio } from "@/types/team";
 import type { LifeMoment } from "@/types/life";
+import type { BlogPostSummary } from "@/types/blog";
 import type {
   GooglePlaceReview,
   GoogleReviewsResponse,
@@ -62,9 +63,16 @@ import type {
 interface HomePageViewProps {
   initialTeam?: AttorneyBio[];
   initialLife?: LifeMoment[];
+  initialGallery?: GalleryPhoto[];
+  initialPosts?: BlogPostSummary[];
 }
 
-export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
+export function HomePageView({
+  initialTeam,
+  initialLife,
+  initialGallery,
+  initialPosts,
+}: HomePageViewProps) {
   const [lang, setLang] = useState<Language>("en");
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -273,16 +281,29 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
           },
         ];
 
-  const lifeMoments = photos.map((photo) => ({
-    url: photo.url,
-    alt: photo.alt,
-    title: photo.title[lang],
-    location: photo.location,
-    client: photo.client,
-    caption: photo.caption[lang],
-    image: photo.url,
-    tag: photo.tag[lang],
-  }));
+  const galleryBlobs =
+    initialGallery && initialGallery.length > 0 ? initialGallery : photos;
+
+  const lifeMoments = galleryBlobs.map((blob, index) => {
+    const matchingLife = initialLife?.[index];
+    const resolvedUrl =
+      blob.url.startsWith("http")
+        ? blob.url
+        : matchingLife?.image?.startsWith("http")
+          ? matchingLife.image
+          : blob.url;
+    return {
+      url: resolvedUrl,
+      pathname: blob.pathname,
+      alt: blob.alt,
+      title: matchingLife?.title?.[lang] || blob.title[lang],
+      location: matchingLife?.location || blob.location,
+      client: matchingLife?.client || blob.client,
+      caption: matchingLife?.caption?.[lang] || blob.caption[lang],
+      image: resolvedUrl,
+      tag: matchingLife?.tag?.[lang] || blob.tag[lang],
+    };
+  });
 
   const nextLife = () => {
     setLifeIndex((prev) => (prev + 1 >= lifeMoments.length - 1 ? 0 : prev + 1));
@@ -1086,7 +1107,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
             className="flex gap-6 transition-transform duration-500 ease-out"
             style={{ transform: `translateX(-${lifeIndex * (100 / 2)}%)` }}
           >
-            {lifeMoments.map((item, idx) => (
+            {lifeMoments.map((blob, idx) => (
               <div
                 key={idx}
                 className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 bg-white dark:bg-[#0F223D] rounded-3xl p-5 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col justify-between"
@@ -1094,33 +1115,33 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
                 <div className="space-y-4">
                   <div className="aspect-[4/3] rounded-2xl overflow-hidden relative bg-gray-100">
                     <Image
-                      src={item.url}
-                      alt={item.alt}
+                      src={blob.url}
+                      alt={blob.alt}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover hover:scale-105 transition-transform duration-500"
                     />
                     <span className="absolute top-3 left-3 bg-white/95 dark:bg-black/80 backdrop-blur-md text-[#16345F] dark:text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                      {item.tag}
+                      {blob.tag}
                     </span>
                   </div>
 
                   <div className="space-y-1.5 px-1">
                     <p className="text-xs font-bold text-[#C01072] dark:text-[#F472B6] flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
-                      <span>{item.location}</span>
+                      <span>{blob.location}</span>
                     </p>
                     <h3 className="font-bold text-[#16345F] dark:text-white text-lg leading-snug">
-                      {item.title}
+                      {blob.title}
                     </h3>
                     <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pt-1">
-                      {item.caption}
+                      {blob.caption}
                     </p>
                   </div>
                 </div>
 
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-white/10 px-1 flex items-center justify-between text-[11px] font-medium text-gray-400">
-                  <span>{t.lifeHeading.withClient} {item.client}</span>
+                  <span>{t.lifeHeading.withClient} {blob.client}</span>
                   <Camera className="w-3.5 h-3.5 text-gray-400" />
                 </div>
               </div>
@@ -1145,6 +1166,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
         title={t.blogHeading.title}
         youtubeCardText={t.blogHeading.youtubeCard}
         instagramCardText={t.blogHeading.instagramCard}
+        initialPosts={initialPosts}
       />
 
       {/* 11. FOOTER (CON REDES SOCIALES TIKTOK, FACEBOOK, INSTAGRAM, YOUTUBE) */}

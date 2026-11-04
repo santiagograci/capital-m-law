@@ -10,6 +10,7 @@ import { saveMediaUpload, ALLOWED_IMAGE_TYPES, MAX_UPLOAD_BYTES } from "@/lib/me
 
 function revalidateLifeRoutes(momentId?: string) {
   updateTag(LIFE_TAG);
+  updateTag("gallery-blobs");
   if (momentId) updateTag(`life-moment:${momentId}`);
   revalidatePath("/", "layout");
   revalidatePath("/");

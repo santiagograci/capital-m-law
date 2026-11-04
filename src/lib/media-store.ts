@@ -2,10 +2,10 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { put } from "@vercel/blob";
 
 const ROOT = process.cwd();
-export const PUBLIC_UPLOADS_DIR = path.join(ROOT, "public", "uploads");
-export const UPLOADS_DIR = path.join(ROOT, "storage", "uploads");
+export const UPLOADS_DIR = path.join(ROOT, "public", "uploads");
 const TMP_UPLOADS_DIR = path.join("/tmp", "capital-m-law", "storage", "uploads");
 
 const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -25,6 +25,20 @@ export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 const inMemoryMedia = new Map<string, { body: Buffer; type: string }>();
 
 export async function saveMediaUpload(file: File): Promise<string> {
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const blob = await put(file.name, file, {
+        access: "public",
+        addRandomSuffix: true,
+        allowOverwrite: true,
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+      return blob.url;
+    } catch (err) {
+      console.warn("[media-store] Could not upload to Vercel Blob, falling back:", err);
+    }
+  }
+
   const ext =
     Object.entries(MIME_BY_EXT).find(([, mime]) => mime === file.type)?.[0] ?? ".jpg";
   const name = `${crypto.randomUUID()}${ext}`;
@@ -34,23 +48,23 @@ export async function saveMediaUpload(file: File): Promise<string> {
   // 1. Always retain in-memory
   inMemoryMedia.set(name, { body: buffer, type: mimeType });
 
-  // 2. Write to public/uploads when writable (local dev / self-hosted)
-  if (!IS_SERVERLESS) {
-    try {
-      await fs.mkdir(PUBLIC_UPLOADS_DIR, { recursive: true });
-      await fs.writeFile(path.join(PUBLIC_UPLOADS_DIR, name), buffer);
-      return `/uploads/${name}`;
-    } catch (err) {
-      console.warn("[media-store] public/uploads write skipped:", err);
-    }
-  }
-
-  // 3. Fallback to /tmp for read-only serverless environments
+  // 2. Try writing to /tmp
   try {
     await fs.mkdir(TMP_UPLOADS_DIR, { recursive: true });
     await fs.writeFile(path.join(TMP_UPLOADS_DIR, name), buffer);
   } catch (err) {
     console.warn("[media-store] Could not write upload to /tmp:", err);
+  }
+
+  // 3. Local dev write
+  if (!IS_SERVERLESS) {
+    try {
+      await fs.mkdir(UPLOADS_DIR, { recursive: true });
+      await fs.writeFile(path.join(UPLOADS_DIR, name), buffer);
+      return `/uploads/${name}`;
+    } catch (err) {
+      console.warn("[media-store] Local upload write skipped:", err);
+    }
   }
 
   return `/api/uploads/${name}`;
@@ -59,29 +73,19 @@ export async function saveMediaUpload(file: File): Promise<string> {
 export async function readMediaUpload(name: string): Promise<{ body: Buffer; type: string } | null> {
   if (!/^[a-f0-9-]{36}\.(jpe?g|png|webp|avif|gif)$/i.test(name)) return null;
 
-  // 1. Check in-memory store
   const cached = inMemoryMedia.get(name);
   if (cached) return cached;
 
-  const type = MIME_BY_EXT[path.extname(name).toLowerCase()] ?? "application/octet-stream";
-
-  // 2. Check public/uploads
-  try {
-    const body = await fs.readFile(path.join(PUBLIC_UPLOADS_DIR, name));
-    inMemoryMedia.set(name, { body, type });
-    return { body, type };
-  } catch {}
-
-  // 3. Check /tmp
   try {
     const body = await fs.readFile(path.join(TMP_UPLOADS_DIR, name));
+    const type = MIME_BY_EXT[path.extname(name).toLowerCase()] ?? "application/octet-stream";
     inMemoryMedia.set(name, { body, type });
     return { body, type };
   } catch {}
 
-  // 4. Check legacy storage/uploads
   try {
     const body = await fs.readFile(path.join(UPLOADS_DIR, name));
+    const type = MIME_BY_EXT[path.extname(name).toLowerCase()] ?? "application/octet-stream";
     inMemoryMedia.set(name, { body, type });
     return { body, type };
   } catch {
@@ -101,9 +105,6 @@ export async function deleteMediaUpload(url: string | null): Promise<void> {
   } catch {}
 
   if (!IS_SERVERLESS) {
-    try {
-      await fs.rm(path.join(PUBLIC_UPLOADS_DIR, name), { force: true });
-    } catch {}
     try {
       await fs.rm(path.join(UPLOADS_DIR, name), { force: true });
     } catch {}

@@ -13,7 +13,6 @@ export async function getAllLifeMoments(): Promise<LifeMoment[]> {
 }
 
 export async function getActiveLifeMoments(): Promise<LifeMoment[]> {
-  noStore();
   const moments = await readAllLifeMoments();
   return moments
     .filter((m) => m.active !== false)

@@ -13,7 +13,6 @@ export async function getAllTeamMembers(): Promise<AttorneyBio[]> {
 }
 
 export async function getActiveTeamMembers(): Promise<AttorneyBio[]> {
-  noStore();
   const all = await readAllTeamMembers();
   return all
     .filter((m) => m.active !== false)

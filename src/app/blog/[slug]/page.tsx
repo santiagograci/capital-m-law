@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 86400; // 24 horas (ISR)
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -13,8 +12,13 @@ import { PostContent } from "@/components/blog/post-content";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { ContextualBlogCta } from "@/components/blog/contextual-blog-cta";
 import { ReadingProgressBar } from "@/components/ui/micro-interactions";
-import { getPostBySlug, getRelatedPosts } from "@/lib/blog/queries";
+import { getPostBySlug, getPostSummaries, getRelatedPosts } from "@/lib/blog/queries";
 import { formatPostDate } from "@/lib/blog/utils";
+
+export async function generateStaticParams() {
+  const posts = await getPostSummaries();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
   const { slug } = await params;

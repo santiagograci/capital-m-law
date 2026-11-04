@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 86400; // 24 horas (ISR)
 
 import { NextResponse } from "next/server";
 import { getActiveTeamMembers, getAllTeamMembers } from "@/lib/team/queries";
@@ -18,6 +17,8 @@ export async function GET(request: Request) {
 
   const active = await getActiveTeamMembers();
   return NextResponse.json(active, {
-    headers: { "Cache-Control": "no-store, max-age=0" },
+    headers: {
+      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
+    },
   });
 }
