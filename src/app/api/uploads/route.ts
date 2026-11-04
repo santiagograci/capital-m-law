@@ -1,5 +1,5 @@
-import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
+import { saveMediaUpload } from "@/lib/media-store";
 
 export const dynamic = "force-dynamic";
 
@@ -35,20 +35,14 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const blob = await put(file.name, file, {
-      access: "public",
-      addRandomSuffix: true,
-      allowOverwrite: true,
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-    });
-
-    return NextResponse.json({ url: blob.url });
+    const url = await saveMediaUpload(file);
+    return NextResponse.json({ url });
   } catch (error) {
-    console.error("[uploads/route] Error al subir archivo a Vercel Blob:", error);
+    console.error("[uploads/route] Error al guardar el archivo localmente:", error);
     const message =
       error instanceof Error
         ? error.message
-        : "Error interno al subir el archivo a Vercel Blob.";
+        : "Error interno al guardar el archivo.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

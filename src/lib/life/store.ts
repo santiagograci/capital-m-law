@@ -2,18 +2,16 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { list, put } from "@vercel/blob";
 import type { LifeMoment } from "@/types/life";
 
 /**
- * Resilient persistence for Life at Capital M supporting both local dev,
- * Vercel Blob (shared across all Serverless instances), and /tmp fallback.
+ * Local file persistence for Life at Capital M supporting content/life/moments.json
+ * and /tmp + in-memory fallback without relying on Vercel Blob.
  */
 
 const ROOT = process.cwd();
 const LIFE_FILE = path.join(ROOT, "content", "life", "moments.json");
 const TMP_LIFE_FILE = path.join("/tmp", "capital-m-law", "content", "life", "moments.json");
-const BLOB_LIFE_KEY = "_db/life-moments.json";
 
 const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 
@@ -119,31 +117,7 @@ function getInitialMoments(): LifeMoment[] {
 }
 
 async function readRaw(): Promise<LifeMoment[]> {
-  // 1. Try reading from Vercel Blob (shared across all serverless function instances)
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    try {
-      const { blobs } = await list({
-        prefix: BLOB_LIFE_KEY,
-        limit: 1,
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
-      const match = blobs.find((b) => b.pathname === BLOB_LIFE_KEY) ?? blobs[0];
-      if (match?.url) {
-        const res = await fetch(`${match.url}?t=${Date.now()}`, { cache: "no-store" });
-        if (res.ok) {
-          const parsed = await res.json();
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            inMemoryMoments = parsed as LifeMoment[];
-            return inMemoryMoments;
-          }
-        }
-      }
-    } catch (err) {
-      console.warn("[life/store] Could not read from Vercel Blob, falling back:", err);
-    }
-  }
-
-  // 2. /tmp (persisted across warm serverless calls or multi-worker local runs)
+  // 1. /tmp
   try {
     const tmpRaw = await fs.readFile(TMP_LIFE_FILE, "utf8");
     const parsed = JSON.parse(tmpRaw);
@@ -153,7 +127,7 @@ async function readRaw(): Promise<LifeMoment[]> {
     }
   } catch {}
 
-  // 3. Bundled static
+  // 2. Bundled static
   try {
     const raw = await fs.readFile(LIFE_FILE, "utf8");
     const parsed = JSON.parse(raw) as unknown;
@@ -163,12 +137,12 @@ async function readRaw(): Promise<LifeMoment[]> {
     }
   } catch {}
 
-  // 4. In-memory
+  // 3. In-memory
   if (inMemoryMoments !== null && inMemoryMoments.length > 0) {
     return inMemoryMoments;
   }
 
-  // 5. Default seed
+  // 4. Default seed
   const initial = getInitialMoments();
   inMemoryMoments = initial;
   return initial;
@@ -178,23 +152,7 @@ async function writeRaw(moments: LifeMoment[]): Promise<void> {
   inMemoryMoments = moments;
   const serialized = JSON.stringify(moments, null, 2) + "\n";
 
-  // 1. Write to Vercel Blob so all serverless instances read the latest state
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    try {
-      await put(BLOB_LIFE_KEY, serialized, {
-        access: "public",
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        cacheControlMaxAge: 0,
-        contentType: "application/json",
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
-    } catch (err) {
-      console.warn("[life/store] Could not write to Vercel Blob:", err);
-    }
-  }
-
-  // 2. /tmp
+  // 1. /tmp
   try {
     await fs.mkdir(path.dirname(TMP_LIFE_FILE), { recursive: true });
     const tmpFile = `${TMP_LIFE_FILE}.${process.pid}.${Date.now()}.tmp`;
@@ -204,7 +162,7 @@ async function writeRaw(moments: LifeMoment[]): Promise<void> {
     console.warn("[life/store] Could not write to /tmp (retained in-memory):", err);
   }
 
-  // 3. Local dev
+  // 2. Local dev
   if (!IS_SERVERLESS) {
     try {
       await fs.mkdir(path.dirname(LIFE_FILE), { recursive: true });

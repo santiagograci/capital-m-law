@@ -164,7 +164,12 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
     values.coverMode === "url"
       ? values.coverUrl || null
       : values.coverMode === "upload"
-        ? filePreview ?? (post?.coverImage?.startsWith("/api/") ? post.coverImage : null)
+        ? filePreview ??
+          (post?.coverImage?.startsWith("/api/") ||
+          post?.coverImage?.startsWith("/blog/uploads/") ||
+          post?.coverImage?.startsWith("/uploads/")
+            ? post.coverImage
+            : null)
         : null;
 
   const slugPreview = values.slug ? slugify(values.slug) : slugify(values.title);
