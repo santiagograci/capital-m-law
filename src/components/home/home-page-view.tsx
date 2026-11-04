@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { photos } from "@/data/gallery";
 import {
   CONTENT,
   FIGMA_SERVICES,
@@ -131,9 +133,8 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
     }
   };
 
-  // Dynamic state for Team & Life (initialized from server with client refresh)
+  // Dynamic state for Team & Reviews (initialized from server with client refresh)
   const [teamData, setTeamData] = useState<AttorneyBio[]>(initialTeam ?? []);
-  const [lifeData, setLifeData] = useState<LifeMoment[]>(initialLife ?? []);
   const [totalReviews, setTotalReviews] = useState<number>(53);
   const [googleRating, setGoogleRating] = useState<number>(4.8);
   const [googleReviews, setGoogleReviews] = useState<GooglePlaceReview[]>([]);
@@ -142,22 +143,6 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
     if (initialTeam && initialTeam.length > 0) {
       setTeamData(initialTeam);
     }
-    fetch("/api/team", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setTeamData(data);
-      })
-      .catch(() => {});
-
-    if (initialLife && initialLife.length > 0) {
-      setLifeData(initialLife);
-    }
-    fetch("/api/life", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setLifeData(data);
-      })
-      .catch(() => {});
 
     fetch("/api/reviews")
       .then((res) => (res.ok ? res.json() : null))
@@ -174,7 +159,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
         }
       })
       .catch(() => {});
-  }, [initialTeam, initialLife]);
+  }, [initialTeam]);
 
   // Estados de carruseles
   const [lifeIndex, setLifeIndex] = useState(0);
@@ -262,8 +247,7 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               lang === "en"
                 ? "Licensed Colombian attorney with over 8 years of experience advising international clients, digital nomads, and foreign investors relocating to Medellín. Known for transparent execution, strategic clarity, and client-first advocacy."
                 : "Abogada colombiana con más de 8 años de experiencia guiando a clientes extranjeros, fundadores y jubilados en Colombia. Reconocida por su claridad técnica, acompañamiento cercano y defensa rigurosa.",
-            image:
-              "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=85",
+            image: "/gallery/profile_team_mafe.jpg",
           },
           {
             name: "Ana María Muñoz",
@@ -285,83 +269,20 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               lang === "en"
                 ? "Bilingual attorney specialized in Colombian immigration pathways, regulatory compliance, and civil law. Dedicated to meticulous case preparation before Cancillería and Migración Colombia, delivering swift resolutions for expats."
                 : "Abogada bilingüe especializada en trámites migratorios ante Cancillería y Migración Colombia, derecho corporativo y notarial. Reconocida por su precisión documental y agilidad de respuesta.",
-            image:
-              "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=85",
+            image: "/gallery/profile_team_ana.jpg",
           },
         ];
 
-  const lifeMoments =
-    lifeData.length > 0
-      ? lifeData.map((item) => ({
-          title: item.title?.[lang] || item.title?.es || "",
-          location: item.location,
-          client: item.client,
-          caption: item.caption?.[lang] || item.caption?.es || "",
-          image: item.image,
-          tag: item.tag?.[lang] || item.tag?.es || "",
-        }))
-      : [
-          {
-            title:
-              lang === "en"
-                ? "Visa Celebration at Provenza"
-                : "Celebración de Visa en Provenza",
-            location: "El Poblado, Medellín",
-            client: "Alex & María Fernanda",
-            caption:
-              lang === "en"
-                ? "Celebrating a 2-year digital nomad visa approval over fresh Colombian coffee."
-                : "Celebrando la aprobación de 2 años de visa con café especial de origen.",
-            image:
-              "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=700&q=80",
-            tag: lang === "en" ? "Community" : "Comunidad",
-          },
-          {
-            title:
-              lang === "en"
-                ? "Real Estate Closing at Notary 15"
-                : "Cierre Inmobiliario en Notaría 15",
-            location: "Laureles, Medellín",
-            client: "Carl & Ana María",
-            caption:
-              lang === "en"
-                ? "Handing over the keys and finalized public deed after a complete 20-year title audit."
-                : "Entrega de llaves y firma de escritura pública tras un estudio de títulos sin riesgos.",
-            image:
-              "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=700&q=80",
-            tag: lang === "en" ? "Milestone" : "Hito Legal",
-          },
-          {
-            title:
-              lang === "en"
-                ? "Strategy Session at Belén Malibú HQ"
-                : "Sesión Estratégica en Sede Belén Malibú",
-            location: "Medellín HQ",
-            client: "Founders & Legal Team",
-            caption:
-              lang === "en"
-                ? "Mapping out a new tech company incorporation and bilingual employment contracts."
-                : "Estructurando la constitución de una nueva SAS y contratos laborales bilingües.",
-            image:
-              "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=80",
-            tag: lang === "en" ? "Everyday Life" : "Día a Día",
-          },
-          {
-            title:
-              lang === "en"
-                ? "Cédula Extranjería Delivery Day"
-                : "Entrega de Cédula de Extranjería",
-            location: "Migración Colombia",
-            client: "Jay & The Team",
-            caption:
-              lang === "en"
-                ? "From initial consultation to holding the physical Colombian ID card in record time."
-                : "Acompañamiento presencial para reclamar el documento físico en tiempo récord.",
-            image:
-              "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=700&q=80",
-            tag: lang === "en" ? "Success Story" : "Caso de Éxito",
-          },
-        ];
+  const lifeMoments = photos.map((photo) => ({
+    url: photo.url,
+    alt: photo.alt,
+    title: photo.title[lang],
+    location: photo.location,
+    client: photo.client,
+    caption: photo.caption[lang],
+    image: photo.url,
+    tag: photo.tag[lang],
+  }));
 
   const nextLife = () => {
     setLifeIndex((prev) => (prev + 1 >= lifeMoments.length - 1 ? 0 : prev + 1));
@@ -1067,8 +988,14 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               >
                 <div className="space-y-5">
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-                    <div className="w-32 h-32 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shadow-inner shrink-0 bg-gray-100">
-                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                    <div className="relative w-32 h-32 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shadow-inner shrink-0 bg-gray-100">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        fill
+                        sizes="128px"
+                        className="object-cover"
+                      />
                     </div>
                     <div className="text-center sm:text-left space-y-1 pt-1">
                       <h3 className="text-2xl font-bold text-[#16345F] dark:text-white">{member.name}</h3>
@@ -1166,10 +1093,12 @@ export function HomePageView({ initialTeam, initialLife }: HomePageViewProps) {
               >
                 <div className="space-y-4">
                   <div className="aspect-[4/3] rounded-2xl overflow-hidden relative bg-gray-100">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    <Image
+                      src={item.url}
+                      alt={item.alt}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover hover:scale-105 transition-transform duration-500"
                     />
                     <span className="absolute top-3 left-3 bg-white/95 dark:bg-black/80 backdrop-blur-md text-[#16345F] dark:text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
                       {item.tag}

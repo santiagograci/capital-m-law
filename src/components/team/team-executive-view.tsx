@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -111,11 +112,12 @@ export function TeamExecutiveView({ initialMembers }: TeamExecutiveViewProps) {
                   {/* Portrait Column */}
                   <div className="lg:col-span-4 space-y-6">
                     <div className="relative aspect-[3/4] w-full rounded-3xl overflow-hidden shadow-md group">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={attorney.image}
                         alt={attorney.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#16345F]/80 via-transparent to-transparent opacity-60" />
 

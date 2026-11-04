@@ -1,11 +1,9 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Camera, MapPin, User } from "lucide-react";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { Footer } from "@/components/Footer";
-import { getActiveLifeMoments } from "@/lib/life/queries";
+import { photos } from "@/data/gallery";
 
 export const metadata: Metadata = {
   title: "Life at Capital M | Capital M Law Medellín",
@@ -14,9 +12,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/life-at-capital-m" },
 };
 
-export default async function LifeAtCapitalMPage() {
-  const moments = await getActiveLifeMoments();
-
+export default function LifeAtCapitalMPage() {
   return (
     <div className="min-h-screen bg-[#FAFBFD] dark:bg-[#0A1526]">
       <BlogHeader />
@@ -38,44 +34,45 @@ export default async function LifeAtCapitalMPage() {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {moments.map((moment) => (
+          {photos.map((photo) => (
             <article
-              key={moment.id}
-              className="group overflow-hidden rounded-3xl border border-[#16345F]/10 dark:border-white/10 bg-white dark:bg-[#0F1E35] shadow-sm transition hover:shadow-md"
+              key={photo.url}
+              className="group overflow-hidden rounded-3xl border border-[#16345F]/10 dark:border-white/10 bg-white dark:bg-[#0F1E35] shadow-sm transition hover:shadow-md flex flex-col justify-between"
             >
               <div className="aspect-[16/10] w-full overflow-hidden bg-gray-100 dark:bg-white/5 relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={moment.image}
-                  alt={moment.title.en}
-                  className="size-full object-cover transition duration-500 group-hover:scale-105"
+                <Image
+                  src={photo.url}
+                  alt={photo.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover transition duration-500 group-hover:scale-105"
                 />
                 <span className="absolute top-4 left-4 rounded-full bg-[#16345F]/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-white">
-                  {moment.tag.en} · {moment.tag.es}
+                  {photo.tag.en} · {photo.tag.es}
                 </span>
               </div>
               <div className="p-6 space-y-3">
                 <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-[#00AA81]">
                   <span className="inline-flex items-center gap-1">
                     <MapPin className="size-3.5" />
-                    {moment.location}
+                    {photo.location}
                   </span>
                   <span className="inline-flex items-center gap-1 text-[#706F6F] dark:text-gray-400">
                     <User className="size-3.5" />
-                    {moment.client}
+                    {photo.client}
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-[#16345F] dark:text-white">
-                  {moment.title.en}
+                  {photo.title.en}
                 </h2>
                 <p className="text-xs font-semibold text-[#C01072] dark:text-[#F472B6]">
-                  {moment.title.es}
+                  {photo.title.es}
                 </p>
                 <p className="text-sm text-[#706F6F] dark:text-gray-300 leading-relaxed">
-                  {moment.caption.en}
+                  {photo.caption.en}
                 </p>
                 <p className="text-xs text-[#706F6F]/80 dark:text-gray-400 italic">
-                  {moment.caption.es}
+                  {photo.caption.es}
                 </p>
               </div>
             </article>
