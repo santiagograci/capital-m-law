@@ -4,6 +4,7 @@ import { Camera, MapPin, User } from "lucide-react";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { Footer } from "@/components/Footer";
 import { getGalleryPhotos } from "@/data/gallery";
+import { getActiveLifeMoments } from "@/lib/life/queries";
 
 export const revalidate = 86400; // 24 horas (ISR)
 
@@ -15,7 +16,51 @@ export const metadata: Metadata = {
 };
 
 export default async function LifeAtCapitalMPage() {
-  const galleryItems = await getGalleryPhotos();
+  const [activeMoments, galleryItems] = await Promise.all([
+    getActiveLifeMoments(),
+    getGalleryPhotos(),
+  ]);
+
+  const itemsToRender =
+    activeMoments.length > 0
+      ? activeMoments.map((moment) => {
+          const fileName = moment.image.split("/").pop()?.toLowerCase() ?? "";
+          const baseName = fileName.replace(/\.[^.]+$/, "");
+          const matchedBlob =
+            moment.image.startsWith("/gallery/") && baseName
+              ? galleryItems.find((b) => {
+                  const blobName = b.pathname.split("/").pop()?.toLowerCase() ?? "";
+                  return (
+                    b.url.startsWith("http") &&
+                    (blobName === fileName || blobName.startsWith(baseName))
+                  );
+                })
+              : undefined;
+          const resolvedUrl = matchedBlob?.url || moment.image;
+
+          return {
+            id: moment.id,
+            url: resolvedUrl,
+            pathname: matchedBlob?.pathname || moment.image,
+            alt: `${moment.title.en} - Capital M Law`,
+            title: moment.title,
+            location: moment.location,
+            client: moment.client,
+            caption: moment.caption,
+            tag: moment.tag,
+          };
+        })
+      : galleryItems.map((blob, index) => ({
+          id: blob.pathname || `gallery-${index}`,
+          url: blob.url,
+          pathname: blob.pathname,
+          alt: blob.alt,
+          title: blob.title,
+          location: blob.location,
+          client: blob.client,
+          caption: blob.caption,
+          tag: blob.tag,
+        }));
 
   return (
     <div className="min-h-screen bg-[#FAFBFD] dark:bg-[#0A1526]">
@@ -38,9 +83,9 @@ export default async function LifeAtCapitalMPage() {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {galleryItems.map((blob) => (
+          {itemsToRender.map((blob) => (
             <article
-              key={blob.pathname || blob.url}
+              key={blob.id || blob.pathname || blob.url}
               className="group overflow-hidden rounded-3xl border border-[#16345F]/10 dark:border-white/10 bg-white dark:bg-[#0F1E35] shadow-sm transition hover:shadow-md flex flex-col justify-between"
             >
               <div className="aspect-[16/10] w-full overflow-hidden bg-gray-100 dark:bg-white/5 relative">

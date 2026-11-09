@@ -141,8 +141,9 @@ export function HomePageView({
     }
   };
 
-  // Dynamic state for Team & Reviews (initialized from server with client refresh)
+  // Dynamic state for Team, Life & Reviews (initialized from server with client refresh)
   const [teamData, setTeamData] = useState<AttorneyBio[]>(initialTeam ?? []);
+  const [lifeData, setLifeData] = useState<LifeMoment[]>(initialLife ?? []);
   const [totalReviews, setTotalReviews] = useState<number>(53);
   const [googleRating, setGoogleRating] = useState<number>(4.8);
   const [googleReviews, setGoogleReviews] = useState<GooglePlaceReview[]>([]);
@@ -151,6 +152,18 @@ export function HomePageView({
     if (initialTeam && initialTeam.length > 0) {
       setTeamData(initialTeam);
     }
+    if (initialLife && initialLife.length > 0) {
+      setLifeData(initialLife);
+    }
+
+    fetch("/api/life")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: LifeMoment[] | null) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLifeData(data);
+        }
+      })
+      .catch(() => {});
 
     fetch("/api/reviews")
       .then((res) => (res.ok ? res.json() : null))
@@ -167,15 +180,32 @@ export function HomePageView({
         }
       })
       .catch(() => {});
-  }, [initialTeam]);
+  }, [initialTeam, initialLife]);
 
   // Estados de carruseles
   const [lifeIndex, setLifeIndex] = useState(0);
+  const [cardsPerView, setCardsPerView] = useState(3);
+  const [isLifePaused, setIsLifePaused] = useState(false);
   const [reviewIndex, setReviewIndex] = useState(0);
+
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      if (window.innerWidth < 640) {
+        setCardsPerView(1);
+      } else if (window.innerWidth < 1024) {
+        setCardsPerView(2);
+      } else {
+        setCardsPerView(3);
+      }
+    };
+    updateCardsPerView();
+    window.addEventListener("resize", updateCardsPerView);
+    return () => window.removeEventListener("resize", updateCardsPerView);
+  }, []);
 
   const t = CONTENT[lang];
 
-  // Sincronizar tema con html y localStorage
+  // Sincronizar tema e idioma con html y localStorage
   useEffect(() => {
     setMounted(true);
     const savedTheme = localStorage.getItem("capm-theme");
@@ -186,6 +216,12 @@ export function HomePageView({
     } else {
       setDarkMode(false);
       document.documentElement.classList.remove("dark");
+    }
+
+    const savedLang = localStorage.getItem("capm-lang");
+    if (savedLang === "en" || savedLang === "es") {
+      setLang(savedLang);
+      setSelectedServiceForm(CONTENT[savedLang].form.matters[0]);
     }
   }, []);
 
@@ -204,6 +240,7 @@ export function HomePageView({
   const toggleLanguage = () => {
     const nextLang = lang === "en" ? "es" : "en";
     setLang(nextLang);
+    localStorage.setItem("capm-lang", nextLang);
     setSelectedServiceForm(CONTENT[nextLang].form.matters[0]);
   };
 
@@ -284,33 +321,86 @@ export function HomePageView({
   const galleryBlobs =
     initialGallery && initialGallery.length > 0 ? initialGallery : photos;
 
-  const lifeMoments = galleryBlobs.map((blob, index) => {
-    const matchingLife = initialLife?.[index];
-    const resolvedUrl =
-      blob.url.startsWith("http")
-        ? blob.url
-        : matchingLife?.image?.startsWith("http")
-          ? matchingLife.image
-          : blob.url;
-    return {
-      url: resolvedUrl,
-      pathname: blob.pathname,
-      alt: blob.alt,
-      title: matchingLife?.title?.[lang] || blob.title[lang],
-      location: matchingLife?.location || blob.location,
-      client: matchingLife?.client || blob.client,
-      caption: matchingLife?.caption?.[lang] || blob.caption[lang],
-      image: resolvedUrl,
-      tag: matchingLife?.tag?.[lang] || blob.tag[lang],
-    };
-  });
+  const activeMoments = lifeData.filter((m) => m.active !== false);
+
+  const lifeMoments =
+    activeMoments.length > 0
+      ? activeMoments.map((moment) => {
+          const fileName = moment.image.split("/").pop()?.toLowerCase() ?? "";
+          const baseName = fileName.replace(/\.[^.]+$/, "");
+          const matchedBlob =
+            moment.image.startsWith("/gallery/") && baseName
+              ? galleryBlobs.find((b) => {
+                  const blobName = b.pathname.split("/").pop()?.toLowerCase() ?? "";
+                  return (
+                    b.url.startsWith("http") &&
+                    (blobName === fileName || blobName.startsWith(baseName))
+                  );
+                })
+              : undefined;
+          const resolvedUrl = matchedBlob?.url || moment.image;
+
+          return {
+            id: moment.id,
+            url: resolvedUrl,
+            pathname: matchedBlob?.pathname || moment.image,
+            alt: `${moment.title?.[lang] || moment.title?.en || "Capital M Law"} - Capital M Law`,
+            title: moment.title?.[lang] || moment.title?.en || "",
+            location: moment.location,
+            client: moment.client,
+            caption: moment.caption?.[lang] || moment.caption?.en || "",
+            image: resolvedUrl,
+            tag: moment.tag?.[lang] || moment.tag?.en || "",
+          };
+        })
+      : galleryBlobs.map((blob, index) => ({
+          id: blob.pathname || `gallery-${index}`,
+          url: blob.url,
+          pathname: blob.pathname,
+          alt: blob.alt,
+          title: blob.title[lang],
+          location: blob.location,
+          client: blob.client,
+          caption: blob.caption[lang],
+          image: blob.url,
+          tag: blob.tag[lang],
+        }));
+
+  const maxLifeIndex = Math.max(0, lifeMoments.length - cardsPerView);
+  const safeLifeIndex = Math.min(lifeIndex, maxLifeIndex);
+  const lifeTranslateExpr =
+    cardsPerView === 1
+      ? `calc(${safeLifeIndex} * (100% + 24px))`
+      : cardsPerView === 2
+        ? `calc(${safeLifeIndex} * (50% + 12px))`
+        : `calc(${safeLifeIndex} * (33.333333% + 8px))`;
 
   const nextLife = () => {
-    setLifeIndex((prev) => (prev + 1 >= lifeMoments.length - 1 ? 0 : prev + 1));
+    setLifeIndex((prev) => {
+      const current = Math.min(prev, maxLifeIndex);
+      return current >= maxLifeIndex ? 0 : current + 1;
+    });
   };
   const prevLife = () => {
-    setLifeIndex((prev) => (prev === 0 ? lifeMoments.length - 2 : prev - 1));
+    setLifeIndex((prev) => {
+      const current = Math.min(prev, maxLifeIndex);
+      return current <= 0 ? maxLifeIndex : current - 1;
+    });
   };
+
+  // Autoplay cada 4.5 segundos con pausa en hover y reinicio al navegar manualmente
+  useEffect(() => {
+    if (isLifePaused || maxLifeIndex <= 0) return;
+
+    const intervalId = window.setInterval(() => {
+      setLifeIndex((prev) => {
+        const current = Math.min(prev, maxLifeIndex);
+        return current >= maxLifeIndex ? 0 : current + 1;
+      });
+    }, 4500);
+
+    return () => window.clearInterval(intervalId);
+  }, [isLifePaused, maxLifeIndex, lifeIndex]);
 
   const nextReview = () => {
     setReviewIndex((prev) => (prev + 1 >= FIGMA_REVIEWS.length ? 0 : prev + 1));
@@ -1071,7 +1161,12 @@ export function HomePageView({
       </section>
 
       {/* 8. CARRUSEL: LIFE AT CAPITAL M */}
-      <section id="life" className="py-20 px-4 max-w-[1240px] mx-auto relative z-10 space-y-10">
+      <section
+        id="life"
+        onMouseEnter={() => setIsLifePaused(true)}
+        onMouseLeave={() => setIsLifePaused(false)}
+        className="py-20 px-4 max-w-[1240px] mx-auto relative z-10 space-y-10"
+      >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C01072]/10 text-[#C01072] dark:text-[#F472B6] text-xs font-semibold uppercase tracking-wider">
@@ -1105,11 +1200,11 @@ export function HomePageView({
         <div className="overflow-hidden">
           <div
             className="flex gap-6 transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${lifeIndex * (100 / 2)}%)` }}
+            style={{ transform: `translateX(-${lifeTranslateExpr})` }}
           >
             {lifeMoments.map((blob, idx) => (
               <div
-                key={idx}
+                key={blob.id || idx}
                 className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 bg-white dark:bg-[#0F223D] rounded-3xl p-5 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col justify-between"
               >
                 <div className="space-y-4">
@@ -1148,6 +1243,24 @@ export function HomePageView({
             ))}
           </div>
         </div>
+
+        {maxLifeIndex > 0 && (
+          <div className="flex items-center justify-center gap-2 pt-2">
+            {Array.from({ length: maxLifeIndex + 1 }).map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setLifeIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  safeLifeIndex === idx
+                    ? "w-7 bg-[#C01072]"
+                    : "w-2 bg-gray-300 dark:bg-white/20 hover:bg-[#16345F]/50"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 9. PRUEBA SOCIAL, CALIFICACIÓN GOOGLE & TARJETAS PROFESIONALES */}

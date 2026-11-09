@@ -1,18 +1,25 @@
 "use client";
 
-import { SearchX, SlidersHorizontal, X } from "lucide-react";
+import { Globe, SearchX, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBlogFilters } from "@/hooks/use-blog-filters";
-import type { BlogPostSummary, BlogSort } from "@/types/blog";
+import type { BlogLanguage, BlogPostSummary, BlogSort } from "@/types/blog";
 import { BlogSearchBar } from "./blog-search-bar";
 import { BlogTagFilter } from "./blog-tag-filter";
 import { FeaturedPosts } from "./featured-posts";
 import { PostCard } from "./post-card";
 
-const SORT_LABELS: Record<BlogSort, string> = {
-  newest: "Newest first",
-  oldest: "Oldest first",
-  quick: "Quick reads",
+const SORT_LABELS: Record<"en" | "es", Record<BlogSort, string>> = {
+  en: {
+    newest: "Newest first",
+    oldest: "Oldest first",
+    quick: "Quick reads",
+  },
+  es: {
+    newest: "Más recientes",
+    oldest: "Más antiguos",
+    quick: "Lecturas rápidas",
+  },
 };
 
 /**
@@ -27,28 +34,90 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
     hasActiveFilters,
     availableTags,
     categoryCounts,
+    languageCounts,
+    languageScopedCount,
     setQuery,
     setCategory,
+    setLanguage,
     toggleTag,
     setSort,
     reset,
   } = useBlogFilters(posts);
 
-  const featured = posts.filter((p) => p.featured).slice(0, 3);
+  const isEs = state.language === "es";
+  const hasSearchOrTopicFilters =
+    state.query.trim() !== "" || state.category !== null || state.tags.length > 0;
+
+  const featured = filtered.filter((p) => p.featured).slice(0, 3);
   const featuredIds = new Set(featured.map((p) => p.id));
   // Avoid duplicates: when the featured block is visible, the grid shows the rest.
-  const gridPosts = hasActiveFilters ? filtered : filtered.filter((p) => !featuredIds.has(p.id));
+  const gridPosts = hasSearchOrTopicFilters
+    ? filtered
+    : filtered.filter((p) => !featuredIds.has(p.id));
 
   return (
     <>
       {/* Sticky filter panel */}
       <div className="sticky top-[72px] z-30 -mx-4 mb-10 border-b border-[#16345F]/5 bg-white/85 px-4 pb-5 pt-4 backdrop-blur-xl dark:border-white/5 dark:bg-[#0A1526]/85 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[0_20px_50px_-30px_rgba(22,52,95,0.35)]">
         <div className="space-y-5">
-          <BlogSearchBar value={state.query} onChange={setQuery} pending={isStale} />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <BlogSearchBar value={state.query} onChange={setQuery} pending={isStale} />
+            </div>
+
+            {/* Language Selector (All / EN / ES) */}
+            <div
+              role="group"
+              aria-label="Filter articles by language"
+              className="inline-flex items-center gap-1 self-start rounded-2xl border border-[#16345F]/10 bg-[#16345F]/[0.03] p-1.5 dark:border-white/10 dark:bg-white/[0.04] sm:self-stretch"
+            >
+              <span className="hidden items-center gap-1 pl-2 pr-1 text-xs font-semibold text-[#706F6F] dark:text-gray-400 lg:inline-flex">
+                <Globe className="size-3.5 text-[#C01072]" />
+                <span>{isEs ? "Idioma:" : "Language:"}</span>
+              </span>
+
+              {(
+                [
+                  { value: "all", label: isEs ? "Todos" : "All", count: languageCounts.all },
+                  { value: "en", label: "EN · English", count: languageCounts.en },
+                  { value: "es", label: "ES · Español", count: languageCounts.es },
+                ] as const
+              ).map((opt) => {
+                const active = state.language === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setLanguage(opt.value)}
+                    aria-pressed={active}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all",
+                      active
+                        ? "bg-[#16345F] text-white shadow-xs dark:bg-[#C01072] dark:text-white"
+                        : "text-[#16345F]/75 hover:bg-white/70 hover:text-[#16345F] dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white",
+                    )}
+                  >
+                    <span>{opt.label}</span>
+                    <span
+                      className={cn(
+                        "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
+                        active
+                          ? "bg-white/20 text-white"
+                          : "bg-[#16345F]/10 text-[#16345F] dark:bg-white/10 dark:text-gray-300",
+                      )}
+                    >
+                      {opt.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <BlogTagFilter
             activeCategory={state.category}
             categoryCounts={categoryCounts}
-            totalCount={posts.length}
+            totalCount={languageScopedCount}
             onCategoryChange={setCategory}
             tags={availableTags}
             activeTags={state.tags}
@@ -57,24 +126,39 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
         </div>
       </div>
 
-      {!hasActiveFilters && <FeaturedPosts posts={featured} />}
+      {!hasSearchOrTopicFilters && <FeaturedPosts posts={featured} />}
 
       {/* Results header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-xl font-semibold text-[#16345F] dark:text-white">
-            {hasActiveFilters ? "Results" : "Latest Articles"}
+            {hasActiveFilters
+              ? isEs
+                ? "Resultados"
+                : "Results"
+              : isEs
+                ? "Artículos Recientes"
+                : "Latest Articles"}
           </h2>
           <span className="text-sm text-[#706F6F] dark:text-gray-400" aria-live="polite">
-            {filtered.length} {filtered.length === 1 ? "article" : "articles"}
+            {filtered.length}{" "}
+            {filtered.length === 1
+              ? isEs
+                ? "artículo"
+                : "article"
+              : isEs
+                ? "artículos"
+                : "articles"}
           </span>
           {hasActiveFilters && (
             <ActiveFilterChips
               query={state.query}
               category={state.category}
+              language={state.language}
               tags={state.tags}
               onClearQuery={() => setQuery("")}
               onClearCategory={() => setCategory(null)}
+              onClearLanguage={() => setLanguage("all")}
               onRemoveTag={toggleTag}
               onReset={reset}
             />
@@ -89,7 +173,7 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
             onChange={(e) => setSort(e.target.value as BlogSort)}
             className="rounded-lg border border-[#16345F]/10 bg-white py-1.5 pl-2 pr-8 text-sm font-medium text-[#16345F] outline-none focus:border-[#9BB8E0] dark:border-white/10 dark:bg-[#0F1E35] dark:text-white"
           >
-            {Object.entries(SORT_LABELS).map(([value, label]) => (
+            {Object.entries(SORT_LABELS[isEs ? "es" : "en"]).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
@@ -110,10 +194,12 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
           ))}
         </div>
       ) : hasActiveFilters ? (
-        <EmptyState onReset={reset} />
+        <EmptyState isEs={isEs} onReset={reset} />
       ) : posts.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-[#9BB8E0] p-12 text-center text-[#706F6F]">
-          No articles published yet. Check back soon.
+          {isEs
+            ? "Aún no hay artículos publicados. Vuelve pronto."
+            : "No articles published yet. Check back soon."}
         </p>
       ) : null}
     </>
@@ -123,17 +209,34 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
 function ActiveFilterChips(props: {
   query: string;
   category: string | null;
+  language: BlogLanguage | "all";
   tags: string[];
   onClearQuery: () => void;
   onClearCategory: () => void;
+  onClearLanguage: () => void;
   onRemoveTag: (tag: string) => void;
   onReset: () => void;
 }) {
   const chip =
     "inline-flex items-center gap-1 rounded-full bg-[#9BB8E0]/20 py-1 pl-3 pr-1.5 text-xs font-medium text-[#16345F] dark:bg-white/10 dark:text-gray-200";
   const x = "rounded-full p-0.5 hover:bg-[#16345F]/10 dark:hover:bg-white/10";
+  const isEs = props.language === "es";
+
   return (
     <div className="flex flex-wrap items-center gap-1.5 sm:ml-2">
+      {props.language !== "all" && (
+        <span className={chip}>
+          {props.language === "es" ? "ES · Español" : "EN · English"}
+          <button
+            type="button"
+            className={x}
+            onClick={props.onClearLanguage}
+            aria-label="Clear language filter"
+          >
+            <X className="size-3" />
+          </button>
+        </span>
+      )}
       {props.query.trim() && (
         <span className={chip}>
           “{props.query.trim()}”
@@ -159,22 +262,28 @@ function ActiveFilterChips(props: {
         </span>
       ))}
       <button type="button" onClick={props.onReset} className="ml-1 text-xs font-semibold text-[#C01072] hover:underline dark:text-[#F472B6]">
-        Clear all
+        {isEs ? "Limpiar filtros" : "Clear all"}
       </button>
     </div>
   );
 }
 
-function EmptyState({ onReset }: { onReset: () => void }) {
+function EmptyState({ isEs, onReset }: { isEs: boolean; onReset: () => void }) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-[#9BB8E0] bg-[#9BB8E0]/5 px-6 py-16 text-center">
       <span className="flex size-14 items-center justify-center rounded-2xl bg-white text-[#16345F] shadow-sm dark:bg-white/10 dark:text-[#9BB8E0]">
         <SearchX className="size-6" />
       </span>
       <div>
-        <p className="text-lg font-semibold text-[#16345F] dark:text-white">No articles match your filters</p>
+        <p className="text-lg font-semibold text-[#16345F] dark:text-white">
+          {isEs
+            ? "No hay artículos que coincidan con tus filtros"
+            : "No articles match your filters"}
+        </p>
         <p className="mt-1 text-sm text-[#706F6F] dark:text-gray-400">
-          Try different keywords or remove a topic. Can’t find your answer? Ask our lawyers directly.
+          {isEs
+            ? "Prueba cambiando el idioma o eliminando algún filtro. ¿Necesitas asesoría directa?"
+            : "Try switching the language or removing a topic. Can’t find your answer? Ask our lawyers directly."}
         </p>
       </div>
       <div className="flex flex-wrap justify-center gap-3">
@@ -183,7 +292,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
           onClick={onReset}
           className="rounded-xl bg-[#16345F] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4479]"
         >
-          Clear filters
+          {isEs ? "Ver todos los artículos" : "Clear filters"}
         </button>
         <a
           href="https://calendly.com/capital-m-law-"
@@ -191,7 +300,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
           rel="noopener noreferrer"
           className="rounded-xl border border-[#C01072] px-5 py-2.5 text-sm font-semibold text-[#C01072] transition hover:bg-[#C01072] hover:text-white"
         >
-          Book a consultation ($67)
+          {isEs ? "Agendar consulta ($67)" : "Book a consultation ($67)"}
         </a>
       </div>
     </div>

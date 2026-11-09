@@ -70,6 +70,9 @@ export function HomeBlogSection({
     };
   }, [initialPosts]);
 
+  const langPosts = posts.filter((p) => (p.language ?? "en") === lang);
+  const displayedPosts = (langPosts.length > 0 ? langPosts : posts).slice(0, 3);
+
   return (
     <section
       id="blog"
@@ -88,7 +91,7 @@ export function HomeBlogSection({
           </div>
 
           <Link
-            href="/blog"
+            href={`/blog?lang=${lang}`}
             className="inline-flex items-center gap-1.5 text-sm font-bold text-[#C01072] dark:text-[#F472B6] hover:underline self-start md:self-auto group"
           >
             <span>{lang === "es" ? "Ver todos los artículos" : "View all articles"}</span>
@@ -110,8 +113,8 @@ export function HomeBlogSection({
                 <div className="h-14 w-full rounded bg-gray-200 dark:bg-white/10" />
               </div>
             ))
-          ) : posts.length > 0 ? (
-            posts.map((post) => (
+          ) : displayedPosts.length > 0 ? (
+            displayedPosts.map((post) => (
               <article
                 key={post.id}
                 className="group relative bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-all duration-300 flex flex-col justify-between"
@@ -123,11 +126,14 @@ export function HomeBlogSection({
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
                       <CategoryBadge
                         category={post.category}
                         className="bg-white/95 dark:bg-[#0A1526]/90 backdrop-blur shadow-xs text-[10px]"
                       />
+                      <span className="rounded-full bg-[#16345F]/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs backdrop-blur">
+                        {(post.language ?? "en").toUpperCase()}
+                      </span>
                     </div>
                   </div>
 

@@ -30,8 +30,11 @@ export function PostCard({ post, onTagClick, activeTags = [], className }: PostC
           alt={post.title}
           className="size-full transition-transform duration-500 group-hover:scale-[1.04]"
         />
-        <div className="absolute left-4 top-4">
+        <div className="absolute left-4 top-4 flex items-center gap-1.5">
           <CategoryBadge category={post.category} className="bg-white/95 shadow-sm backdrop-blur dark:bg-[#0A1526]/90" />
+          <span className="rounded-full bg-[#16345F]/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur">
+            {(post.language ?? "en").toUpperCase()}
+          </span>
         </div>
       </div>
 

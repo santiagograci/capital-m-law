@@ -24,6 +24,16 @@ export function AdminPostsTable({ posts }: { posts: BlogPostSummary[] }) {
           <li key={post.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-2">
+                <span
+                  className={cn(
+                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ring-1",
+                    (post.language ?? "en") === "es"
+                      ? "bg-[#C01072]/10 text-[#C01072] ring-[#C01072]/25 dark:bg-[#C01072]/20 dark:text-[#F472B6] dark:ring-[#F472B6]/30"
+                      : "bg-[#16345F]/10 text-[#16345F] ring-[#16345F]/20 dark:bg-[#9BB8E0]/15 dark:text-[#9BB8E0] dark:ring-[#9BB8E0]/30",
+                  )}
+                >
+                  {(post.language ?? "en") === "es" ? "ES · Español" : "EN · English"}
+                </span>
                 <CategoryBadge category={post.category} />
                 {post.featured && (
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[#C01072]">

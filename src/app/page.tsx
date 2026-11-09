@@ -19,7 +19,7 @@ export default async function HomePage() {
       initialTeam={team}
       initialLife={life}
       initialGallery={galleryPhotos}
-      initialPosts={posts.slice(0, 3)}
+      initialPosts={posts}
     />
   );
 }

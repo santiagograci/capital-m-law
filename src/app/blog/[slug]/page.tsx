@@ -82,6 +82,9 @@ async function Article({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <CategoryBadge category={post.category} />
+            <span className="rounded-full bg-[#16345F]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#16345F] dark:bg-white/10 dark:text-[#9BB8E0]">
+              {(post.language ?? "en") === "es" ? "ES · Español" : "EN · English"}
+            </span>
             {post.featured && (
               <span className="rounded-full bg-[#C01072] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
                 Featured

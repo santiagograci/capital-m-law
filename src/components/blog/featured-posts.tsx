@@ -41,6 +41,9 @@ export function FeaturedPosts({ posts }: { posts: BlogPostSummary[] }) {
                 <Star className="size-3 fill-current" /> Featured
               </span>
               <CategoryBadge category={main.category} className="bg-white/90 text-[#16345F]" />
+              <span className="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
+                {(main.language ?? "en").toUpperCase()}
+              </span>
             </div>
             <h3 className="max-w-2xl text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
               <Link href={`/blog/${main.slug}`} className="after:absolute after:inset-0 after:content-['']">

@@ -4,8 +4,10 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useReducer, useRef }
 import { useSearchParams } from "next/navigation";
 import {
   BLOG_CATEGORIES,
+  BLOG_LANGUAGES,
   type BlogCategory,
   type BlogFilterState,
+  type BlogLanguage,
   type BlogPostSummary,
   type BlogSort,
 } from "@/types/blog";
@@ -17,6 +19,7 @@ import {
 type Action =
   | { type: "setQuery"; query: string }
   | { type: "setCategory"; category: BlogCategory | null }
+  | { type: "setLanguage"; language: BlogLanguage | "all" }
   | { type: "toggleTag"; tag: string }
   | { type: "setSort"; sort: BlogSort }
   | { type: "reset" };
@@ -24,6 +27,7 @@ type Action =
 export const INITIAL_FILTERS: BlogFilterState = {
   query: "",
   category: null,
+  language: "all",
   tags: [],
   sort: "newest",
 };
@@ -35,6 +39,8 @@ function reducer(state: BlogFilterState, action: Action): BlogFilterState {
     case "setCategory":
       // Clicking the active category toggles it off.
       return { ...state, category: state.category === action.category ? null : action.category };
+    case "setLanguage":
+      return { ...state, language: action.language };
     case "toggleTag": {
       const has = state.tags.some((t) => t.toLowerCase() === action.tag.toLowerCase());
       return {
@@ -59,10 +65,15 @@ const SORTS: BlogSort[] = ["newest", "oldest", "quick"];
 
 function fromSearchParams(params: URLSearchParams): BlogFilterState {
   const category = params.get("category");
+  const lang = params.get("lang") as BlogLanguage | "all" | null;
   const sort = params.get("sort") as BlogSort | null;
   return {
     query: params.get("q") ?? "",
     category: BLOG_CATEGORIES.includes(category as BlogCategory) ? (category as BlogCategory) : null,
+    language:
+      lang && (BLOG_LANGUAGES.includes(lang as BlogLanguage) || lang === "all")
+        ? (lang as BlogLanguage | "all")
+        : "all",
     tags: (params.get("tags") ?? "").split(",").map((t) => t.trim()).filter(Boolean),
     sort: sort && SORTS.includes(sort) ? sort : "newest",
   };
@@ -70,6 +81,7 @@ function fromSearchParams(params: URLSearchParams): BlogFilterState {
 
 function toQueryString(state: BlogFilterState): string {
   const p = new URLSearchParams();
+  if (state.language !== "all") p.set("lang", state.language);
   if (state.query.trim()) p.set("q", state.query.trim());
   if (state.category) p.set("category", state.category);
   if (state.tags.length) p.set("tags", state.tags.join(","));
@@ -91,6 +103,8 @@ export function filterPosts(posts: BlogPostSummary[], f: BlogFilterState): BlogP
   const wantedTags = f.tags.map((t) => t.toLowerCase());
 
   const result = posts.filter((post) => {
+    const postLang = post.language === "es" ? "es" : "en";
+    if (f.language !== "all" && postLang !== f.language) return false;
     if (f.category && post.category !== f.category) return false;
 
     // Tags: AND semantics — every selected tag must be on the post.
@@ -120,20 +134,31 @@ export function filterPosts(posts: BlogPostSummary[], f: BlogFilterState): BlogP
 /*                                   Hook                                     */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Owns all blog filter state.
- *
- * - `useReducer` keeps transitions explicit and testable.
- * - `useDeferredValue` keeps typing in the search box responsive.
- * - State is mirrored to the URL (`?q=&category=&tags=&sort=`) with
- *   `history.replaceState`, so filtered views are shareable / bookmarkable
- *   and survive reloads, without triggering server round-trips.
- */
 export function useBlogFilters(posts: BlogPostSummary[]) {
   const searchParams = useSearchParams();
   const [state, dispatch] = useReducer(reducer, searchParams, (sp) =>
     fromSearchParams(new URLSearchParams(sp.toString())),
   );
+
+  // Sync with global language stored in localStorage ("capm-lang") if no explicit ?lang= param was passed
+  const syncedLangRef = useRef(false);
+  useEffect(() => {
+    if (syncedLangRef.current) return;
+    syncedLangRef.current = true;
+    const urlLang = searchParams.get("lang");
+    if (urlLang) return;
+    try {
+      const savedLang = localStorage.getItem("capm-lang");
+      if (savedLang === "en" || savedLang === "es") {
+        const hasPostsInLang = posts.some((p) => (p.language ?? "en") === savedLang);
+        if (hasPostsInLang) {
+          dispatch({ type: "setLanguage", language: savedLang });
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [posts, searchParams]);
 
   const deferredState = useDeferredValue(state);
   const isStale = deferredState !== state;
@@ -153,10 +178,18 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
 
   const filtered = useMemo(() => filterPosts(posts, deferredState), [posts, deferredState]);
 
+  const languageScopedPosts = useMemo(
+    () =>
+      state.language === "all"
+        ? posts
+        : posts.filter((p) => (p.language === "es" ? "es" : "en") === state.language),
+    [posts, state.language],
+  );
+
   /** Tags ranked by frequency → most useful chips first. */
   const availableTags = useMemo(() => {
     const counts = new Map<string, { label: string; count: number }>();
-    for (const p of posts) {
+    for (const p of languageScopedPosts) {
       for (const t of p.tags) {
         const key = t.toLowerCase();
         const entry = counts.get(key);
@@ -165,16 +198,40 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
       }
     }
     return [...counts.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-  }, [posts]);
+  }, [languageScopedPosts]);
 
   const categoryCounts = useMemo(() => {
     const counts = Object.fromEntries(BLOG_CATEGORIES.map((c) => [c, 0])) as Record<BlogCategory, number>;
-    for (const p of posts) counts[p.category]++;
+    for (const p of languageScopedPosts) counts[p.category]++;
     return counts;
+  }, [languageScopedPosts]);
+
+  const languageCounts = useMemo(() => {
+    let en = 0;
+    let es = 0;
+    for (const p of posts) {
+      if (p.language === "es") es++;
+      else en++;
+    }
+    return { all: posts.length, en, es };
   }, [posts]);
 
   const hasActiveFilters =
-    state.query.trim() !== "" || state.category !== null || state.tags.length > 0;
+    state.query.trim() !== "" ||
+    state.category !== null ||
+    state.language !== "all" ||
+    state.tags.length > 0;
+
+  const setLanguage = useCallback((language: BlogLanguage | "all") => {
+    dispatch({ type: "setLanguage", language });
+    if (language === "en" || language === "es") {
+      try {
+        localStorage.setItem("capm-lang", language);
+      } catch {
+        // ignore storage errors
+      }
+    }
+  }, []);
 
   return {
     state,
@@ -183,8 +240,11 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
     hasActiveFilters,
     availableTags,
     categoryCounts,
+    languageCounts,
+    languageScopedCount: languageScopedPosts.length,
     setQuery: useCallback((query: string) => dispatch({ type: "setQuery", query }), []),
     setCategory: useCallback((category: BlogCategory | null) => dispatch({ type: "setCategory", category }), []),
+    setLanguage,
     toggleTag: useCallback((tag: string) => dispatch({ type: "toggleTag", tag }), []),
     setSort: useCallback((sort: BlogSort) => dispatch({ type: "setSort", sort }), []),
     reset: useCallback(() => dispatch({ type: "reset" }), []),

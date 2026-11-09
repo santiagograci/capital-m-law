@@ -2,7 +2,14 @@
 
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { BLOG_CATEGORIES, type ActionResult, type BlogCategory, type BlogPost } from "@/types/blog";
+import {
+  BLOG_CATEGORIES,
+  BLOG_LANGUAGES,
+  type ActionResult,
+  type BlogCategory,
+  type BlogLanguage,
+  type BlogPost,
+} from "@/types/blog";
 import { createSession, destroySession, requireStaff, verifyPassword } from "./auth";
 import { BLOG_TAG } from "./queries";
 import {
@@ -77,6 +84,8 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
   const title = str(formData, "title");
   const author = str(formData, "author");
   const category = str(formData, "category") as BlogCategory;
+  const rawLang = str(formData, "language") as BlogLanguage;
+  const language: BlogLanguage = BLOG_LANGUAGES.includes(rawLang) ? rawLang : "en";
   const excerpt = str(formData, "excerpt");
   const content = String(formData.get("content") ?? "").trim();
   const tags = parseTags(str(formData, "tags"));
@@ -131,6 +140,7 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
         title,
         author,
         category,
+        language,
         tags,
         coverImage,
         excerpt,

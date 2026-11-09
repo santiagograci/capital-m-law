@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { PageTransitionProvider } from "@/components/transitions/page-transition-provider";
 import { FloatingContactButton } from "@/components/ui/micro-interactions";
 import { BackToTop } from "@/components/ui/back-to-top";
@@ -40,6 +41,7 @@ export default function RootLayout({
           <FloatingContactButton />
           <BackToTop />
         </PageTransitionProvider>
+        <Analytics />
       </body>
     </html>
   );

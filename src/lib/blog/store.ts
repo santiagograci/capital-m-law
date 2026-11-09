@@ -30,6 +30,13 @@ const inMemoryUploads = new Map<string, { body: Buffer; type: string }>();
 // Serialize writes within this process to avoid lost updates.
 let writeQueue: Promise<unknown> = Promise.resolve();
 
+function normalizePosts(raw: unknown[]): BlogPost[] {
+  return (raw as BlogPost[]).map((p) => ({
+    ...p,
+    language: p.language === "es" ? "es" : "en",
+  }));
+}
+
 async function readRaw(bypassCache = false): Promise<BlogPost[]> {
   if (
     !bypassCache &&
@@ -58,7 +65,7 @@ async function readRaw(bypassCache = false): Promise<BlogPost[]> {
         if (res.ok) {
           const parsed = await res.json();
           if (Array.isArray(parsed) && parsed.length > 0) {
-            inMemoryPosts = parsed as BlogPost[];
+            inMemoryPosts = normalizePosts(parsed);
             inMemoryPostsAt = Date.now();
             return inMemoryPosts;
           }
@@ -74,7 +81,7 @@ async function readRaw(bypassCache = false): Promise<BlogPost[]> {
     const tmpRaw = await fs.readFile(TMP_POSTS_FILE, "utf8");
     const parsed = JSON.parse(tmpRaw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      inMemoryPosts = parsed as BlogPost[];
+      inMemoryPosts = normalizePosts(parsed);
       inMemoryPostsAt = Date.now();
       return inMemoryPosts;
     }
@@ -87,7 +94,7 @@ async function readRaw(bypassCache = false): Promise<BlogPost[]> {
     const raw = await fs.readFile(POSTS_FILE, "utf8");
     const parsed = JSON.parse(raw) as unknown;
     if (Array.isArray(parsed) && parsed.length > 0) {
-      inMemoryPosts = parsed as BlogPost[];
+      inMemoryPosts = normalizePosts(parsed);
       inMemoryPostsAt = Date.now();
       return inMemoryPosts;
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -355,10 +355,30 @@ const VISA_CATEGORIES: VisaCategory[] = [
 ];
 
 export function VisasImmigrationPageView() {
-  const [lang, setLang] = useState<"en" | "es">("es");
+  const [lang, setLang] = useState<"en" | "es">("en");
   const [activeCategoryId, setActiveCategoryId] = useState<"v" | "m" | "r">("v");
   const [activeVisaIndex, setActiveVisaIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<"interactive" | "grid">("interactive");
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("capm-lang");
+      if (saved === "en" || saved === "es") {
+        setLang(saved);
+      }
+    } catch {
+      // Fallback to 'en'
+    }
+  }, []);
+
+  const handleLanguageChange = (nextLang: "en" | "es") => {
+    setLang(nextLang);
+    try {
+      window.localStorage.setItem("capm-lang", nextLang);
+    } catch {
+      // Ignore storage errors
+    }
+  };
 
   const activeCategory =
     VISA_CATEGORIES.find((c) => c.id === activeCategoryId) || VISA_CATEGORIES[0];
@@ -399,7 +419,7 @@ export function VisasImmigrationPageView() {
 
         <div className="flex items-center gap-2 bg-white dark:bg-[#070E1A] p-1.5 rounded-2xl border border-[#16345F]/10 dark:border-white/10 shadow-xs">
           <button
-            onClick={() => setLang("en")}
+            onClick={() => handleLanguageChange("en")}
             className={cn(
               "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               lang === "en"
@@ -410,7 +430,7 @@ export function VisasImmigrationPageView() {
             English
           </button>
           <button
-            onClick={() => setLang("es")}
+            onClick={() => handleLanguageChange("es")}
             className={cn(
               "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               lang === "es"

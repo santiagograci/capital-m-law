@@ -122,7 +122,7 @@ export function mapBlobsToGalleryPhotos(
   const remainingBlobs = validBlobs.filter((b) => !usedUrls.has(b.url));
   let remainingIdx = 0;
 
-  return mappedCards.map((card) => {
+  const baseCards = mappedCards.map((card) => {
     if (card.url.startsWith("/gallery/") && remainingIdx < remainingBlobs.length) {
       const blob = remainingBlobs[remainingIdx++];
       return {
@@ -133,6 +133,32 @@ export function mapBlobsToGalleryPhotos(
     }
     return card;
   });
+
+  // Include any additional blobs beyond the initial 4 cards
+  const extraBlobs = remainingBlobs.slice(remainingIdx).map((blob, index) => {
+    const rawName =
+      blob.pathname
+        .split("/")
+        .pop()
+        ?.replace(/\.[^.]+$/, "")
+        .replace(/[-_]+/g, " ") ?? `Moment ${photos.length + index + 1}`;
+    const formattedTitle = rawName.replace(/\b\w/g, (c) => c.toUpperCase());
+    return {
+      url: blob.url,
+      pathname: blob.pathname,
+      alt: `${formattedTitle} - Capital M Law`,
+      title: { en: formattedTitle, es: formattedTitle },
+      location: "Medellín, Colombia",
+      client: "Capital M Clients",
+      caption: {
+        en: "Legal milestone with our international community in Medellín.",
+        es: "Hito legal junto a nuestra comunidad internacional en Medellín.",
+      },
+      tag: { en: "Community", es: "Comunidad" },
+    };
+  });
+
+  return [...baseCards, ...extraBlobs];
 }
 
 const fetchCachedGalleryBlobs = unstable_cache(

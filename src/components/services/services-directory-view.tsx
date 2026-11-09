@@ -47,6 +47,26 @@ export function ServicesDirectoryView() {
   const [highlightedAnchor, setHighlightedAnchor] = useState<string | null>(null);
 
   useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("capm-lang");
+      if (saved === "en" || saved === "es") {
+        setLang(saved);
+      }
+    } catch {
+      // Fallback to 'en'
+    }
+  }, []);
+
+  const handleLanguageChange = (nextLang: "en" | "es") => {
+    setLang(nextLang);
+    try {
+      window.localStorage.setItem("capm-lang", nextLang);
+    } catch {
+      // Ignore storage errors
+    }
+  };
+
+  useEffect(() => {
     let highlightTimer: ReturnType<typeof setTimeout> | null = null;
     let scrollTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -138,7 +158,7 @@ export function ServicesDirectoryView() {
 
           <div className="flex items-center gap-2 self-start md:self-auto bg-white dark:bg-[#070E1A] p-1.5 rounded-2xl border border-[#16345F]/10 dark:border-white/10 shadow-xs">
             <button
-              onClick={() => setLang("en")}
+              onClick={() => handleLanguageChange("en")}
               className={cn(
                 "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
                 lang === "en"
@@ -149,7 +169,7 @@ export function ServicesDirectoryView() {
               English
             </button>
             <button
-              onClick={() => setLang("es")}
+              onClick={() => handleLanguageChange("es")}
               className={cn(
                 "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
                 lang === "es"

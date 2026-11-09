@@ -21,7 +21,12 @@ import {
 import { cn } from "@/lib/utils";
 import { savePostAction } from "@/lib/blog/actions";
 import { computeReadingTime, slugify } from "@/lib/blog/utils";
-import { BLOG_CATEGORIES, type BlogCategory, type BlogPost } from "@/types/blog";
+import {
+  BLOG_CATEGORIES,
+  type BlogCategory,
+  type BlogLanguage,
+  type BlogPost,
+} from "@/types/blog";
 import { PostContent } from "../post-content";
 import { CategoryBadge } from "../category-badge";
 
@@ -34,6 +39,7 @@ interface FormValues {
   slug: string;
   author: string;
   category: BlogCategory;
+  language: BlogLanguage;
   tags: string;
   excerpt: string;
   content: string;
@@ -47,6 +53,7 @@ const EMPTY: FormValues = {
   slug: "",
   author: TEAM_AUTHORS[0],
   category: "Visas",
+  language: "en",
   tags: "",
   excerpt: "",
   content: "",
@@ -62,6 +69,7 @@ function fromPost(post: BlogPost): FormValues {
     slug: post.slug,
     author: post.author,
     category: post.category,
+    language: post.language === "es" ? "es" : "en",
     tags: post.tags.join(", "),
     excerpt: post.excerpt,
     content: post.content,
@@ -330,6 +338,41 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
         </Panel>
 
         <Panel title="Details">
+          <Field label="Language / Idioma" htmlFor="language">
+            <select
+              id="language"
+              name="language"
+              value={values.language}
+              onChange={(e) => set("language", e.target.value as BlogLanguage)}
+              className={cn(inputCls, "h-11 font-medium")}
+            >
+              <option value="en">English (EN)</option>
+              <option value="es">Español (ES)</option>
+            </select>
+            <div className="mt-2 grid grid-cols-2 gap-1.5 rounded-xl bg-[#16345F]/5 p-1 text-xs font-semibold dark:bg-white/5">
+              {(
+                [
+                  { code: "en", label: "English" },
+                  { code: "es", label: "Español" },
+                ] as const
+              ).map((langOpt) => (
+                <button
+                  key={langOpt.code}
+                  type="button"
+                  onClick={() => set("language", langOpt.code)}
+                  className={cn(
+                    "rounded-lg py-1.5 transition",
+                    values.language === langOpt.code
+                      ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
+                      : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white",
+                  )}
+                >
+                  {langOpt.code.toUpperCase()} · {langOpt.label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
           <Field label="Author" error={errors.author} htmlFor="author">
             <input
               id="author"

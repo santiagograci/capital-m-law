@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -25,6 +25,26 @@ interface ServiceDetailViewProps {
 export function ServiceDetailView({ service }: ServiceDetailViewProps) {
   const [lang, setLang] = useState<"en" | "es">("en");
 
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("capm-lang");
+      if (saved === "en" || saved === "es") {
+        setLang(saved);
+      }
+    } catch {
+      // Fallback to 'en'
+    }
+  }, []);
+
+  const handleLanguageChange = (nextLang: "en" | "es") => {
+    setLang(nextLang);
+    try {
+      window.localStorage.setItem("capm-lang", nextLang);
+    } catch {
+      // Ignore storage errors
+    }
+  };
+
   return (
     <div className="space-y-16">
       {/* Top Navigation & Language switcher */}
@@ -39,9 +59,9 @@ export function ServiceDetailView({ service }: ServiceDetailViewProps) {
 
         <div className="flex items-center gap-2 bg-white dark:bg-[#070E1A] p-1.5 rounded-2xl border border-[#16345F]/10 dark:border-white/10 shadow-xs">
           <button
-            onClick={() => setLang("en")}
+            onClick={() => handleLanguageChange("en")}
             className={cn(
-              "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all",
+              "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               lang === "en"
                 ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
                 : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white"
@@ -50,9 +70,9 @@ export function ServiceDetailView({ service }: ServiceDetailViewProps) {
             English
           </button>
           <button
-            onClick={() => setLang("es")}
+            onClick={() => handleLanguageChange("es")}
             className={cn(
-              "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all",
+              "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
               lang === "es"
                 ? "bg-[#16345F] text-white shadow-xs dark:bg-[#9BB8E0] dark:text-[#0A1526]"
                 : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white"

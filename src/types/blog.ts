@@ -14,12 +14,18 @@ export const BLOG_CATEGORIES = [
 
 export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
 
+export const BLOG_LANGUAGES = ["en", "es"] as const;
+
+export type BlogLanguage = (typeof BLOG_LANGUAGES)[number];
+
 export interface BlogPost {
   id: string;
   slug: string;
   title: string;
   author: string;
   category: BlogCategory;
+  /** Article language: 'en' (English) or 'es' (Español). */
+  language: BlogLanguage;
   /** Free-form tags used by the public tag filter (e.g. "Digital Nomad", "M Visa"). */
   tags: string[];
   coverImage: string | null;
@@ -43,6 +49,7 @@ export type BlogSort = "newest" | "oldest" | "quick";
 export interface BlogFilterState {
   query: string;
   category: BlogCategory | null;
+  language: BlogLanguage | "all";
   tags: string[];
   sort: BlogSort;
 }
