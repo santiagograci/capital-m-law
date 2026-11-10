@@ -366,41 +366,39 @@ export function HomePageView({
           tag: blob.tag[lang],
         }));
 
-  const maxLifeIndex = Math.max(0, lifeMoments.length - cardsPerView);
-  const safeLifeIndex = Math.min(lifeIndex, maxLifeIndex);
-  const lifeTranslateExpr =
+  const totalMoments = lifeMoments.length;
+  const safeLifeIndex = totalMoments > 0 ? lifeIndex % totalMoments : 0;
+  const carouselTrackItems =
+    totalMoments > 1
+      ? [...lifeMoments, ...lifeMoments.slice(0, Math.min(3, totalMoments))]
+      : lifeMoments;
+
+  const lifeTranslateStyle =
     cardsPerView === 1
-      ? `calc(${safeLifeIndex} * (100% + 24px))`
+      ? `translate3d(calc(-1 * ${safeLifeIndex} * (100% + 24px)), 0, 0)`
       : cardsPerView === 2
-        ? `calc(${safeLifeIndex} * (50% + 12px))`
-        : `calc(${safeLifeIndex} * (33.333333% + 8px))`;
+        ? `translate3d(calc(-1 * ${safeLifeIndex} * (50% + 12px)), 0, 0)`
+        : `translate3d(calc(-1 * ${safeLifeIndex} * (33.333333% + 8px)), 0, 0)`;
 
   const nextLife = () => {
-    setLifeIndex((prev) => {
-      const current = Math.min(prev, maxLifeIndex);
-      return current >= maxLifeIndex ? 0 : current + 1;
-    });
+    if (totalMoments <= 1) return;
+    setLifeIndex((prev) => (prev + 1) % totalMoments);
   };
   const prevLife = () => {
-    setLifeIndex((prev) => {
-      const current = Math.min(prev, maxLifeIndex);
-      return current <= 0 ? maxLifeIndex : current - 1;
-    });
+    if (totalMoments <= 1) return;
+    setLifeIndex((prev) => (prev - 1 + totalMoments) % totalMoments);
   };
 
-  // Autoplay cada 4.5 segundos con pausa en hover y reinicio al navegar manualmente
+  // Autoplay cada 4 segundos con ciclo circular infinito, pausa en hover y reinicio al navegar manualmente
   useEffect(() => {
-    if (isLifePaused || maxLifeIndex <= 0) return;
+    if (isLifePaused || totalMoments <= 1) return;
 
     const intervalId = window.setInterval(() => {
-      setLifeIndex((prev) => {
-        const current = Math.min(prev, maxLifeIndex);
-        return current >= maxLifeIndex ? 0 : current + 1;
-      });
-    }, 4500);
+      setLifeIndex((prev) => (prev + 1) % totalMoments);
+    }, 4000);
 
     return () => window.clearInterval(intervalId);
-  }, [isLifePaused, maxLifeIndex, lifeIndex]);
+  }, [isLifePaused, totalMoments, lifeIndex]);
 
   const nextReview = () => {
     setReviewIndex((prev) => (prev + 1 >= FIGMA_REVIEWS.length ? 0 : prev + 1));
@@ -1199,13 +1197,13 @@ export function HomePageView({
 
         <div className="overflow-hidden">
           <div
-            className="flex gap-6 transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${lifeTranslateExpr})` }}
+            className="flex gap-6 transition-transform duration-500 ease-out will-change-transform"
+            style={{ transform: lifeTranslateStyle }}
           >
-            {lifeMoments.map((blob, idx) => (
+            {carouselTrackItems.map((blob, idx) => (
               <div
-                key={blob.id || idx}
-                className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 bg-white dark:bg-[#0F223D] rounded-3xl p-5 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col justify-between"
+                key={`${blob.id || blob.pathname}-${idx}`}
+                className="w-full sm:w-[calc(50%-12px)] lg:w-[calc((100%-48px)/3)] shrink-0 bg-white dark:bg-[#0F223D] rounded-3xl p-5 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col justify-between"
               >
                 <div className="space-y-4">
                   <div className="aspect-[4/3] rounded-2xl overflow-hidden relative bg-gray-100">
@@ -1244,11 +1242,11 @@ export function HomePageView({
           </div>
         </div>
 
-        {maxLifeIndex > 0 && (
+        {totalMoments > 1 && (
           <div className="flex items-center justify-center gap-2 pt-2">
-            {Array.from({ length: maxLifeIndex + 1 }).map((_, idx) => (
+            {lifeMoments.map((item, idx) => (
               <button
-                key={idx}
+                key={item.id || idx}
                 type="button"
                 onClick={() => setLifeIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}

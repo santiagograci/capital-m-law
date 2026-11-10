@@ -1,19 +1,12 @@
 export const revalidate = 86400; // 24 horas (ISR)
 
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ArrowLeft, CalendarDays, Clock, MessageCircle, UserRound } from "lucide-react";
-import { CategoryBadge } from "@/components/blog/category-badge";
-import { CoverImage } from "@/components/blog/cover-image";
-import { PostCard } from "@/components/blog/post-card";
-import { PostContent } from "@/components/blog/post-content";
-import { ShareButtons } from "@/components/blog/share-buttons";
-import { ContextualBlogCta } from "@/components/blog/contextual-blog-cta";
+import { BilingualArticleView } from "@/components/blog/bilingual-article-view";
 import { ReadingProgressBar } from "@/components/ui/micro-interactions";
 import { getPostBySlug, getPostSummaries, getRelatedPosts } from "@/lib/blog/queries";
-import { formatPostDate } from "@/lib/blog/utils";
+import { getLocalizedField } from "@/lib/blog/utils";
 
 export async function generateStaticParams() {
   const posts = await getPostSummaries();
@@ -24,22 +17,26 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return { title: "Article not found | Capital M Law" };
+
+  const titleEn = getLocalizedField(post.title, "en");
+  const excerptEn = getLocalizedField(post.excerpt, "en");
+
   return {
-    title: `${post.title} | Capital M Law`,
-    description: post.excerpt,
+    title: `${titleEn} | Capital M Law`,
+    description: excerptEn,
     authors: [{ name: post.author }],
     alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       type: "article",
-      title: post.title,
-      description: post.excerpt,
+      title: titleEn,
+      description: excerptEn,
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
       authors: [post.author],
       tags: post.tags,
       images: post.coverImage ? [{ url: post.coverImage }] : undefined,
     },
-    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
+    twitter: { card: "summary_large_image", title: titleEn, description: excerptEn },
   };
 }
 
@@ -49,12 +46,14 @@ async function Article({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
   if (!post) notFound();
 
   const related = await getRelatedPosts(post);
+  const titleEn = getLocalizedField(post.title, "en");
+  const excerptEn = getLocalizedField(post.excerpt, "en");
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
+    headline: titleEn,
+    description: excerptEn,
     image: post.coverImage ?? undefined,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
@@ -70,115 +69,7 @@ async function Article({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
         // JSON.stringify output with "<" escaped → safe inline script.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-
-      <article>
-        {/* Header */}
-        <header className="mx-auto max-w-3xl px-4 pt-10 sm:px-6 sm:pt-14">
-          <Link
-            href="/blog"
-            className="group mb-8 inline-flex items-center gap-2 text-sm font-medium text-[#706F6F] transition hover:text-[#16345F] dark:text-gray-400 dark:hover:text-white"
-          >
-            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" /> All articles
-          </Link>
-          <div className="flex flex-wrap items-center gap-2">
-            <CategoryBadge category={post.category} />
-            <span className="rounded-full bg-[#16345F]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#16345F] dark:bg-white/10 dark:text-[#9BB8E0]">
-              {(post.language ?? "en") === "es" ? "ES · Español" : "EN · English"}
-            </span>
-            {post.featured && (
-              <span className="rounded-full bg-[#C01072] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
-                Featured
-              </span>
-            )}
-          </div>
-          <h1 className="mt-5 text-3xl font-bold leading-[1.15] tracking-tight text-[#16345F] dark:text-white sm:text-4xl lg:text-5xl">
-            {post.title}
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-[#706F6F] dark:text-gray-300">{post.excerpt}</p>
-
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-[#16345F]/10 py-5 dark:border-white/10">
-            <dl className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[#706F6F] dark:text-gray-400">
-              <div className="flex items-center gap-2">
-                <dt className="sr-only">Author</dt>
-                <span className="flex size-9 items-center justify-center rounded-full bg-[#16345F] text-white dark:bg-[#9BB8E0] dark:text-[#0A1526]">
-                  <UserRound className="size-4" />
-                </span>
-                <dd className="font-semibold text-[#16345F] dark:text-white">{post.author}</dd>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <dt className="sr-only">Published</dt>
-                <CalendarDays className="size-4" />
-                <dd>
-                  <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
-                </dd>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <dt className="sr-only">Reading time</dt>
-                <Clock className="size-4" />
-                <dd>{post.readingTime} min read</dd>
-              </div>
-            </dl>
-            <ShareButtons title={post.title} excerpt={post.excerpt} />
-          </div>
-        </header>
-
-        {post.coverImage && (
-          <div className="mx-auto mt-10 max-w-5xl px-4 sm:px-6">
-            <CoverImage
-              src={post.coverImage}
-              alt={post.title}
-              priority
-              className="aspect-[2/1] w-full rounded-3xl shadow-[0_30px_60px_-30px_rgba(22,52,95,0.45)]"
-            />
-          </div>
-        )}
-
-        {/* Body */}
-        <div className="mx-auto mt-12 max-w-3xl px-4 sm:px-6">
-          <PostContent markdown={post.content} />
-
-          {post.tags.length > 0 && (
-            <ul className="mt-12 flex flex-wrap gap-2" aria-label="Tags">
-              {post.tags.map((tag) => (
-                <li key={tag}>
-                  <Link
-                    href={`/blog?tags=${encodeURIComponent(tag)}`}
-                    className="rounded-lg bg-[#9BB8E0]/20 px-3 py-1.5 text-xs font-medium text-[#16345F] transition hover:bg-[#9BB8E0]/40 dark:bg-white/5 dark:text-[#9BB8E0]"
-                  >
-                    #{tag}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* Contextual Monetization CTA */}
-          <ContextualBlogCta category={post.category} tags={post.tags} />
-
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[#16345F]/10 pt-8 dark:border-white/10">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 rounded-xl border border-[#16345F]/15 px-4 py-2.5 text-sm font-semibold text-[#16345F] transition hover:border-[#16345F] dark:border-white/15 dark:text-white"
-            >
-              <ArrowLeft className="size-4" /> Back to all articles
-            </Link>
-            <ShareButtons title={post.title} excerpt={post.excerpt} />
-          </div>
-        </div>
-      </article>
-
-      {related.length > 0 && (
-        <section aria-labelledby="related-heading" className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
-          <h2 id="related-heading" className="mb-6 text-2xl font-semibold text-[#16345F] dark:text-white">
-            Related articles
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((p) => (
-              <PostCard key={p.id} post={p} />
-            ))}
-          </div>
-        </section>
-      )}
+      <BilingualArticleView post={post} related={related} />
     </>
   );
 }

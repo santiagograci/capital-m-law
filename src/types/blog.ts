@@ -18,20 +18,25 @@ export const BLOG_LANGUAGES = ["en", "es"] as const;
 
 export type BlogLanguage = (typeof BLOG_LANGUAGES)[number];
 
+export interface LocalizedText {
+  en: string;
+  es: string;
+}
+
 export interface BlogPost {
   id: string;
   slug: string;
-  title: string;
+  title: LocalizedText;
   author: string;
   category: BlogCategory;
-  /** Article language: 'en' (English) or 'es' (Español). */
+  /** Primary article language: 'en' (English) or 'es' (Español). */
   language: BlogLanguage;
   /** Free-form tags used by the public tag filter (e.g. "Digital Nomad", "M Visa"). */
   tags: string[];
   coverImage: string | null;
-  excerpt: string;
-  /** Full body in Markdown (GFM supported). */
-  content: string;
+  excerpt: LocalizedText;
+  /** Full body in Markdown (GFM supported) per language. */
+  content: LocalizedText;
   featured: boolean;
   /** ISO 8601 */
   publishedAt: string;

@@ -4,7 +4,8 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { list, put } from "@vercel/blob";
 import { unstable_cache } from "next/cache";
-import type { BlogPost } from "@/types/blog";
+import type { BlogLanguage, BlogPost } from "@/types/blog";
+import { toLocalizedText } from "./utils";
 
 /**
  * Resilient persistence for the blog supporting Vercel Blob (shared across all
@@ -31,10 +32,16 @@ const inMemoryUploads = new Map<string, { body: Buffer; type: string }>();
 let writeQueue: Promise<unknown> = Promise.resolve();
 
 function normalizePosts(raw: unknown[]): BlogPost[] {
-  return (raw as BlogPost[]).map((p) => ({
-    ...p,
-    language: p.language === "es" ? "es" : "en",
-  }));
+  return (raw as Record<string, unknown>[]).map((p) => {
+    const lang: BlogLanguage = p.language === "es" ? "es" : "en";
+    return {
+      ...(p as unknown as BlogPost),
+      language: lang,
+      title: toLocalizedText(p.title, lang),
+      excerpt: toLocalizedText(p.excerpt, lang),
+      content: toLocalizedText(p.content, lang),
+    };
+  });
 }
 
 async function readRaw(bypassCache = false): Promise<BlogPost[]> {

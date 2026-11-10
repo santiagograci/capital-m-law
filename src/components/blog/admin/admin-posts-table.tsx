@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Pencil, Star, Trash, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { deletePostAction, toggleFeaturedAction } from "@/lib/blog/actions";
-import { formatPostDate } from "@/lib/blog/utils";
+import { formatPostDate, getLocalizedField, hasLanguageTranslation } from "@/lib/blog/utils";
 import type { BlogPostSummary } from "@/types/blog";
 import { CategoryBadge } from "../category-badge";
 import { ConfirmSubmitButton } from "./confirm-submit-button";
@@ -20,65 +20,79 @@ export function AdminPostsTable({ posts }: { posts: BlogPostSummary[] }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-[#16345F]/10 bg-white dark:border-white/10 dark:bg-[#0F1E35]">
       <ul className="divide-y divide-[#16345F]/5 dark:divide-white/5">
-        {posts.map((post) => (
-          <li key={post.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
-            <div className="min-w-0 flex-1">
-              <div className="mb-1 flex flex-wrap items-center gap-2">
-                <span
-                  className={cn(
-                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ring-1",
-                    (post.language ?? "en") === "es"
-                      ? "bg-[#C01072]/10 text-[#C01072] ring-[#C01072]/25 dark:bg-[#C01072]/20 dark:text-[#F472B6] dark:ring-[#F472B6]/30"
-                      : "bg-[#16345F]/10 text-[#16345F] ring-[#16345F]/20 dark:bg-[#9BB8E0]/15 dark:text-[#9BB8E0] dark:ring-[#9BB8E0]/30",
-                  )}
-                >
-                  {(post.language ?? "en") === "es" ? "ES · Español" : "EN · English"}
-                </span>
-                <CategoryBadge category={post.category} />
-                {post.featured && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[#C01072]">
-                    <Star className="size-3 fill-current" /> Featured
-                  </span>
-                )}
-              </div>
-              <p className="truncate font-semibold text-[#16345F] dark:text-white">{post.title}</p>
-              <p className="text-xs text-[#706F6F] dark:text-gray-400">
-                {post.author} · {formatPostDate(post.publishedAt)} · {post.readingTime} min
-              </p>
-            </div>
+        {posts.map((post) => {
+          const titleEn = getLocalizedField(post.title, "en");
+          const titleEs = hasLanguageTranslation(post.title, "es")
+            ? getLocalizedField(post.title, "es")
+            : null;
+          const hasEn = hasLanguageTranslation(post.title, "en");
+          const hasEs = hasLanguageTranslation(post.title, "es");
 
-            <div className="flex items-center gap-1">
-              <form action={toggleFeaturedAction}>
-                <input type="hidden" name="id" value={post.id} />
-                <button
-                  type="submit"
-                  title={post.featured ? "Remove from featured" : "Mark as featured"}
-                  aria-label={post.featured ? "Remove from featured" : "Mark as featured"}
-                  className={cn(iconBtn, post.featured && "text-[#C01072]")}
-                >
-                  <Star className={cn("size-4", post.featured && "fill-current")} />
-                </button>
-              </form>
-              <Link href={`/blog/${post.slug}`} title="View" aria-label="View post" className={iconBtn}>
-                <ExternalLink className="size-4" />
-              </Link>
-              <Link href={`/admin/blog/edit/${post.id}`} title="Edit" aria-label="Edit post" className={iconBtn}>
-                <Pencil className="size-4" />
-              </Link>
-              <form action={deletePostAction}>
-                <input type="hidden" name="id" value={post.id} />
-                <ConfirmSubmitButton
-                  message={`Delete “${post.title}”? This cannot be undone.`}
-                  className={cn(iconBtn, "hover:bg-[#C01072]/10 hover:text-[#C01072]")}
-                  aria-label="Delete post"
-                  title="Delete"
-                >
-                  <Trash className="size-4" />
-                </ConfirmSubmitButton>
-              </form>
-            </div>
-          </li>
-        ))}
+          return (
+            <li key={post.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  {hasEn && (
+                    <span className="inline-flex items-center rounded-full bg-[#16345F]/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#16345F] ring-1 ring-[#16345F]/20 dark:bg-[#9BB8E0]/15 dark:text-[#9BB8E0] dark:ring-[#9BB8E0]/30">
+                      🇺🇸 EN
+                    </span>
+                  )}
+                  {hasEs && (
+                    <span className="inline-flex items-center rounded-full bg-[#C01072]/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#C01072] ring-1 ring-[#C01072]/25 dark:bg-[#C01072]/20 dark:text-[#F472B6] dark:ring-[#F472B6]/30">
+                      🇪🇸 ES
+                    </span>
+                  )}
+                  <CategoryBadge category={post.category} />
+                  {post.featured && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[#C01072]">
+                      <Star className="size-3 fill-current" /> Featured
+                    </span>
+                  )}
+                </div>
+                <p className="truncate font-semibold text-[#16345F] dark:text-white">{titleEn}</p>
+                {titleEs && titleEs !== titleEn && (
+                  <p className="truncate text-xs font-medium text-[#C01072] dark:text-[#F472B6]">
+                    ES: {titleEs}
+                  </p>
+                )}
+                <p className="text-xs text-[#706F6F] dark:text-gray-400">
+                  {post.author} · {formatPostDate(post.publishedAt)} · {post.readingTime} min
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <form action={toggleFeaturedAction}>
+                  <input type="hidden" name="id" value={post.id} />
+                  <button
+                    type="submit"
+                    title={post.featured ? "Remove from featured" : "Mark as featured"}
+                    aria-label={post.featured ? "Remove from featured" : "Mark as featured"}
+                    className={cn(iconBtn, post.featured && "text-[#C01072]")}
+                  >
+                    <Star className={cn("size-4", post.featured && "fill-current")} />
+                  </button>
+                </form>
+                <Link href={`/blog/${post.slug}`} title="View" aria-label="View post" className={iconBtn}>
+                  <ExternalLink className="size-4" />
+                </Link>
+                <Link href={`/admin/blog/edit/${post.id}`} title="Edit" aria-label="Edit post" className={iconBtn}>
+                  <Pencil className="size-4" />
+                </Link>
+                <form action={deletePostAction}>
+                  <input type="hidden" name="id" value={post.id} />
+                  <ConfirmSubmitButton
+                    message={`Delete “${titleEn}”? This cannot be undone.`}
+                    className={cn(iconBtn, "hover:bg-[#C01072]/10 hover:text-[#C01072]")}
+                    aria-label="Delete post"
+                    title="Delete"
+                  >
+                    <Trash className="size-4" />
+                  </ConfirmSubmitButton>
+                </form>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -81,13 +81,39 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
   await requireStaff();
 
   const id = str(formData, "id") || null;
-  const title = str(formData, "title");
+
+  // Support both bilingual fields (titleEn/titleEs) and legacy single fields (title)
+  const titleEnRaw = str(formData, "titleEn");
+  const titleEsRaw = str(formData, "titleEs");
+  const legacyTitle = str(formData, "title");
+
+  const excerptEnRaw = str(formData, "excerptEn");
+  const excerptEsRaw = str(formData, "excerptEs");
+  const legacyExcerpt = str(formData, "excerpt");
+
+  const contentEnRaw = String(formData.get("contentEn") ?? "").trim();
+  const contentEsRaw = String(formData.get("contentEs") ?? "").trim();
+  const legacyContent = String(formData.get("content") ?? "").trim();
+
+  const titleEn = titleEnRaw || legacyTitle || titleEsRaw;
+  const titleEs = titleEsRaw;
+  const excerptEn = excerptEnRaw || legacyExcerpt || excerptEsRaw;
+  const excerptEs = excerptEsRaw;
+  const contentEn = contentEnRaw || legacyContent || contentEsRaw;
+  const contentEs = contentEsRaw;
+
+  const primaryTitle = titleEn || titleEs;
+  const primaryExcerpt = excerptEn || excerptEs;
+  const primaryContent = contentEn || contentEs;
+
   const author = str(formData, "author");
   const category = str(formData, "category") as BlogCategory;
   const rawLang = str(formData, "language") as BlogLanguage;
-  const language: BlogLanguage = BLOG_LANGUAGES.includes(rawLang) ? rawLang : "en";
-  const excerpt = str(formData, "excerpt");
-  const content = String(formData.get("content") ?? "").trim();
+  const language: BlogLanguage = BLOG_LANGUAGES.includes(rawLang)
+    ? rawLang
+    : titleEs && !titleEnRaw
+      ? "es"
+      : "en";
   const tags = parseTags(str(formData, "tags"));
   const featured = formData.get("featured") === "on";
   const coverMode = str(formData, "coverMode"); // "url" | "upload" | "none"
@@ -96,11 +122,17 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
   const customSlug = slugify(str(formData, "slug"));
 
   const errors: Partial<Record<Field, string>> = {};
-  if (title.length < 5 || title.length > 140) errors.title = "Title must be 5–140 characters.";
+  if (primaryTitle.length < 5 || primaryTitle.length > 140) {
+    errors.title = "Title must be 5–140 characters (in English or Spanish).";
+  }
   if (author.length < 2 || author.length > 80) errors.author = "Author is required.";
   if (!BLOG_CATEGORIES.includes(category)) errors.category = "Choose a valid category.";
-  if (excerpt.length < 20 || excerpt.length > 320) errors.excerpt = "Excerpt must be 20–320 characters.";
-  if (content.length < 50) errors.content = "Content must be at least 50 characters.";
+  if (primaryExcerpt.length < 20 || primaryExcerpt.length > 320) {
+    errors.excerpt = "Excerpt must be 20–320 characters (in English or Spanish).";
+  }
+  if (primaryContent.length < 50) {
+    errors.content = "Content must be at least 50 characters (in English or Spanish).";
+  }
 
   let uploadFile: File | null = null;
   if (coverMode === "url" && coverUrl && !isValidCoverUrl(coverUrl)) {
@@ -123,8 +155,8 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
       const existing = id ? posts.find((p) => p.id === id) : undefined;
       if (id && !existing) return { posts, result: { error: "Post not found." } };
 
-      // Unique slug: custom → existing → from title, suffixed on collision.
-      const base = customSlug || existing?.slug || slugify(title) || "post";
+      // Unique slug: custom → existing → from primaryTitle, suffixed on collision.
+      const base = customSlug || existing?.slug || slugify(primaryTitle) || "post";
       let slug = base;
       for (let i = 2; posts.some((p) => p.slug === slug && p.id !== id); i++) slug = `${base}-${i}`;
 
@@ -137,18 +169,27 @@ export async function savePostAction(_prev: ActionResult | null, formData: FormD
       const post: BlogPost = {
         id: existing?.id ?? crypto.randomUUID(),
         slug,
-        title,
+        title: {
+          en: titleEn,
+          es: titleEs,
+        },
         author,
         category,
         language,
         tags,
         coverImage,
-        excerpt,
-        content,
+        excerpt: {
+          en: excerptEn,
+          es: excerptEs,
+        },
+        content: {
+          en: contentEn,
+          es: contentEs,
+        },
         featured,
         publishedAt: existing?.publishedAt ?? now,
         updatedAt: now,
-        readingTime: computeReadingTime(content),
+        readingTime: computeReadingTime(primaryContent),
       };
 
       const next = existing ? posts.map((p) => (p.id === id ? post : p)) : [post, ...posts];

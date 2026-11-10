@@ -1,4 +1,10 @@
-import type { BlogCategory, BlogPost, BlogPostSummary } from "@/types/blog";
+import type {
+  BlogCategory,
+  BlogLanguage,
+  BlogPost,
+  BlogPostSummary,
+  LocalizedText,
+} from "@/types/blog";
 
 /** Brand palette — single source of truth for blog components. */
 export const BRAND = {
@@ -83,6 +89,52 @@ export function parseTags(raw: string): string[] {
       return true;
     })
     .slice(0, 8);
+}
+
+export function toLocalizedText(
+  val: unknown,
+  primaryLang: BlogLanguage = "en",
+): LocalizedText {
+  if (val && typeof val === "object" && !Array.isArray(val)) {
+    const obj = val as Record<string, unknown>;
+    const en = typeof obj.en === "string" ? obj.en : "";
+    const es = typeof obj.es === "string" ? obj.es : "";
+    return {
+      en: en || es,
+      es: es || "",
+    };
+  }
+  if (typeof val === "string") {
+    return primaryLang === "es"
+      ? { en: val, es: val }
+      : { en: val, es: "" };
+  }
+  return { en: "", es: "" };
+}
+
+/**
+ * Resolves a localized field (`{ en, es }` or legacy plain string) for `lang`,
+ * falling back to English (`en`) when the requested translation is empty.
+ */
+export function getLocalizedField(
+  field: LocalizedText | string | undefined | null,
+  lang: BlogLanguage = "en",
+): string {
+  if (!field) return "";
+  if (typeof field === "string") return field;
+  if (lang === "es") {
+    return field.es?.trim() ? field.es : field.en || "";
+  }
+  return field.en?.trim() ? field.en : field.es || "";
+}
+
+export function hasLanguageTranslation(
+  field: LocalizedText | string | undefined | null,
+  lang: BlogLanguage,
+): boolean {
+  if (!field) return false;
+  if (typeof field === "string") return lang === "en" && field.trim().length > 0;
+  return Boolean(field[lang]?.trim());
 }
 
 export function toSummary({ content: _content, ...rest }: BlogPost): BlogPostSummary {

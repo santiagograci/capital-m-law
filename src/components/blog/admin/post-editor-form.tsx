@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { savePostAction } from "@/lib/blog/actions";
-import { computeReadingTime, slugify } from "@/lib/blog/utils";
+import { computeReadingTime, slugify, toLocalizedText } from "@/lib/blog/utils";
 import {
   BLOG_CATEGORIES,
   type BlogCategory,
@@ -35,28 +35,34 @@ const TEAM_AUTHORS = ["María Fernanda Duarte", "Capital M Law Team", "Legal Res
 type CoverMode = "url" | "upload" | "none";
 
 interface FormValues {
-  title: string;
+  titleEn: string;
+  titleEs: string;
+  excerptEn: string;
+  excerptEs: string;
+  contentEn: string;
+  contentEs: string;
   slug: string;
   author: string;
   category: BlogCategory;
   language: BlogLanguage;
   tags: string;
-  excerpt: string;
-  content: string;
   featured: boolean;
   coverMode: CoverMode;
   coverUrl: string;
 }
 
 const EMPTY: FormValues = {
-  title: "",
+  titleEn: "",
+  titleEs: "",
+  excerptEn: "",
+  excerptEs: "",
+  contentEn: "",
+  contentEs: "",
   slug: "",
   author: TEAM_AUTHORS[0],
   category: "Visas",
   language: "en",
   tags: "",
-  excerpt: "",
-  content: "",
   featured: false,
   coverMode: "url",
   coverUrl: "",
@@ -64,15 +70,23 @@ const EMPTY: FormValues = {
 
 function fromPost(post: BlogPost): FormValues {
   const isUpload = post.coverImage?.startsWith("/api/blog/uploads/") ?? false;
+  const primaryLang: BlogLanguage = post.language === "es" ? "es" : "en";
+  const titleObj = toLocalizedText(post.title, primaryLang);
+  const excerptObj = toLocalizedText(post.excerpt, primaryLang);
+  const contentObj = toLocalizedText(post.content, primaryLang);
+
   return {
-    title: post.title,
+    titleEn: titleObj.en,
+    titleEs: titleObj.es,
+    excerptEn: excerptObj.en,
+    excerptEs: excerptObj.es,
+    contentEn: contentObj.en,
+    contentEs: contentObj.es,
     slug: post.slug,
     author: post.author,
     category: post.category,
-    language: post.language === "es" ? "es" : "en",
+    language: primaryLang,
     tags: post.tags.join(", "),
-    excerpt: post.excerpt,
-    content: post.content,
     featured: post.featured,
     coverMode: post.coverImage ? (isUpload ? "upload" : "url") : "none",
     coverUrl: isUpload ? "" : (post.coverImage ?? ""),
@@ -83,6 +97,7 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
   const isEditing = Boolean(post);
   const [state, formAction, pending] = useActionState(savePostAction, null);
   const [values, setValues] = useState<FormValues>(() => (post ? fromPost(post) : EMPTY));
+  const [activeLang, setActiveLang] = useState<BlogLanguage>("en");
   const [tab, setTab] = useState<"write" | "preview">("write");
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [handledState, setHandledState] = useState(state);
@@ -154,6 +169,20 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
     startTransition(() => formAction(fd));
   }
 
+  const currentTitle = activeLang === "es" ? values.titleEs : values.titleEn;
+  const currentExcerpt = activeLang === "es" ? values.excerptEs : values.excerptEn;
+  const currentContent = activeLang === "es" ? values.contentEs : values.contentEn;
+
+  const setCurrentTitle = (val: string) =>
+    set(activeLang === "es" ? "titleEs" : "titleEn", val);
+  const setCurrentExcerpt = (val: string) =>
+    set(activeLang === "es" ? "excerptEs" : "excerptEn", val);
+  const setCurrentContent = (val: string) =>
+    set(activeLang === "es" ? "contentEs" : "contentEn", val);
+
+  const hasEnContent = Boolean(values.titleEn.trim() || values.contentEn.trim());
+  const hasEsContent = Boolean(values.titleEs.trim() || values.contentEs.trim());
+
   /** Wraps the current selection in the textarea with Markdown syntax. */
   function applyFormat(before: string, after = "", placeholder = "text") {
     const el = contentRef.current;
@@ -161,7 +190,7 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
     const { selectionStart: s, selectionEnd: e, value } = el;
     const selected = value.slice(s, e) || placeholder;
     const next = value.slice(0, s) + before + selected + after + value.slice(e);
-    set("content", next);
+    setCurrentContent(next);
     requestAnimationFrame(() => {
       el.focus();
       el.setSelectionRange(s + before.length, s + before.length + selected.length);
@@ -180,11 +209,20 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
             : null)
         : null;
 
-  const slugPreview = values.slug ? slugify(values.slug) : slugify(values.title);
+  const slugPreview = values.slug
+    ? slugify(values.slug)
+    : slugify(values.titleEn || values.titleEs);
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1fr_340px]" noValidate>
       {post && <input type="hidden" name="id" value={post.id} />}
+      <input type="hidden" name="titleEn" value={values.titleEn} />
+      <input type="hidden" name="titleEs" value={values.titleEs} />
+      <input type="hidden" name="excerptEn" value={values.excerptEn} />
+      <input type="hidden" name="excerptEs" value={values.excerptEs} />
+      <input type="hidden" name="contentEn" value={values.contentEn} />
+      <input type="hidden" name="contentEs" value={values.contentEs} />
+      <input type="hidden" name="language" value={values.language} />
 
       {/* ------------------------------ Main column ----------------------------- */}
       <div className="space-y-6">
@@ -208,13 +246,82 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
           </div>
         )}
 
-        <Field label="Title" error={errors.title} htmlFor="title">
+        {/* Bilingual Tab Switcher Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#16345F]/10 bg-white p-3 shadow-xs dark:border-white/10 dark:bg-[#0F1E35]">
+          <div className="space-y-0.5 pl-1">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#16345F] dark:text-white">
+              Article Language Version
+            </p>
+            <p className="text-xs text-[#706F6F] dark:text-gray-400">
+              Switch tabs to write the English and Spanish versions of this article independently.
+            </p>
+          </div>
+
+          <div
+            role="tablist"
+            aria-label="Article translation language"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[#16345F]/5 p-1.5 dark:bg-white/5"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeLang === "en"}
+              onClick={() => setActiveLang("en")}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all cursor-pointer",
+                activeLang === "en"
+                  ? "bg-[#16345F] text-white shadow-sm dark:bg-[#9BB8E0] dark:text-[#0A1526]"
+                  : "text-[#706F6F] hover:text-[#16345F] dark:text-gray-300 dark:hover:text-white",
+              )}
+            >
+              <span>🇺🇸 English (EN)</span>
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  hasEnContent ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600",
+                )}
+                title={hasEnContent ? "English content added" : "Empty"}
+              />
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeLang === "es"}
+              onClick={() => setActiveLang("es")}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all cursor-pointer",
+                activeLang === "es"
+                  ? "bg-[#C01072] text-white shadow-sm"
+                  : "text-[#706F6F] hover:text-[#16345F] dark:text-gray-300 dark:hover:text-white",
+              )}
+            >
+              <span>🇪🇸 Español (ES)</span>
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  hasEsContent ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600",
+                )}
+                title={hasEsContent ? "Spanish content added" : "Empty"}
+              />
+            </button>
+          </div>
+        </div>
+
+        <Field
+          label={activeLang === "es" ? "Title (Español)" : "Title (English)"}
+          error={errors.title}
+          htmlFor="title-input"
+        >
           <input
-            id="title"
-            name="title"
-            value={values.title}
-            onChange={(e) => set("title", e.target.value)}
-            placeholder="e.g. How to get your Colombian Digital Nomad Visa in 2026"
+            id="title-input"
+            value={currentTitle}
+            onChange={(e) => setCurrentTitle(e.target.value)}
+            placeholder={
+              activeLang === "es"
+                ? "ej. Cómo obtener tu Visa de Nómada Digital en Colombia en 2026"
+                : "e.g. How to get your Colombian Digital Nomad Visa in 2026"
+            }
             maxLength={140}
             className={cn(inputCls, "h-14 text-lg font-semibold")}
           />
@@ -223,15 +330,23 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
           </p>
         </Field>
 
-        <Field label="Excerpt" hint={`${values.excerpt.length}/320 · shown on cards & SEO`} error={errors.excerpt} htmlFor="excerpt">
+        <Field
+          label={activeLang === "es" ? "Excerpt (Español)" : "Excerpt (English)"}
+          hint={`${currentExcerpt.length}/320 · shown on cards & SEO`}
+          error={errors.excerpt}
+          htmlFor="excerpt-input"
+        >
           <textarea
-            id="excerpt"
-            name="excerpt"
+            id="excerpt-input"
             rows={3}
             maxLength={320}
-            value={values.excerpt}
-            onChange={(e) => set("excerpt", e.target.value)}
-            placeholder="A 1–2 sentence summary that makes expats and investors want to read more."
+            value={currentExcerpt}
+            onChange={(e) => setCurrentExcerpt(e.target.value)}
+            placeholder={
+              activeLang === "es"
+                ? "Un resumen de 1 a 2 frases en español para las tarjetas del blog y SEO."
+                : "A 1–2 sentence summary that makes expats and investors want to read more."
+            }
             className={cn(inputCls, "resize-none py-3")}
           />
         </Field>
@@ -239,11 +354,12 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
         {/* Markdown editor */}
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label htmlFor="content" className="text-sm font-medium text-[#16345F] dark:text-gray-200">
-              Content <span className="font-normal text-[#706F6F]">(Markdown)</span>
+            <label htmlFor="content-input" className="text-sm font-medium text-[#16345F] dark:text-gray-200">
+              {activeLang === "es" ? "Content — Español " : "Content — English "}
+              <span className="font-normal text-[#706F6F]">(Markdown)</span>
             </label>
             <span className="text-xs text-[#706F6F]">
-              ~{computeReadingTime(values.content || " ")} min read
+              ~{computeReadingTime(currentContent || " ")} min read
             </span>
           </div>
           <div
@@ -259,6 +375,34 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
               <TabButton active={tab === "preview"} onClick={() => setTab("preview")}>
                 <Eye className="size-3.5" /> Preview
               </TabButton>
+
+              <div className="ml-2 inline-flex items-center gap-1 rounded-lg bg-[#16345F]/5 p-0.5 text-[11px] font-bold dark:bg-white/5">
+                <button
+                  type="button"
+                  onClick={() => setActiveLang("en")}
+                  className={cn(
+                    "rounded-md px-2 py-1 transition cursor-pointer",
+                    activeLang === "en"
+                      ? "bg-[#16345F] text-white dark:bg-[#9BB8E0] dark:text-[#0A1526]"
+                      : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white",
+                  )}
+                >
+                  🇺🇸 EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveLang("es")}
+                  className={cn(
+                    "rounded-md px-2 py-1 transition cursor-pointer",
+                    activeLang === "es"
+                      ? "bg-[#C01072] text-white"
+                      : "text-[#706F6F] hover:text-[#16345F] dark:hover:text-white",
+                  )}
+                >
+                  🇪🇸 ES
+                </button>
+              </div>
+
               {tab === "write" && (
                 <div className="ml-auto flex items-center gap-0.5">
                   <ToolButton label="Heading" onClick={() => applyFormat("\n## ", "\n", "Section title")}><Heading2 /></ToolButton>
@@ -271,15 +415,17 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
                 </div>
               )}
             </div>
-            {/* Textarea stays mounted (hidden in preview) so it is always submitted. */}
             <textarea
               ref={contentRef}
-              id="content"
-              name="content"
-              value={values.content}
-              onChange={(e) => set("content", e.target.value)}
+              id="content-input"
+              value={currentContent}
+              onChange={(e) => setCurrentContent(e.target.value)}
               rows={22}
-              placeholder={"## Who qualifies?\n\nWrite your article in **Markdown**…"}
+              placeholder={
+                activeLang === "es"
+                  ? "## ¿Quiénes califican?\n\nEscribe la versión en **Español** del artículo en Markdown…"
+                  : "## Who qualifies?\n\nWrite the **English** version of your article in Markdown…"
+              }
               className={cn(
                 "block w-full resize-y bg-transparent p-5 font-mono text-sm leading-relaxed text-[#16345F] outline-none dark:text-gray-200",
                 tab === "preview" && "hidden",
@@ -287,8 +433,8 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
             />
             {tab === "preview" && (
               <div className="min-h-[520px] p-6 sm:p-8">
-                {values.content.trim() ? (
-                  <PostContent markdown={values.content} />
+                {currentContent.trim() ? (
+                  <PostContent markdown={currentContent} />
                 ) : (
                   <p className="text-sm text-[#706F6F]">Nothing to preview yet.</p>
                 )}
@@ -417,7 +563,7 @@ export function PostEditorForm({ post }: { post?: BlogPost }) {
               name="slug"
               value={values.slug}
               onChange={(e) => set("slug", e.target.value)}
-              placeholder={slugify(values.title) || "auto-from-title"}
+              placeholder={slugify(values.titleEn || values.titleEs) || "auto-from-title"}
               className={cn(inputCls, "h-11 font-mono text-xs")}
             />
           </Field>

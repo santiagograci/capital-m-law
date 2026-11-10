@@ -1,21 +1,32 @@
 import Link from "next/link";
 import { ArrowUpRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatPostDate } from "@/lib/blog/utils";
-import type { BlogPostSummary } from "@/types/blog";
+import { formatPostDate, getLocalizedField, hasLanguageTranslation } from "@/lib/blog/utils";
+import type { BlogLanguage, BlogPostSummary } from "@/types/blog";
 import { CategoryBadge } from "./category-badge";
 import { CoverImage } from "./cover-image";
 
 interface PostCardProps {
   post: BlogPostSummary;
+  lang?: BlogLanguage;
   /** Called when a tag chip inside the card is clicked (explorer filter). */
   onTagClick?: (tag: string) => void;
   activeTags?: string[];
   className?: string;
 }
 
-export function PostCard({ post, onTagClick, activeTags = [], className }: PostCardProps) {
+export function PostCard({
+  post,
+  lang = "en",
+  onTagClick,
+  activeTags = [],
+  className,
+}: PostCardProps) {
   const active = new Set(activeTags.map((t) => t.toLowerCase()));
+  const displayTitle = getLocalizedField(post.title, lang);
+  const displayExcerpt = getLocalizedField(post.excerpt, lang);
+  const hasEn = hasLanguageTranslation(post.title, "en");
+  const hasEs = hasLanguageTranslation(post.title, "es");
 
   return (
     <article
@@ -27,13 +38,13 @@ export function PostCard({ post, onTagClick, activeTags = [], className }: PostC
       <div className="relative aspect-[16/10] overflow-hidden">
         <CoverImage
           src={post.coverImage}
-          alt={post.title}
+          alt={displayTitle}
           className="size-full transition-transform duration-500 group-hover:scale-[1.04]"
         />
         <div className="absolute left-4 top-4 flex items-center gap-1.5">
           <CategoryBadge category={post.category} className="bg-white/95 shadow-sm backdrop-blur dark:bg-[#0A1526]/90" />
           <span className="rounded-full bg-[#16345F]/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm backdrop-blur">
-            {(post.language ?? "en").toUpperCase()}
+            {hasEn && hasEs ? "EN / ES" : hasEs ? "ES" : "EN"}
           </span>
         </div>
       </div>
@@ -53,12 +64,12 @@ export function PostCard({ post, onTagClick, activeTags = [], className }: PostC
             href={`/blog/${post.slug}`}
             className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
           >
-            {post.title}
+            {displayTitle}
           </Link>
         </h3>
 
         <p className="line-clamp-3 text-sm leading-relaxed text-[#706F6F] dark:text-gray-300">
-          {post.excerpt}
+          {displayExcerpt}
         </p>
 
         {post.tags.length > 0 && (

@@ -11,6 +11,7 @@ import {
   type BlogPostSummary,
   type BlogSort,
 } from "@/types/blog";
+import { getLocalizedField, hasLanguageTranslation } from "@/lib/blog/utils";
 
 /* -------------------------------------------------------------------------- */
 /*                                  Reducer                                   */
@@ -27,7 +28,7 @@ type Action =
 export const INITIAL_FILTERS: BlogFilterState = {
   query: "",
   category: null,
-  language: "all",
+  language: "en",
   tags: [],
   sort: "newest",
 };
@@ -73,7 +74,7 @@ function fromSearchParams(params: URLSearchParams): BlogFilterState {
     language:
       lang && (BLOG_LANGUAGES.includes(lang as BlogLanguage) || lang === "all")
         ? (lang as BlogLanguage | "all")
-        : "all",
+        : "en",
     tags: (params.get("tags") ?? "").split(",").map((t) => t.trim()).filter(Boolean),
     sort: sort && SORTS.includes(sort) ? sort : "newest",
   };
@@ -81,7 +82,7 @@ function fromSearchParams(params: URLSearchParams): BlogFilterState {
 
 function toQueryString(state: BlogFilterState): string {
   const p = new URLSearchParams();
-  if (state.language !== "all") p.set("lang", state.language);
+  if (state.language !== "en" && state.language !== "all") p.set("lang", state.language);
   if (state.query.trim()) p.set("q", state.query.trim());
   if (state.category) p.set("category", state.category);
   if (state.tags.length) p.set("tags", state.tags.join(","));
@@ -103,8 +104,6 @@ export function filterPosts(posts: BlogPostSummary[], f: BlogFilterState): BlogP
   const wantedTags = f.tags.map((t) => t.toLowerCase());
 
   const result = posts.filter((post) => {
-    const postLang = post.language === "es" ? "es" : "en";
-    if (f.language !== "all" && postLang !== f.language) return false;
     if (f.category && post.category !== f.category) return false;
 
     // Tags: AND semantics — every selected tag must be on the post.
@@ -113,10 +112,14 @@ export function filterPosts(posts: BlogPostSummary[], f: BlogFilterState): BlogP
       if (!wantedTags.every((t) => postTags.includes(t))) return false;
     }
 
-    // Keywords: every term must appear somewhere in the searchable text.
+    // Keywords: search across both English and Spanish titles/excerpts + metadata.
     if (terms.length) {
+      const titleEn = getLocalizedField(post.title, "en");
+      const titleEs = getLocalizedField(post.title, "es");
+      const excerptEn = getLocalizedField(post.excerpt, "en");
+      const excerptEs = getLocalizedField(post.excerpt, "es");
       const haystack = normalize(
-        [post.title, post.excerpt, post.author, post.category, ...post.tags].join(" "),
+        [titleEn, titleEs, excerptEn, excerptEs, post.author, post.category, ...post.tags].join(" "),
       );
       if (!terms.every((t) => haystack.includes(t))) return false;
     }
@@ -150,15 +153,12 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
     try {
       const savedLang = localStorage.getItem("capm-lang");
       if (savedLang === "en" || savedLang === "es") {
-        const hasPostsInLang = posts.some((p) => (p.language ?? "en") === savedLang);
-        if (hasPostsInLang) {
-          dispatch({ type: "setLanguage", language: savedLang });
-        }
+        dispatch({ type: "setLanguage", language: savedLang });
       }
     } catch {
       // ignore storage errors
     }
-  }, [posts, searchParams]);
+  }, [searchParams]);
 
   const deferredState = useDeferredValue(state);
   const isStale = deferredState !== state;
@@ -178,18 +178,10 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
 
   const filtered = useMemo(() => filterPosts(posts, deferredState), [posts, deferredState]);
 
-  const languageScopedPosts = useMemo(
-    () =>
-      state.language === "all"
-        ? posts
-        : posts.filter((p) => (p.language === "es" ? "es" : "en") === state.language),
-    [posts, state.language],
-  );
-
   /** Tags ranked by frequency → most useful chips first. */
   const availableTags = useMemo(() => {
     const counts = new Map<string, { label: string; count: number }>();
-    for (const p of languageScopedPosts) {
+    for (const p of posts) {
       for (const t of p.tags) {
         const key = t.toLowerCase();
         const entry = counts.get(key);
@@ -198,28 +190,27 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
       }
     }
     return [...counts.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-  }, [languageScopedPosts]);
+  }, [posts]);
 
   const categoryCounts = useMemo(() => {
     const counts = Object.fromEntries(BLOG_CATEGORIES.map((c) => [c, 0])) as Record<BlogCategory, number>;
-    for (const p of languageScopedPosts) counts[p.category]++;
+    for (const p of posts) counts[p.category]++;
     return counts;
-  }, [languageScopedPosts]);
+  }, [posts]);
 
   const languageCounts = useMemo(() => {
     let en = 0;
     let es = 0;
     for (const p of posts) {
-      if (p.language === "es") es++;
-      else en++;
+      if (hasLanguageTranslation(p.title, "en")) en++;
+      if (hasLanguageTranslation(p.title, "es")) es++;
     }
-    return { all: posts.length, en, es };
+    return { all: posts.length, en: en || posts.length, es: es || posts.length };
   }, [posts]);
 
   const hasActiveFilters =
     state.query.trim() !== "" ||
     state.category !== null ||
-    state.language !== "all" ||
     state.tags.length > 0;
 
   const setLanguage = useCallback((language: BlogLanguage | "all") => {
@@ -241,7 +232,7 @@ export function useBlogFilters(posts: BlogPostSummary[]) {
     availableTags,
     categoryCounts,
     languageCounts,
-    languageScopedCount: languageScopedPosts.length,
+    languageScopedCount: posts.length,
     setQuery: useCallback((query: string) => dispatch({ type: "setQuery", query }), []),
     setCategory: useCallback((category: BlogCategory | null) => dispatch({ type: "setCategory", category }), []),
     setLanguage,

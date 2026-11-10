@@ -6,7 +6,7 @@ import { ArrowUpRight, Clock, BookOpen, Sparkles, Play } from "lucide-react";
 import type { BlogPostSummary } from "@/types/blog";
 import { CategoryBadge } from "@/components/blog/category-badge";
 import { CoverImage } from "@/components/blog/cover-image";
-import { formatPostDate } from "@/lib/blog/utils";
+import { formatPostDate, getLocalizedField, hasLanguageTranslation } from "@/lib/blog/utils";
 import { mediaData } from "@/data/media";
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -70,8 +70,7 @@ export function HomeBlogSection({
     };
   }, [initialPosts]);
 
-  const langPosts = posts.filter((p) => (p.language ?? "en") === lang);
-  const displayedPosts = (langPosts.length > 0 ? langPosts : posts).slice(0, 3);
+  const displayedPosts = posts.slice(0, 3);
 
   return (
     <section
@@ -114,62 +113,69 @@ export function HomeBlogSection({
               </div>
             ))
           ) : displayedPosts.length > 0 ? (
-            displayedPosts.map((post) => (
-              <article
-                key={post.id}
-                className="group relative bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-all duration-300 flex flex-col justify-between"
-              >
-                <div className="space-y-4">
-                  <div className="aspect-[16/10] rounded-2xl bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
-                    <CoverImage
-                      src={post.coverImage}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                      <CategoryBadge
-                        category={post.category}
-                        className="bg-white/95 dark:bg-[#0A1526]/90 backdrop-blur shadow-xs text-[10px]"
+            displayedPosts.map((post) => {
+              const displayTitle = getLocalizedField(post.title, lang);
+              const displayExcerpt = getLocalizedField(post.excerpt, lang);
+              const hasEn = hasLanguageTranslation(post.title, "en");
+              const hasEs = hasLanguageTranslation(post.title, "es");
+
+              return (
+                <article
+                  key={post.id}
+                  className="group relative bg-white dark:bg-[#0F223D] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xs hover:shadow-xl hover:border-[#9BB8E0] dark:hover:border-[#9BB8E0]/40 transition-all duration-300 flex flex-col justify-between"
+                >
+                  <div className="space-y-4">
+                    <div className="aspect-[16/10] rounded-2xl bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+                      <CoverImage
+                        src={post.coverImage}
+                        alt={displayTitle}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <span className="rounded-full bg-[#16345F]/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs backdrop-blur">
-                        {(post.language ?? "en").toUpperCase()}
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                        <CategoryBadge
+                          category={post.category}
+                          className="bg-white/95 dark:bg-[#0A1526]/90 backdrop-blur shadow-xs text-[10px]"
+                        />
+                        <span className="rounded-full bg-[#16345F]/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-xs backdrop-blur">
+                          {hasEn && hasEs ? "EN / ES" : hasEs ? "ES" : "EN"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-[#706F6F] dark:text-gray-400">
+                      <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
+                      <span>•</span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="size-3" /> {post.readingTime} min
                       </span>
                     </div>
+
+                    <h3 className="font-bold text-[#16345F] dark:text-white text-lg leading-snug group-hover:text-[#C01072] dark:group-hover:text-[#F472B6] transition-colors line-clamp-2">
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="after:absolute after:inset-0 after:content-['']"
+                      >
+                        {displayTitle}
+                      </Link>
+                    </h3>
+
+                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                      {displayExcerpt}
+                    </p>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-[#706F6F] dark:text-gray-400">
-                    <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
-                    <span>•</span>
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="size-3" /> {post.readingTime} min
+                  <div className="pt-4 mt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs">
+                    <span className="font-medium text-[#16345F] dark:text-gray-300 truncate max-w-[65%]">
+                      {post.author}
+                    </span>
+                    <span className="inline-flex items-center gap-1 font-semibold text-[#C01072] dark:text-[#F472B6] group-hover:translate-x-0.5 transition-transform">
+                      {lang === "es" ? "Leer artículo" : "Read article"}
+                      <ArrowUpRight className="size-3.5" />
                     </span>
                   </div>
-
-                  <h3 className="font-bold text-[#16345F] dark:text-white text-lg leading-snug group-hover:text-[#C01072] dark:group-hover:text-[#F472B6] transition-colors line-clamp-2">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="after:absolute after:inset-0 after:content-['']"
-                    >
-                      {post.title}
-                    </Link>
-                  </h3>
-
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
-                    {post.excerpt}
-                  </p>
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs">
-                  <span className="font-medium text-[#16345F] dark:text-gray-300 truncate max-w-[65%]">
-                    {post.author}
-                  </span>
-                  <span className="inline-flex items-center gap-1 font-semibold text-[#C01072] dark:text-[#F472B6] group-hover:translate-x-0.5 transition-transform">
-                    {lang === "es" ? "Leer artículo" : "Read article"}
-                    <ArrowUpRight className="size-3.5" />
-                  </span>
-                </div>
-              </article>
-            ))
+                </article>
+              );
+            })
           ) : (
             <div className="col-span-full p-8 text-center bg-white dark:bg-[#0F223D] rounded-3xl border border-dashed border-[#9BB8E0] text-sm text-[#706F6F]">
               {lang === "es"

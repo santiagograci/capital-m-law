@@ -44,7 +44,8 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
     reset,
   } = useBlogFilters(posts);
 
-  const isEs = state.language === "es";
+  const activeLang: BlogLanguage = state.language === "es" ? "es" : "en";
+  const isEs = activeLang === "es";
   const hasSearchOrTopicFilters =
     state.query.trim() !== "" || state.category !== null || state.tags.length > 0;
 
@@ -78,12 +79,11 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
 
               {(
                 [
-                  { value: "all", label: isEs ? "Todos" : "All", count: languageCounts.all },
-                  { value: "en", label: "EN · English", count: languageCounts.en },
-                  { value: "es", label: "ES · Español", count: languageCounts.es },
+                  { value: "en", label: "🇺🇸 EN · English" },
+                  { value: "es", label: "🇪🇸 ES · Español" },
                 ] as const
               ).map((opt) => {
-                const active = state.language === opt.value;
+                const active = activeLang === opt.value;
                 return (
                   <button
                     key={opt.value}
@@ -91,23 +91,13 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
                     onClick={() => setLanguage(opt.value)}
                     aria-pressed={active}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all",
+                      "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all cursor-pointer",
                       active
                         ? "bg-[#16345F] text-white shadow-xs dark:bg-[#C01072] dark:text-white"
                         : "text-[#16345F]/75 hover:bg-white/70 hover:text-[#16345F] dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white",
                     )}
                   >
                     <span>{opt.label}</span>
-                    <span
-                      className={cn(
-                        "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
-                        active
-                          ? "bg-white/20 text-white"
-                          : "bg-[#16345F]/10 text-[#16345F] dark:bg-white/10 dark:text-gray-300",
-                      )}
-                    >
-                      {opt.count}
-                    </span>
                   </button>
                 );
               })}
@@ -126,7 +116,7 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
         </div>
       </div>
 
-      {!hasSearchOrTopicFilters && <FeaturedPosts posts={featured} />}
+      {!hasSearchOrTopicFilters && <FeaturedPosts posts={featured} lang={activeLang} />}
 
       {/* Results header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
@@ -190,7 +180,13 @@ export function BlogExplorer({ posts }: { posts: BlogPostSummary[] }) {
           )}
         >
           {gridPosts.map((post) => (
-            <PostCard key={post.id} post={post} onTagClick={toggleTag} activeTags={state.tags} />
+            <PostCard
+              key={post.id}
+              post={post}
+              lang={activeLang}
+              onTagClick={toggleTag}
+              activeTags={state.tags}
+            />
           ))}
         </div>
       ) : hasActiveFilters ? (
